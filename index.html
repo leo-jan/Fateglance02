@@ -93,13 +93,15 @@
         .toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; background: #323232; color: white; border-radius: 8px; z-index: 9999; animation: fadeIn 0.3s; max-width: 400px; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        .att-input { width: 60px; padding: 5px 8px; border: 1px solid #ddd; border-radius: 4px; text-align: center; }
+        .att-input { width: 55px; padding: 4px 6px; border: 1px solid #ddd; border-radius: 4px; text-align: center; font-size: 13px; }
         .att-input:focus { border-color: #4a90d9; outline: none; }
         .att-input-wide { width: 120px; }
-        .att-input-small { width: 45px; padding: 4px 4px; border: 1px solid #ddd; border-radius: 4px; text-align: center; font-size: 12px; }
+        .att-input-small { width: 42px; padding: 3px 4px; border: 1px solid #ddd; border-radius: 4px; text-align: center; font-size: 12px; }
         .att-input-small:focus { border-color: #4a90d9; outline: none; }
         .att-row-total { background: #fff8e1; font-weight: 600; }
         .att-row-total td { border-top: 2px solid #ffb300; }
+        .att-row-subtotal { background: #f5f5f5; }
+        .att-row-subtotal td { border-top: 1px dashed #ccc; }
         
         .cloud-badge { display: inline-block; background: #e3f2fd; color: #1565c0; padding: 2px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; }
         
@@ -115,12 +117,15 @@
         .area-distribution-title { font-size: 13px; font-weight: 600; color: #555; margin-bottom: 8px; }
         .area-distribution-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 6px; }
         .area-distribution-item { display: flex; align-items: center; gap: 4px; font-size: 12px; padding: 4px 8px; background: white; border-radius: 4px; border: 1px solid #e8edf4; }
-        .area-distribution-item input { width: 40px; padding: 2px 4px; border: 1px solid #ddd; border-radius: 3px; text-align: center; font-size: 12px; }
+        .area-distribution-item input { width: 36px; padding: 2px 4px; border: 1px solid #ddd; border-radius: 3px; text-align: center; font-size: 11px; }
         .area-distribution-item input:focus { border-color: #4a90d9; outline: none; }
-        .area-distribution-item .area-label { min-width: 40px; color: #666; }
+        .area-distribution-item .area-label { min-width: 35px; color: #666; font-size: 11px; }
         
         .info-box { padding: 10px 16px; background: #e3f2fd; border-radius: 6px; border-left: 4px solid #4a90d9; margin: 10px 0; font-size: 13px; color: #1565c0; }
         .warning-box { padding: 10px 16px; background: #fff3e0; border-radius: 6px; border-left: 4px solid #ff9800; margin: 10px 0; font-size: 13px; color: #e65100; }
+        
+        .att-section-title { font-weight: 600; color: #1a237e; margin: 12px 0 6px 0; font-size: 14px; }
+        .att-section-desc { font-size: 12px; color: #888; margin-bottom: 8px; }
         
         @media (max-width: 768px) {
             .form-row { grid-template-columns: 1fr; }
@@ -132,6 +137,8 @@
             .login-box { margin: 40px 20px; padding: 30px 20px; }
             .stats { grid-template-columns: 1fr 1fr; }
             .area-distribution-grid { grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); }
+            .att-input { width: 40px; font-size: 11px; }
+            .att-input-small { width: 32px; font-size: 10px; }
         }
     </style>
 </head>
@@ -190,7 +197,6 @@
         <div id="tab-entry" class="tab-content active">
             <h2 id="entryTitle">📝 施工量录入</h2>
             
-            <!-- 显示当日考勤汇总 -->
             <div id="entryAttendanceSummary" class="info-box"></div>
             
             <div class="form-row">
@@ -233,7 +239,6 @@
                 </div>
             </div>
             
-            <!-- 显示该班组今日各区域人员分布 -->
             <div id="entryTeamDistribution" class="area-distribution" style="display:none;">
                 <div class="area-distribution-title" id="distTitle">👷 该班组今日各区域人员分布</div>
                 <div id="teamDistributionGrid" class="area-distribution-grid"></div>
@@ -313,7 +318,7 @@
         <div id="tab-attendance" class="tab-content">
             <h2 id="attTitle">👷 出勤日报（班组长）</h2>
             <div class="info-box" id="attendanceInfo">
-                📌 请按工种填报各区域人数，每个工种的区域人数总和会自动汇总
+                📌 请按工种填报中国籍和外籍的应到/实到人数，各区域人数总和自动汇总
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -456,7 +461,7 @@
 
 <script>
 // ============================================================
-//  国际化 (i18n)
+//  国际化 (i18n) - 完整中英文
 // ============================================================
 const I18N = {
     zh: {
@@ -519,6 +524,7 @@ const I18N = {
         present: '实到',
         absent: '缺勤',
         foreignLabel: '外籍',
+        chineseLabel: '中国籍',
         remarkLabel: '备注',
         matched: '匹配',
         diff: '差值',
@@ -558,11 +564,84 @@ const I18N = {
         deleteConfirm: '确定删除用户 {name} 吗？',
         userDeleted: '✅ 用户已删除',
         distTitle: '👷 该班组今日各区域人员分布',
-        attInfo: '📌 请按工种填报各区域人数，每个工种的区域人数总和会自动汇总',
+        attInfo: '📌 请按工种填报中国籍和外籍的应到/实到人数',
         manpowerHint: '可从今日考勤中分配人数',
         noAttendance: '⚠️ 该班组今日尚未填报考勤，请先填写出勤日报',
         total: '合计',
         areaDist: '区域分布',
+        chinese: '中国籍',
+        foreigner: '外籍',
+        chineseExpected: '中国应到',
+        chinesePresent: '中国实到',
+        foreignExpected: '外籍应到',
+        foreignPresent: '外籍实到',
+        all: '全部',
+        // 工种名称中英文
+        workerTypes: {
+            '木工': 'Carpenter',
+            '瓦工': 'Mason',
+            '钢筋工': 'Rebar Worker',
+            '架子工': 'Scaffolder',
+            '旗手': 'Signalman',
+            '小工': 'Helper',
+            '起重工': 'Rigger',
+            '测量工': 'Surveyor',
+            '焊工': 'Welder'
+        },
+        // 分部分项中英文
+        categoryNames: {
+            '无收入项': 'Non-revenue Work',
+            '土石方工程': 'Earthwork',
+            '模板工程': 'Formwork',
+            '架子工程': 'Scaffolding',
+            '钢筋工程': 'Rebar Work',
+            '混凝土工程': 'Concrete Work'
+        },
+        // 工作内容中英文（部分）
+        workItems: {
+            '送水送饭倒运材料': 'Water/food delivery & material handling',
+            '开会': 'Meeting',
+            '配合测量': 'Survey assistance',
+            '配合材料组': 'Material team assistance',
+            '配合降水': 'Dewatering assistance',
+            '旗手': 'Flagman / Signalman',
+            '其他杂活': 'Other miscellaneous work',
+            '人工挖土方（深度1.5m以内）': 'Manual excavation (depth ≤1.5m)',
+            '人工挖桩间土': 'Manual excavation between piles',
+            '人工回填（就地松填）': 'Manual backfill - loose fill',
+            '人工回填（夯填）': 'Manual backfill - compacted',
+            '人工配合机械回填': 'Manual assistance for machine backfill',
+            '人工平整场地、清理铲平机挖余土、配合机械平整水稳层': 'Manual leveling & cleaning',
+            '人工原土打夯': 'Manual compaction of natural soil',
+            '人工运土（运距20米以内）': 'Manual earth transport (≤20m)',
+            '砂垫层人工找平夯实': 'Sand cushion leveling & compaction',
+            '级配砂石人工平整夯实': 'Graded sand & gravel leveling',
+            '铺碎石人工夯实': 'Crushed stone compaction',
+            '截、破砼实心桩（桩径1000mm以内）': 'Cutting/breaking concrete piles',
+            '人工破砼（有筋）': 'Breaking reinforced concrete',
+            '人工破砼（无筋）': 'Breaking plain concrete',
+            '垫层模板': 'Lean concrete formwork',
+            '道路模板': 'Road formwork',
+            '基础模板': 'Foundation formwork',
+            '结构模板': 'Structural formwork',
+            '结构（施工层无现浇板）模板': 'Structural formwork (no slab)',
+            '双排脚手架（高度≤6m）': 'Double-row scaffolding (≤6m)',
+            '双排脚手架（高度≤12m）': 'Double-row scaffolding (≤12m)',
+            '双排脚手架（高度≤18m）': 'Double-row scaffolding (≤18m)',
+            '水池底板及筏板基础': 'Reservoir bottom & raft foundation',
+            '水池壁板': 'Reservoir wall',
+            '基础': 'Foundation',
+            '结构': 'Structural',
+            '汽车泵砼浇筑（基础）': 'Truck pump concrete (foundation)',
+            '汽车泵砼浇筑高度50m内（结构）': 'Truck pump concrete (structure ≤50m)',
+            '人工上料（二次倒运）手推车运砼浇捣': 'Manual feeding & handcart concrete',
+            '道路砼（厚200mm）': 'Road concrete (200mm)',
+            '混凝土井': 'Concrete manhole',
+            '地坪混凝土浇筑（厚50mm）': 'Concrete paving (50mm)',
+            '地坪混凝土浇筑（厚100mm）': 'Concrete paving (100mm)',
+            '地坪混凝土浇筑（厚150mm）': 'Concrete paving (150mm)',
+            '地坪混凝土浇筑（厚200mm）': 'Concrete paving (200mm)'
+        }
     },
     en: {
         appTitle: '🏗️ Civil Work Daily Report',
@@ -623,7 +702,8 @@ const I18N = {
         expected: 'Expected',
         present: 'Present',
         absent: 'Absent',
-        foreignLabel: 'Foreign',
+        foreignLabel: 'Non-Chinese',
+        chineseLabel: 'Chinese',
         remarkLabel: 'Remark',
         matched: 'Matched',
         diff: 'Diff',
@@ -663,18 +743,94 @@ const I18N = {
         deleteConfirm: 'Delete user {name}?',
         userDeleted: '✅ User deleted',
         distTitle: '👷 Team member distribution by area today',
-        attInfo: '📌 Fill in the number of people in each area by worker type. The sum will be automatically calculated.',
+        attInfo: '📌 Fill in Chinese and Non-Chinese expected/present by worker type',
         manpowerHint: 'Can be assigned from today\'s attendance',
         noAttendance: '⚠️ This team has not reported attendance today, please fill in attendance first',
         total: 'Total',
         areaDist: 'Area Distribution',
+        chinese: 'Chinese',
+        foreigner: 'Non-Chinese',
+        chineseExpected: 'Chinese Expected',
+        chinesePresent: 'Chinese Present',
+        foreignExpected: 'Non-Chinese Expected',
+        foreignPresent: 'Non-Chinese Present',
+        all: 'All',
+        workerTypes: {
+            '木工': 'Carpenter',
+            '瓦工': 'Mason',
+            '钢筋工': 'Rebar Worker',
+            '架子工': 'Scaffolder',
+            '旗手': 'Signalman',
+            '小工': 'Helper',
+            '起重工': 'Rigger',
+            '测量工': 'Surveyor',
+            '焊工': 'Welder'
+        },
+        categoryNames: {
+            '无收入项': 'Non-revenue Work',
+            '土石方工程': 'Earthwork',
+            '模板工程': 'Formwork',
+            '架子工程': 'Scaffolding',
+            '钢筋工程': 'Rebar Work',
+            '混凝土工程': 'Concrete Work'
+        },
+        workItems: {
+            '送水送饭倒运材料': 'Water/food delivery & material handling',
+            '开会': 'Meeting',
+            '配合测量': 'Survey assistance',
+            '配合材料组': 'Material team assistance',
+            '配合降水': 'Dewatering assistance',
+            '旗手': 'Flagman / Signalman',
+            '其他杂活': 'Other miscellaneous work',
+            '人工挖土方（深度1.5m以内）': 'Manual excavation (depth ≤1.5m)',
+            '人工挖桩间土': 'Manual excavation between piles',
+            '人工回填（就地松填）': 'Manual backfill - loose fill',
+            '人工回填（夯填）': 'Manual backfill - compacted',
+            '人工配合机械回填': 'Manual assistance for machine backfill',
+            '人工平整场地、清理铲平机挖余土、配合机械平整水稳层': 'Manual leveling & cleaning',
+            '人工原土打夯': 'Manual compaction of natural soil',
+            '人工运土（运距20米以内）': 'Manual earth transport (≤20m)',
+            '砂垫层人工找平夯实': 'Sand cushion leveling & compaction',
+            '级配砂石人工平整夯实': 'Graded sand & gravel leveling',
+            '铺碎石人工夯实': 'Crushed stone compaction',
+            '截、破砼实心桩（桩径1000mm以内）': 'Cutting/breaking concrete piles',
+            '人工破砼（有筋）': 'Breaking reinforced concrete',
+            '人工破砼（无筋）': 'Breaking plain concrete',
+            '垫层模板': 'Lean concrete formwork',
+            '道路模板': 'Road formwork',
+            '基础模板': 'Foundation formwork',
+            '结构模板': 'Structural formwork',
+            '结构（施工层无现浇板）模板': 'Structural formwork (no slab)',
+            '双排脚手架（高度≤6m）': 'Double-row scaffolding (≤6m)',
+            '双排脚手架（高度≤12m）': 'Double-row scaffolding (≤12m)',
+            '双排脚手架（高度≤18m）': 'Double-row scaffolding (≤18m)',
+            '水池底板及筏板基础': 'Reservoir bottom & raft foundation',
+            '水池壁板': 'Reservoir wall',
+            '基础': 'Foundation',
+            '结构': 'Structural',
+            '汽车泵砼浇筑（基础）': 'Truck pump concrete (foundation)',
+            '汽车泵砼浇筑高度50m内（结构）': 'Truck pump concrete (structure ≤50m)',
+            '人工上料（二次倒运）手推车运砼浇捣': 'Manual feeding & handcart concrete',
+            '道路砼（厚200mm）': 'Road concrete (200mm)',
+            '混凝土井': 'Concrete manhole',
+            '地坪混凝土浇筑（厚50mm）': 'Concrete paving (50mm)',
+            '地坪混凝土浇筑（厚100mm）': 'Concrete paving (100mm)',
+            '地坪混凝土浇筑（厚150mm）': 'Concrete paving (150mm)',
+            '地坪混凝土浇筑（厚200mm）': 'Concrete paving (200mm)'
+        }
     }
 };
 
 let currentLang = 'zh';
 
 function t(key) {
-    return I18N[currentLang][key] || key;
+    const keys = key.split('.');
+    let val = I18N[currentLang];
+    for (const k of keys) {
+        if (val && val[k] !== undefined) val = val[k];
+        else return key;
+    }
+    return val || key;
 }
 
 function setLang(lang) {
@@ -752,6 +908,10 @@ function updateUI() {
     document.getElementById('btnDedup').textContent = t('dedup');
     document.getElementById('btnReset').textContent = t('reset');
     document.getElementById('dangerHint').textContent = t('dangerHint');
+    document.getElementById('attendanceInfo').textContent = t('attInfo');
+    document.getElementById('distTitle').textContent = t('distTitle');
+    document.getElementById('manpowerHint').textContent = t('manpowerHint');
+    document.getElementById('optAll').textContent = t('all');
     
     // 标题
     document.getElementById('pendingTitle').innerHTML = t('pendingTitle') + ' (<span id="pendingCount">' + pendingItems.length + '</span> ' + (currentLang === 'zh' ? '项' : 'items') + ')';
@@ -763,10 +923,9 @@ function updateUI() {
     document.getElementById('addUserTitle').textContent = t('addUserTitle');
     document.getElementById('dangerTitle').textContent = t('dangerTitle');
     document.getElementById('loginLogsTitle').textContent = t('loginLogsTitle');
-    document.getElementById('optAll').textContent = currentLang === 'zh' ? '全部' : 'All';
-    document.getElementById('attendanceInfo').textContent = t('attInfo');
-    document.getElementById('distTitle').textContent = t('distTitle');
-    document.getElementById('manpowerHint').textContent = t('manpowerHint');
+    
+    // 更新分部分项下拉框
+    updateCategoryOptions();
     
     // Tab按钮
     const tabMap = {
@@ -786,10 +945,7 @@ function updateUI() {
         }
     });
     
-    // 更新角色提示
     updateRoleHint();
-    
-    // 重新加载数据
     renderPending();
     loadAttendance();
     loadOverview();
@@ -797,6 +953,18 @@ function updateUI() {
     loadVerification();
     loadLoginLogs();
     onEntryDateChange();
+}
+
+function updateCategoryOptions() {
+    const sel = document.getElementById('entryCategory');
+    const options = sel.options;
+    for (let i = 0; i < options.length; i++) {
+        const val = options[i].value;
+        const catNames = t('categoryNames');
+        if (catNames && catNames[val]) {
+            options[i].text = val + ' / ' + catNames[val];
+        }
+    }
 }
 
 // ============================================================
@@ -871,7 +1039,7 @@ function saveUsers() {
 }
 
 // ============================================================
-//  工作字典
+//  工作字典 - 带英文
 // ============================================================
 const WORK_DICT = {
     "无收入项": {
@@ -930,9 +1098,22 @@ const WORK_DICT = {
     }
 };
 
-const WORKER_TYPES = ['木工', '瓦工', '钢筋工', '架子工', '旗手', '小工', '起重工', '测量工', '焊工'];
+// 工种名称 - 中英对照
+const WORKER_TYPES_ZH = ['木工', '瓦工', '钢筋工', '架子工', '旗手', '小工', '起重工', '测量工', '焊工'];
+const WORKER_TYPES_EN = ['Carpenter', 'Mason', 'Rebar Worker', 'Scaffolder', 'Signalman', 'Helper', 'Rigger', 'Surveyor', 'Welder'];
+
 const TEAMS = ['马玉奇(Ma Yuqi)', '王建(Wang Jian)', 'Kumar', '郭传海(Guo Chuanhai)', '曹桂龙(Cao Guilong)', '陈传军(Chen Chuanjun)', '王世杰(Wang Shijie)', 'Sheharyar', 'Anwar'];
 const AREAS = ['110', '210', '220', '240', '320', '330', '400', '800', 'precast yard 1', 'precast yard 2'];
+
+function getWorkerTypeDisplay(zh) {
+    const map = t('workerTypes');
+    return map && map[zh] ? zh + ' / ' + map[zh] : zh;
+}
+
+function getWorkItemDisplay(zh) {
+    const map = t('workItems');
+    return map && map[zh] ? zh + ' / ' + map[zh] : zh;
+}
 
 // ============================================================
 //  全局变量
@@ -1091,7 +1272,7 @@ function switchTab(tab) {
 }
 
 // ============================================================
-//  工作字典联动
+//  工作字典联动 - 带英文
 // ============================================================
 function onCategoryChange() {
     const category = document.getElementById('entryCategory').value;
@@ -1102,7 +1283,7 @@ function onCategoryChange() {
     for (const name of Object.keys(items)) {
         const option = document.createElement('option');
         option.value = name;
-        option.textContent = name;
+        option.textContent = getWorkItemDisplay(name);
         subSelect.appendChild(option);
     }
     onSubItemChange();
@@ -1111,8 +1292,19 @@ function onCategoryChange() {
 function onSubItemChange() {
     const category = document.getElementById('entryCategory').value;
     const subItem = document.getElementById('entrySubItem').value;
+    // 从显示文本中提取原始key
+    let originalKey = subItem;
+    const map = t('workItems');
+    if (map) {
+        for (const [zh, en] of Object.entries(map)) {
+            if (subItem === zh + ' / ' + en || subItem === en + ' / ' + zh) {
+                originalKey = zh;
+                break;
+            }
+        }
+    }
     const items = WORK_DICT[category] || {};
-    const info = items[subItem] || { code: 'N/A', unit: 'N/A' };
+    const info = items[originalKey] || items[subItem] || { code: 'N/A', unit: 'N/A' };
     
     document.getElementById('entryCode').value = info.code;
     document.getElementById('entryUnit').value = info.unit;
@@ -1126,7 +1318,6 @@ function onEntryDateChange() {
     const team = document.getElementById('entryTeam').value;
     if (!date || !team) return;
     
-    // 获取该班组今日考勤
     const allAtt = JSON.parse(localStorage.getItem('attendance_data') || '[]');
     const teamAtt = allAtt.filter(a => a.Date === date && a.Team === team);
     
@@ -1144,7 +1335,6 @@ function onEntryDateChange() {
     }
     
     summaryDiv.className = 'info-box';
-    // 显示各工种汇总
     let summaryHtml = '📊 <strong>' + (currentLang === 'zh' ? '今日考勤汇总' : 'Today\'s Attendance') + '</strong>：';
     let totalPeople = 0;
     const typeMap = {};
@@ -1155,16 +1345,14 @@ function onEntryDateChange() {
         totalPeople += total;
     });
     const typeNames = Object.keys(typeMap);
-    summaryHtml += typeNames.map(t => t + '：' + typeMap[t] + (currentLang === 'zh' ? '人' : '')).join(' | ');
+    summaryHtml += typeNames.map(t => getWorkerTypeDisplay(t) + '：' + typeMap[t] + (currentLang === 'zh' ? '人' : '')).join(' | ');
     summaryHtml += ' | ' + (currentLang === 'zh' ? '合计' : 'Total') + '：' + totalPeople + (currentLang === 'zh' ? '人' : '');
     summaryDiv.innerHTML = summaryHtml;
     
-    // 显示各区域人员分布
-    // 从考勤中提取区域分布数据（如果有的话）
+    // 显示区域分布
     const areaData = {};
     teamAtt.forEach(a => {
         const type = a["Worker Type"];
-        // 检查是否有区域分布数据（格式：Area_110, Area_210, ...）
         for (const area of AREAS) {
             const key = 'Area_' + area;
             if (a[key] !== undefined && a[key] !== null && a[key] > 0) {
@@ -1174,7 +1362,6 @@ function onEntryDateChange() {
         }
     });
     
-    // 如果有区域分布数据，显示
     const hasAreaData = Object.keys(areaData).length > 0;
     distDiv.style.display = hasAreaData ? 'block' : 'none';
     
@@ -1186,7 +1373,7 @@ function onEntryDateChange() {
                 const areaTotal = types.reduce((sum, t) => sum + areaData[area][t], 0);
                 gridHtml += `<div class="area-distribution-item">
                     <span class="area-label"><strong>${area}</strong></span>
-                    ${types.map(t => `<span>${t}:${areaData[area][t]}人</span>`).join(' ')}
+                    ${types.map(t => `<span>${getWorkerTypeDisplay(t)}:${areaData[area][t]}人</span>`).join(' ')}
                     <span style="color:#1565c0;font-weight:600;">(共${areaTotal}人)</span>
                 </div>`;
             }
@@ -1198,7 +1385,6 @@ function onEntryDateChange() {
         }
     }
     
-    // 更新人数提示
     hintSpan.textContent = totalPeople > 0 ? (currentLang === 'zh' ? '今日该班组总人数：' + totalPeople + '人' : 'Today total: ' + totalPeople) : '';
 }
 
@@ -1206,9 +1392,6 @@ function onEntryTeamChange() {
     onEntryDateChange();
 }
 
-// ============================================================
-//  录入界面 - 人数变更验证
-// ============================================================
 function onManpowerChange() {
     const date = document.getElementById('entryDate').value;
     const team = document.getElementById('entryTeam').value;
@@ -1241,7 +1424,19 @@ function addToPending() {
     const team = document.getElementById('entryTeam').value;
     const tag = document.getElementById('entryTag').value || 'N/A';
     const category = document.getElementById('entryCategory').value;
-    const subItem = document.getElementById('entrySubItem').value;
+    const subItemEl = document.getElementById('entrySubItem');
+    const subItem = subItemEl.value;
+    // 从显示文本提取原始key
+    let originalSubItem = subItem;
+    const map = t('workItems');
+    if (map) {
+        for (const [zh, en] of Object.entries(map)) {
+            if (subItem === zh + ' / ' + en || subItem === en + ' / ' + zh) {
+                originalSubItem = zh;
+                break;
+            }
+        }
+    }
     const code = document.getElementById('entryCode').value;
     const unit = document.getElementById('entryUnit').value;
     const qty = parseFloat(document.getElementById('entryQty').value) || 0;
@@ -1256,7 +1451,6 @@ function addToPending() {
         return;
     }
     
-    // 验证人数是否超过考勤
     const allAtt = JSON.parse(localStorage.getItem('attendance_data') || '[]');
     const teamAtt = allAtt.filter(a => a.Date === date && a.Team === team);
     let totalPeople = 0;
@@ -1274,7 +1468,7 @@ function addToPending() {
         "Tag Number": tag,
         Code: code,
         "Sub-item": category,
-        "Description of Work": subItem,
+        "Description of Work": originalSubItem,
         Unit: unit,
         "Qty.": qty,
         "UG Pipe length (m)": pipe,
@@ -1360,9 +1554,10 @@ function renderPending() {
         const desc = item["Description of Work"] || '';
         const qty = item["Qty."] || 0;
         const mp = item.Manpower || 0;
+        const descDisplay = getWorkItemDisplay(desc);
         html += `<div class="pending-item">
             <div class="info">
-                <strong>${item.Date}</strong> | ${item.Area} | ${item.Team} | ${desc.substring(0, 30)}${desc.length > 30 ? '...' : ''}
+                <strong>${item.Date}</strong> | ${item.Area} | ${item.Team} | ${descDisplay.substring(0, 30)}${descDisplay.length > 30 ? '...' : ''}
                 <span style="color:#999;font-size:12px;margin-left:10px;">
                     ${qty > 0 ? (currentLang === 'zh' ? '数量:' : 'Qty:') + qty : ''}
                     ${mp > 0 ? (currentLang === 'zh' ? '人数:' : 'MP:') + mp : ''}
@@ -1428,7 +1623,7 @@ function submitAll() {
 }
 
 // ============================================================
-//  出勤日报 - 带区域分布
+//  出勤日报 - 中国籍+外籍 应到/实到 按区域分布
 // ============================================================
 function loadAttendance() {
     const date = document.getElementById('attDate').value;
@@ -1446,65 +1641,107 @@ function renderAttendanceWithArea(data, date, team) {
     const map = {};
     data.forEach(d => map[d["Worker Type"]] = d);
     
-    let html = '<table><thead><tr><th>' + t('workerType') + '</th>';
+    let html = '<table><thead><tr><th rowspan="2">' + t('workerType') + '</th>';
     // 区域列
     for (const area of AREAS) {
-        html += `<th style="font-size:12px;">${area}</th>`;
+        html += `<th colspan="4" style="font-size:11px;text-align:center;">${area}</th>`;
     }
-    html += `<th>${t('total')}</th><th>${t('foreignLabel')}</th><th>${t('remarkLabel')}</th></tr></thead><tbody>`;
+    html += `<th colspan="4" style="text-align:center;">' + t('total') + '</th>`;
+    html += `<th rowspan="2">' + t('remarkLabel') + '</th></tr>`;
+    html += '<tr>';
+    for (const area of AREAS) {
+        html += `<th style="font-size:10px;text-align:center;background:#e3f2fd;">' + t('chineseExpected') + '</th>`;
+        html += `<th style="font-size:10px;text-align:center;background:#e3f2fd;">' + t('chinesePresent') + '</th>`;
+        html += `<th style="font-size:10px;text-align:center;background:#fff3e0;">' + t('foreignExpected') + '</th>`;
+        html += `<th style="font-size:10px;text-align:center;background:#fff3e0;">' + t('foreignPresent') + '</th>`;
+    }
+    html += `<th style="font-size:10px;text-align:center;">' + t('chineseExpected') + '</th>`;
+    html += `<th style="font-size:10px;text-align:center;">' + t('chinesePresent') + '</th>`;
+    html += `<th style="font-size:10px;text-align:center;">' + t('foreignExpected') + '</th>`;
+    html += `<th style="font-size:10px;text-align:center;">' + t('foreignPresent') + '</th>`;
+    html += '</tr></thead><tbody>';
     
-    let grandTotal = 0;
-    WORKER_TYPES.forEach((type) => {
-        const row = map[type] || { Total: 0, Foreign: 0, Remark: '' };
-        let rowTotal = 0;
+    WORKER_TYPES_ZH.forEach((type, idx) => {
+        const row = map[type] || {};
+        const typeDisplay = getWorkerTypeDisplay(type);
+        let totalCnExp = 0, totalCnPre = 0, totalFrExp = 0, totalFrPre = 0;
+        
         html += `<tr>`;
-        html += `<td><strong>${type}</strong></td>`;
-        // 各区域输入
+        html += `<td><strong>${typeDisplay}</strong></td>`;
+        
         for (const area of AREAS) {
-            const key = 'Area_' + area;
-            const val = row[key] || 0;
-            rowTotal += val;
-            html += `<td><input type="number" class="att-input-small" data-type="${type}" data-area="${area}" value="${val}" min="0" onchange="updateAttendanceArea(this)"></td>`;
+            const prefix = 'Area_' + area + '_';
+            const cnExp = row[prefix + 'CnExp'] || 0;
+            const cnPre = row[prefix + 'CnPre'] || 0;
+            const frExp = row[prefix + 'FrExp'] || 0;
+            const frPre = row[prefix + 'FrPre'] || 0;
+            totalCnExp += cnExp; totalCnPre += cnPre;
+            totalFrExp += frExp; totalFrPre += frPre;
+            
+            html += `<td><input type="number" class="att-input-small" data-type="${type}" data-area="${area}" data-field="CnExp" value="${cnExp}" min="0" onchange="updateAttendanceTotal(this)"></td>`;
+            html += `<td><input type="number" class="att-input-small" data-type="${type}" data-area="${area}" data-field="CnPre" value="${cnPre}" min="0" onchange="updateAttendanceTotal(this)"></td>`;
+            html += `<td><input type="number" class="att-input-small" data-type="${type}" data-area="${area}" data-field="FrExp" value="${frExp}" min="0" onchange="updateAttendanceTotal(this)"></td>`;
+            html += `<td><input type="number" class="att-input-small" data-type="${type}" data-area="${area}" data-field="FrPre" value="${frPre}" min="0" onchange="updateAttendanceTotal(this)"></td>`;
         }
-        // 合计（自动计算）
-        html += `<td style="font-weight:bold;color:#1565c0;" class="row-total-${type}">${rowTotal}</td>`;
-        html += `<td><input type="number" class="att-input-small" data-type="${type}" data-field="Foreign" value="${row.Foreign || 0}" min="0"></td>`;
+        
+        html += `<td style="font-weight:bold;color:#1565c0;" class="total-cn-exp-${idx}">${totalCnExp}</td>`;
+        html += `<td style="font-weight:bold;color:#1565c0;" class="total-cn-pre-${idx}">${totalCnPre}</td>`;
+        html += `<td style="font-weight:bold;color:#e65100;" class="total-fr-exp-${idx}">${totalFrExp}</td>`;
+        html += `<td style="font-weight:bold;color:#e65100;" class="total-fr-pre-${idx}">${totalFrPre}</td>`;
         html += `<td><input type="text" class="att-input-wide" data-type="${type}" data-field="Remark" value="${row.Remark || ''}" placeholder="${t('remarkLabel')}"></td>`;
         html += `</tr>`;
-        grandTotal += rowTotal;
     });
     
     // 合计行
     html += `<tr class="att-row-total">
         <td><strong>${t('total')}</strong></td>`;
     for (const area of AREAS) {
-        html += `<td id="area-total-${area}" style="font-weight:bold;color:#1565c0;">0</td>`;
+        html += `<td id="area-total-cn-exp-${area}" style="font-weight:bold;color:#1565c0;">0</td>`;
+        html += `<td id="area-total-cn-pre-${area}" style="font-weight:bold;color:#1565c0;">0</td>`;
+        html += `<td id="area-total-fr-exp-${area}" style="font-weight:bold;color:#e65100;">0</td>`;
+        html += `<td id="area-total-fr-pre-${area}" style="font-weight:bold;color:#e65100;">0</td>`;
     }
-    html += `<td style="font-weight:bold;color:#1565c0;" id="grand-total">0</td>`;
-    html += `<td></td><td></td>`;
+    html += `<td id="grand-cn-exp" style="font-weight:bold;color:#1565c0;">0</td>`;
+    html += `<td id="grand-cn-pre" style="font-weight:bold;color:#1565c0;">0</td>`;
+    html += `<td id="grand-fr-exp" style="font-weight:bold;color:#e65100;">0</td>`;
+    html += `<td id="grand-fr-pre" style="font-weight:bold;color:#e65100;">0</td>`;
+    html += `<td></td>`;
     html += `</tr>`;
     
     html += '</tbody></table>';
     container.innerHTML = html;
     
-    // 计算各区域合计和总合计
     updateAttendanceTotals();
 }
 
-function updateAttendanceArea(el) {
-    const type = el.dataset.type;
-    const area = el.dataset.area;
-    const val = parseInt(el.value) || 0;
-    
-    // 更新该工种的合计
+function updateAttendanceTotal(el) {
+    // 更新对应工种的合计
     const row = el.closest('tr');
-    const inputs = row.querySelectorAll(`.att-input-small[data-type="${type}"]`);
-    let total = 0;
-    inputs.forEach(inp => { total += parseInt(inp.value) || 0; });
-    const totalCell = row.querySelector(`.row-total-${type}`);
-    if (totalCell) totalCell.textContent = total;
+    const type = el.dataset.type;
+    const idx = WORKER_TYPES_ZH.indexOf(type);
+    if (idx === -1) return;
     
-    // 更新各区域合计
+    // 计算该工种各区域合计
+    let cnExp = 0, cnPre = 0, frExp = 0, frPre = 0;
+    const inputs = row.querySelectorAll(`.att-input-small[data-type="${type}"]`);
+    inputs.forEach(inp => {
+        const val = parseInt(inp.value) || 0;
+        const field = inp.dataset.field;
+        if (field === 'CnExp') cnExp += val;
+        else if (field === 'CnPre') cnPre += val;
+        else if (field === 'FrExp') frExp += val;
+        else if (field === 'FrPre') frPre += val;
+    });
+    
+    const cnExpCell = row.querySelector(`.total-cn-exp-${idx}`);
+    const cnPreCell = row.querySelector(`.total-cn-pre-${idx}`);
+    const frExpCell = row.querySelector(`.total-fr-exp-${idx}`);
+    const frPreCell = row.querySelector(`.total-fr-pre-${idx}`);
+    if (cnExpCell) cnExpCell.textContent = cnExp;
+    if (cnPreCell) cnPreCell.textContent = cnPre;
+    if (frExpCell) frExpCell.textContent = frExp;
+    if (frPreCell) frPreCell.textContent = frPre;
+    
     updateAttendanceTotals();
 }
 
@@ -1512,32 +1749,38 @@ function updateAttendanceTotals() {
     const container = document.getElementById('attendanceTable');
     const areaTotals = {};
     for (const area of AREAS) {
-        areaTotals[area] = 0;
+        areaTotals[area] = { cnExp: 0, cnPre: 0, frExp: 0, frPre: 0 };
     }
-    let grandTotal = 0;
+    let grand = { cnExp: 0, cnPre: 0, frExp: 0, frPre: 0 };
     
-    // 遍历所有工种行
     const rows = container.querySelectorAll('tbody tr:not(.att-row-total)');
     rows.forEach(row => {
         for (const area of AREAS) {
-            const inp = row.querySelector(`.att-input-small[data-area="${area}"]`);
-            if (inp) {
-                areaTotals[area] += parseInt(inp.value) || 0;
-            }
+            const cnExp = parseInt(row.querySelector(`.att-input-small[data-area="${area}"][data-field="CnExp"]`)?.value) || 0;
+            const cnPre = parseInt(row.querySelector(`.att-input-small[data-area="${area}"][data-field="CnPre"]`)?.value) || 0;
+            const frExp = parseInt(row.querySelector(`.att-input-small[data-area="${area}"][data-field="FrExp"]`)?.value) || 0;
+            const frPre = parseInt(row.querySelector(`.att-input-small[data-area="${area}"][data-field="FrPre"]`)?.value) || 0;
+            areaTotals[area].cnExp += cnExp;
+            areaTotals[area].cnPre += cnPre;
+            areaTotals[area].frExp += frExp;
+            areaTotals[area].frPre += frPre;
+            grand.cnExp += cnExp;
+            grand.cnPre += cnPre;
+            grand.frExp += frExp;
+            grand.frPre += frPre;
         }
     });
     
-    // 更新区域合计显示
     for (const area of AREAS) {
-        const cell = document.getElementById(`area-total-${area}`);
-        if (cell) {
-            cell.textContent = areaTotals[area];
-            grandTotal += areaTotals[area];
-        }
+        document.getElementById(`area-total-cn-exp-${area}`).textContent = areaTotals[area].cnExp;
+        document.getElementById(`area-total-cn-pre-${area}`).textContent = areaTotals[area].cnPre;
+        document.getElementById(`area-total-fr-exp-${area}`).textContent = areaTotals[area].frExp;
+        document.getElementById(`area-total-fr-pre-${area}`).textContent = areaTotals[area].frPre;
     }
-    
-    const grandCell = document.getElementById('grand-total');
-    if (grandCell) grandCell.textContent = grandTotal;
+    document.getElementById('grand-cn-exp').textContent = grand.cnExp;
+    document.getElementById('grand-cn-pre').textContent = grand.cnPre;
+    document.getElementById('grand-fr-exp').textContent = grand.frExp;
+    document.getElementById('grand-fr-pre').textContent = grand.frPre;
 }
 
 function saveAttendance() {
@@ -1550,20 +1793,33 @@ function saveAttendance() {
     const rows = container.querySelectorAll('tbody tr:not(.att-row-total)');
     
     rows.forEach(row => {
-        const type = row.querySelector('td strong')?.textContent || '';
-        const foreign = parseInt(row.querySelector(`.att-input-small[data-field="Foreign"]`)?.value) || 0;
+        const typeCell = row.querySelector('td strong');
+        if (!typeCell) return;
+        const type = typeCell.textContent.split(' / ')[0] || typeCell.textContent;
         const remark = row.querySelector(`.att-input-wide[data-field="Remark"]`)?.value || '';
-        let total = 0;
+        
         const areaData = {};
+        let totalCnExp = 0, totalCnPre = 0, totalFrExp = 0, totalFrPre = 0;
         
         for (const area of AREAS) {
-            const inp = row.querySelector(`.att-input-small[data-area="${area}"]`);
-            if (inp) {
-                const val = parseInt(inp.value) || 0;
-                areaData['Area_' + area] = val;
-                total += val;
-            }
+            const cnExp = parseInt(row.querySelector(`.att-input-small[data-area="${area}"][data-field="CnExp"]`)?.value) || 0;
+            const cnPre = parseInt(row.querySelector(`.att-input-small[data-area="${area}"][data-field="CnPre"]`)?.value) || 0;
+            const frExp = parseInt(row.querySelector(`.att-input-small[data-area="${area}"][data-field="FrExp"]`)?.value) || 0;
+            const frPre = parseInt(row.querySelector(`.att-input-small[data-area="${area}"][data-field="FrPre"]`)?.value) || 0;
+            
+            areaData['Area_' + area + '_CnExp'] = cnExp;
+            areaData['Area_' + area + '_CnPre'] = cnPre;
+            areaData['Area_' + area + '_FrExp'] = frExp;
+            areaData['Area_' + area + '_FrPre'] = frPre;
+            
+            totalCnExp += cnExp;
+            totalCnPre += cnPre;
+            totalFrExp += frExp;
+            totalFrPre += frPre;
         }
+        
+        const total = totalCnExp + totalFrExp;
+        const present = totalCnPre + totalFrPre;
         
         if (total > 0) {
             records.push({
@@ -1571,9 +1827,12 @@ function saveAttendance() {
                 Team: team,
                 "Worker Type": type,
                 Total: total,
-                Present: total, // 实到=应到（缺勤默认为0）
-                Absent: 0,
-                Foreign: foreign,
+                Present: present,
+                Absent: total - present,
+                CnTotal: totalCnExp,
+                CnPresent: totalCnPre,
+                FrTotal: totalFrExp,
+                FrPresent: totalFrPre,
                 Remark: remark,
                 "Reported By": currentUser || 'unknown',
                 ...areaData
@@ -1593,7 +1852,7 @@ function saveAttendance() {
     
     showToast(t('successSaved'));
     loadAttendance();
-    onEntryDateChange(); // 更新录入界面的考勤信息
+    onEntryDateChange();
 }
 
 function renderAttendanceSummary(date) {
@@ -1611,8 +1870,12 @@ function renderAttendanceSummary(date) {
     teams.forEach(team => {
         const records = filtered.filter(d => d.Team === team);
         let details = records.map(d => {
+            const type = d["Worker Type"];
+            const cnTotal = d.CnTotal || 0;
+            const frTotal = d.FrTotal || 0;
             const total = d.Total || 0;
-            return d["Worker Type"] + total + (currentLang === 'zh' ? '人' : '');
+            return getWorkerTypeDisplay(type) + total + (currentLang === 'zh' ? '人' : '') + 
+                ' (中' + cnTotal + '/外' + frTotal + ')';
         }).join('、');
         html += `<tr><td>${team}</td><td>${details || (currentLang === 'zh' ? '无数据' : 'No data')}</td></tr>`;
     });
@@ -1645,7 +1908,8 @@ function loadOverview() {
         html += '<table><thead><tr><th>' + t('date') + '</th><th>' + t('area') + '</th><th>' + t('team') + '</th><th>' + (currentLang === 'zh' ? '工作描述' : 'Description') + '</th><th>' + t('qty') + '</th><th>' + t('manpower') + '</th><th>' + t('manhours') + '</th></tr></thead><tbody>';
         filtered.forEach(d => {
             const desc = d["Description of Work"] || '';
-            html += `<tr><td>${d.Date}</td><td>${d.Area}</td><td>${d.Team}</td><td>${desc.substring(0, 30)}${desc.length > 30 ? '...' : ''}</td>
+            const descDisplay = getWorkItemDisplay(desc);
+            html += `<tr><td>${d.Date}</td><td>${d.Area}</td><td>${d.Team}</td><td>${descDisplay.substring(0, 30)}${descDisplay.length > 30 ? '...' : ''}</td>
                 <td>${d["Qty."] || 0}</td><td>${d.Manpower || 0}</td><td>${d.Manhours || 0}</td></tr>`;
         });
         html += '</tbody></table>';
@@ -1660,7 +1924,8 @@ function loadOverview() {
         html += '<table><thead><tr><th>' + t('date') + '</th><th>' + t('area') + '</th><th>' + t('team') + '</th><th>' + (currentLang === 'zh' ? '工作描述' : 'Description') + '</th><th>' + t('qty') + '</th><th>' + t('manpower') + '</th><th>' + t('manhours') + '</th></tr></thead><tbody>';
         allData.slice(-100).reverse().forEach(d => {
             const desc = d["Description of Work"] || '';
-            html += `<tr><td>${d.Date}</td><td>${d.Area}</td><td>${d.Team}</td><td>${desc.substring(0, 30)}${desc.length > 30 ? '...' : ''}</td>
+            const descDisplay = getWorkItemDisplay(desc);
+            html += `<tr><td>${d.Date}</td><td>${d.Area}</td><td>${d.Team}</td><td>${descDisplay.substring(0, 30)}${descDisplay.length > 30 ? '...' : ''}</td>
                 <td>${d["Qty."] || 0}</td><td>${d.Manpower || 0}</td><td>${d.Manhours || 0}</td></tr>`;
         });
         html += '</tbody></table>';
