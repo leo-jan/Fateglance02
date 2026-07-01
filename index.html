@@ -1135,12 +1135,16 @@ function initApp() {
     document.getElementById('overviewDate').value = today;
     document.getElementById('verifyDate').value = today;
     
-    // ✅ 预加载字典数据
-    loadCategoriesFromSupabase().then(() => {
-        loadWorkItemsFromSupabase().then(() => {
+    // ✅ 预加载字典数据，完成后初始化下拉菜单
+    loadCategoriesFromSupabase()
+        .then(() => loadWorkItemsFromSupabase())
+        .then(() => {
             onCategoryChange();
+            console.log('✅ 字典数据加载完成，分类下拉已初始化');
+        })
+        .catch(error => {
+            console.error('❌ 字典数据加载失败:', error);
         });
-    });
     
     loadPending();
     loadAttendance();
@@ -1978,9 +1982,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('attDate').value = today;
     document.getElementById('overviewDate').value = today;
     document.getElementById('verifyDate').value = today;
-    
-    // 初始化分类下拉
-    onCategoryChange();
+
+    // ✅ 调用初始化函数
+    initApp();
     
     document.getElementById('attDate').addEventListener('change', loadAttendance);
     document.getElementById('attTeam').addEventListener('change', loadAttendance);
