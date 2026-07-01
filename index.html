@@ -14,6 +14,10 @@
         .header-right { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .user-info { display: flex; align-items: center; gap: 15px; }
         .user-info span { font-weight: 500; color: #1a237e; }
+        .user-role-badge { display: inline-block; padding: 2px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .user-role-badge.admin { background: #e8f5e9; color: #2e7d32; }
+        .user-role-badge.viewer { background: #e3f2fd; color: #1565c0; }
+        .user-role-badge.entry { background: #fff3e0; color: #e65100; }
         .btn-logout { padding: 8px 20px; border: 1px solid #e53935; background: white; color: #e53935; border-radius: 6px; cursor: pointer; }
         .btn-logout:hover { background: #e53935; color: white; }
         
@@ -93,14 +97,14 @@
         .att-input-wide { width: 120px; }
         
         .cloud-badge { display: inline-block; background: #e3f2fd; color: #1565c0; padding: 2px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-        .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
-        .status-dot.green { background: #4caf50; }
-        .status-dot.red { background: #e53935; }
         
         .danger-zone { border: 2px solid #ffcdd2; border-radius: 8px; padding: 20px; margin-top: 15px; background: #fff5f5; }
         .danger-zone h3 { color: #c62828; }
         
         .section-divider { border: none; border-top: 2px solid #e8edf4; margin: 25px 0; }
+        
+        .role-tabs-hint { padding: 10px 16px; background: #f5f5f5; border-radius: 6px; font-size: 13px; color: #666; margin-bottom: 15px; }
+        .role-tabs-hint strong { color: #1a237e; }
         
         @media (max-width: 768px) {
             .form-row { grid-template-columns: 1fr; }
@@ -145,21 +149,31 @@
                 </div>
                 <div class="user-info">
                     <span id="userDisplayName">👤 用户</span>
-                    <span id="userRole" style="font-size:12px;color:#888;"></span>
+                    <span id="userRoleBadge" class="user-role-badge"></span>
                     <button class="btn-logout" onclick="handleLogout()">🚪 退出</button>
                 </div>
             </div>
         </div>
         
+        <!-- Tab 导航栏 -->
         <div class="tabs" id="tabHeaders">
-            <button class="tab-btn active" onclick="switchTab('entry')" data-tab="entry">📝 施工量录入</button>
-            <button class="tab-btn" onclick="switchTab('attendance')" data-tab="attendance">👷 出勤日报</button>
-            <button class="tab-btn" onclick="switchTab('overview')" data-tab="overview">📊 数据总览</button>
-            <button class="tab-btn" onclick="switchTab('verify')" data-tab="verify">✅ 工时核对</button>
-            <button class="tab-btn" onclick="switchTab('settings')" data-tab="settings">⚙️ 设置</button>
+            <!-- 录入员和Admin可见 -->
+            <button class="tab-btn active" onclick="switchTab('entry')" data-tab="entry" data-role="entry,admin">📝 施工量录入</button>
+            <button class="tab-btn" onclick="switchTab('attendance')" data-tab="attendance" data-role="entry,admin">👷 出勤日报</button>
+            <!-- 查看者和Admin可见 -->
+            <button class="tab-btn" onclick="switchTab('overview')" data-tab="overview" data-role="viewer,admin">📊 数据总览</button>
+            <button class="tab-btn" onclick="switchTab('verify')" data-tab="verify" data-role="viewer,admin">✅ 工时核对</button>
+            <!-- 仅Admin可见 -->
+            <button class="tab-btn" onclick="switchTab('settings')" data-tab="settings" data-role="admin">⚙️ 设置</button>
         </div>
         
-        <!-- ===== Tab: 录入 ===== -->
+        <!-- 角色提示 -->
+        <div class="role-tabs-hint" id="roleHint">
+            💡 当前角色：<strong id="roleNameDisplay">录入员</strong> · 
+            可用功能：<span id="availableTabsDisplay">施工量录入、出勤日报</span>
+        </div>
+        
+        <!-- ===== Tab: 录入 (entry + admin) ===== -->
         <div id="tab-entry" class="tab-content active">
             <h2 id="entryTitle">📝 施工量录入</h2>
             <div class="form-row">
@@ -271,7 +285,7 @@
             </div>
         </div>
         
-        <!-- ===== Tab: 出勤 ===== -->
+        <!-- ===== Tab: 出勤 (entry + admin) ===== -->
         <div id="tab-attendance" class="tab-content">
             <h2 id="attTitle">👷 出勤日报（班组长）</h2>
             <div class="form-row">
@@ -304,7 +318,7 @@
             <div id="attendanceSummary"></div>
         </div>
         
-        <!-- ===== Tab: 总览 ===== -->
+        <!-- ===== Tab: 总览 (viewer + admin) ===== -->
         <div id="tab-overview" class="tab-content">
             <h2 id="overviewTitle">📊 数据总览</h2>
             <div class="form-row">
@@ -327,7 +341,7 @@
             <div id="allDataTable" class="table-container"></div>
         </div>
         
-        <!-- ===== Tab: 核对 ===== -->
+        <!-- ===== Tab: 核对 (viewer + admin) ===== -->
         <div id="tab-verify" class="tab-content">
             <h2 id="verifyTitle">✅ 工时与出勤核对</h2>
             <div class="form-row">
@@ -358,7 +372,7 @@
             <div id="verifyStats" style="margin-top:15px;"></div>
         </div>
         
-        <!-- ===== Tab: 设置 ===== -->
+        <!-- ===== Tab: 设置 (仅admin) ===== -->
         <div id="tab-settings" class="tab-content">
             <h2 id="settingsTitle">⚙️ 设置</h2>
             <h3 id="userMgmtTitle">👥 用户管理</h3>
@@ -507,6 +521,15 @@ const I18N = {
         noDataDate: '该日期暂无数据',
         deleteConfirm: '确定删除用户 {name} 吗？',
         userDeleted: '✅ 用户已删除',
+        roleAdmin: '管理员',
+        roleViewer: '查看者',
+        roleEntry: '录入员',
+        roleHint: '💡 当前角色：<strong>{role}</strong> · 可用功能：<span>{tabs}</span>',
+        tabEntry: '施工量录入',
+        tabAttendance: '出勤日报',
+        tabOverview: '数据总览',
+        tabVerify: '工时核对',
+        tabSettings: '设置',
     },
     en: {
         appTitle: '🏗️ Civil Work Daily Report',
@@ -597,6 +620,15 @@ const I18N = {
         noDataDate: 'No data for this date',
         deleteConfirm: 'Delete user {name}?',
         userDeleted: '✅ User deleted',
+        roleAdmin: 'Admin',
+        roleViewer: 'Viewer',
+        roleEntry: 'Entry',
+        roleHint: '💡 Role: <strong>{role}</strong> · Available: <span>{tabs}</span>',
+        tabEntry: 'Work Entry',
+        tabAttendance: 'Attendance',
+        tabOverview: 'Overview',
+        tabVerify: 'Verification',
+        tabSettings: 'Settings',
     }
 };
 
@@ -694,13 +726,13 @@ function updateUI() {
     document.getElementById('loginLogsTitle').textContent = t('loginLogsTitle');
     document.getElementById('optAll').textContent = currentLang === 'zh' ? '全部' : 'All';
     
-    // Tab按钮 - 保留图标，只改文字
+    // Tab按钮
     const tabMap = {
-        '📝 施工量录入': '📝 ' + t('entryTitle').replace('📝 ', ''),
-        '👷 出勤日报': '👷 ' + t('attTitle').replace('👷 ', ''),
-        '📊 数据总览': '📊 ' + t('overviewTitle').replace('📊 ', ''),
-        '✅ 工时核对': '✅ ' + t('verifyTitle').replace('✅ ', ''),
-        '⚙️ 设置': '⚙️ ' + t('settingsTitle').replace('⚙️ ', '')
+        '📝 施工量录入': '📝 ' + t('tabEntry'),
+        '👷 出勤日报': '👷 ' + t('tabAttendance'),
+        '📊 数据总览': '📊 ' + t('tabOverview'),
+        '✅ 工时核对': '✅ ' + t('tabVerify'),
+        '⚙️ 设置': '⚙️ ' + t('tabSettings')
     };
     document.querySelectorAll('.tab-btn').forEach(btn => {
         const key = btn.textContent.trim();
@@ -712,13 +744,45 @@ function updateUI() {
         }
     });
     
-    // 重新加载数据以更新显示
+    // 更新角色提示
+    updateRoleHint();
+    
+    // 重新加载数据
     renderPending();
     loadAttendance();
     loadOverview();
     loadUserList();
     loadVerification();
     loadLoginLogs();
+}
+
+// ============================================================
+//  角色提示更新
+// ============================================================
+function updateRoleHint() {
+    if (!currentUser) return;
+    const user = USERS[currentUser];
+    if (!user) return;
+    
+    const roleNames = {
+        'admin': t('roleAdmin'),
+        'viewer': t('roleViewer'),
+        'entry': t('roleEntry')
+    };
+    const roleName = roleNames[user.role] || user.role;
+    
+    const tabNames = {
+        'admin': [t('tabEntry'), t('tabAttendance'), t('tabOverview'), t('tabVerify'), t('tabSettings')],
+        'viewer': [t('tabOverview'), t('tabVerify')],
+        'entry': [t('tabEntry'), t('tabAttendance')]
+    };
+    const tabs = tabNames[user.role] || [];
+    
+    document.getElementById('roleNameDisplay').textContent = roleName;
+    document.getElementById('availableTabsDisplay').textContent = tabs.join('、');
+    document.getElementById('roleHint').innerHTML = t('roleHint')
+        .replace('{role}', roleName)
+        .replace('{tabs}', tabs.join('、'));
 }
 
 // ============================================================
@@ -869,21 +933,27 @@ function handleLogin() {
     currentRole = user.role;
     isAdmin = currentRole === 'admin';
     
+    // 更新用户信息显示
     document.getElementById('userDisplayName').textContent = '👤 ' + user.display_name;
-    document.getElementById('userRole').textContent = '🔑 ' + user.role;
+    const badge = document.getElementById('userRoleBadge');
+    badge.textContent = t('role' + currentRole.charAt(0).toUpperCase() + currentRole.slice(1));
+    badge.className = 'user-role-badge ' + currentRole;
     
-    // 显示主界面，隐藏登录界面
+    // 显示主界面
     document.getElementById('loginPage').style.display = 'none';
     document.getElementById('mainApp').style.display = 'block';
     
     // 记录登录日志
     addLoginLog(username, user.display_name, user.role);
     
-    updatePermissions();
+    // 根据角色显示对应的Tab
+    updateTabVisibility();
+    updateRoleHint();
+    
+    // 初始化
     initApp();
-    // 更新UI语言
     updateUI();
-    // 显示欢迎消息
+    
     showToast(t('loginWelcome') + user.display_name + '！');
     msg.textContent = '';
 }
@@ -926,21 +996,32 @@ function handleLogout() {
     }
 }
 
-function updatePermissions() {
+// ============================================================
+//  Tab可见性控制
+// ============================================================
+function updateTabVisibility() {
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        const tab = btn.dataset.tab;
-        if (currentRole === 'viewer') {
-            if (tab === 'entry' || tab === 'attendance' || tab === 'settings') {
-                btn.style.display = 'none';
-            } else {
-                btn.style.display = 'inline-block';
-            }
+        const roles = btn.dataset.role.split(',');
+        if (roles.includes(currentRole)) {
+            btn.classList.remove('hidden');
         } else {
-            btn.style.display = 'inline-block';
+            btn.classList.add('hidden');
         }
     });
-    if (currentRole === 'viewer') {
-        switchTab('overview');
+    
+    // 默认激活第一个可见的Tab
+    const visibleTabs = document.querySelectorAll('.tab-btn:not(.hidden)');
+    if (visibleTabs.length > 0) {
+        const firstTab = visibleTabs[0];
+        // 如果当前激活的Tab被隐藏了，切换到第一个可见Tab
+        const activeTab = document.querySelector('.tab-btn.active');
+        if (activeTab && activeTab.classList.contains('hidden')) {
+            switchTab(firstTab.dataset.tab);
+        }
+        // 如果没有任何Tab激活，激活第一个
+        if (!document.querySelector('.tab-btn.active')) {
+            switchTab(firstTab.dataset.tab);
+        }
     }
 }
 
@@ -1030,7 +1111,6 @@ function addToPending() {
         return;
     }
     
-    // 检查是否已存在相同记录
     const duplicate = pendingItems.some(item => 
         item.Date === record.Date && 
         item.Area === record.Area && 
@@ -1295,7 +1375,6 @@ function loadOverview() {
     const allData = JSON.parse(localStorage.getItem('daily_reports') || '[]');
     const filtered = date ? allData.filter(d => d.Date === date) : allData;
     
-    // 区域状态
     const submittedAreas = new Set(filtered.map(d => d.Area));
     const statusHtml = AREAS.map(area => {
         const isSubmitted = submittedAreas.has(area);
@@ -1305,7 +1384,6 @@ function loadOverview() {
     }).join('');
     document.getElementById('areaStatus').innerHTML = statusHtml;
     
-    // 当日数据
     const table = document.getElementById('overviewTable');
     if (filtered.length === 0) {
         table.innerHTML = '<p style="color:#999;padding:20px;">' + t('noDataDate') + '</p>';
@@ -1321,7 +1399,6 @@ function loadOverview() {
         table.innerHTML = html;
     }
     
-    // 全部数据
     const allTable = document.getElementById('allDataTable');
     if (allData.length === 0) {
         allTable.innerHTML = '<p style="color:#999;padding:20px;">' + t('noData') + '</p>';
@@ -1419,7 +1496,6 @@ function loadVerification() {
     html += '</tbody></table>';
     document.getElementById('verifyResult').innerHTML = html;
     
-    // 统计
     const statsHtml = `
         <div class="stats">
             <div class="stat-card"><div class="stat-number">${totalExpected}</div><div class="stat-label">${currentLang === 'zh' ? '总应到' : 'Total Expected'}</div></div>
@@ -1433,7 +1509,7 @@ function loadVerification() {
 }
 
 // ============================================================
-//  用户管理
+//  用户管理 (仅管理员)
 // ============================================================
 function loadUserList() {
     const container = document.getElementById('userList');
@@ -1491,7 +1567,7 @@ function addUser() {
 }
 
 // ============================================================
-//  危险操作
+//  危险操作 (仅管理员)
 // ============================================================
 function exportBackup() {
     const data = {
@@ -1591,10 +1667,6 @@ function resetAllData() {
 // ============================================================
 //  工具函数
 // ============================================================
-function showLoading(show) {
-    document.getElementById('loadingOverlay').classList.toggle('show', show);
-}
-
 function showToast(msg) {
     const toast = document.createElement('div');
     toast.className = 'toast';
@@ -1615,33 +1687,26 @@ setInterval(() => {
 }, 30000);
 
 // ============================================================
-//  启动 - 页面加载完成后初始化
+//  启动
 // ============================================================
 document.addEventListener('DOMContentLoaded', function() {
     loadUsers();
     
-    // 设置默认日期
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('entryDate').value = today;
     document.getElementById('attDate').value = today;
     document.getElementById('overviewDate').value = today;
     document.getElementById('verifyDate').value = today;
     
-    // 初始化工作字典
     onCategoryChange();
     
-    // 事件绑定
     document.getElementById('attDate').addEventListener('change', loadAttendance);
     document.getElementById('attTeam').addEventListener('change', loadAttendance);
     document.getElementById('overviewDate').addEventListener('change', loadOverview);
     document.getElementById('verifyDate').addEventListener('change', loadVerification);
     document.getElementById('verifyTeam').addEventListener('change', loadVerification);
     
-    // 更新登录界面语言
     updateLoginUI();
-    
-    // 如果有自动登录可以在这里处理
-    console.log('系统已就绪，请登录');
 });
 </script>
 </body>
