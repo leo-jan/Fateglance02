@@ -859,69 +859,86 @@ const AREAS = ['110', '210', '220', '240', '320', '330', '400', '800', 'precast 
 // ============================================================
 //  工作字典联动（支持中英文）
 // ============================================================
+// ============================================================
+//  工作字典联动（支持中英文）- 修复版
+// ============================================================
 let categoryMap = {};
 
 async function loadCategoriesFromSupabase() {
     try {
-        console.log('🔍 正在加载分类...');
-        const url = `${SUPABASE_URL}/rest/v1/work_dictionary?select=cat_zh,cat_en`;
-        console.log('请求URL:', url);
+        console.log('🔍 开始加载分类...');
+        const url = SUPABASE_URL + '/rest/v1/work_dictionary?select=cat_zh,cat_en';
+        console.log('📡 请求URL:', url);
         
         const response = await fetch(url, {
             headers: {
                 'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
             }
         });
         
-        console.log('响应状态:', response.status);
+        console.log('📊 响应状态:', response.status);
         
         if (!response.ok) {
-            const error = await response.text();
-            console.error('❌ 请求失败:', error);
-            showToast('❌ 加载字典失败: ' + error);
+            const errorText = await response.text();
+            console.error('❌ 请求失败:', errorText);
+            showToast('❌ 加载字典失败: ' + response.status);
             return [];
         }
         
         const data = await response.json();
-        console.log('✅ 分类数据返回:', data);
+        console.log('✅ 原始数据:', data);
+        console.log('📊 数据条数:', data.length);
         
         if (!data || data.length === 0) {
-            console.warn('⚠️ 分类数据为空');
+            console.warn('⚠️ 字典表为空');
             showToast('⚠️ 字典表没有数据');
             return [];
         }
         
-        categoryMap = {};
+        // 提取分类
+        const catMap = {};
         const zhCategories = [];
         const enCategories = [];
+        
         data.forEach(item => {
-            categoryMap[item.cat_zh] = item.cat_en;
-            zhCategories.push(item.cat_zh);
-            enCategories.push(item.cat_en);
+            if (item.cat_zh && !catMap[item.cat_zh]) {
+                catMap[item.cat_zh] = item.cat_en || item.cat_zh;
+                zhCategories.push(item.cat_zh);
+                enCategories.push(item.cat_en || item.cat_zh);
+            }
         });
+        
+        console.log('✅ 分类列表:', zhCategories);
+        
+        // 保存到全局
         window.zhCategories = zhCategories;
         window.enCategories = enCategories;
-        window.categoryMap = categoryMap;
+        window.categoryMap = catMap;
         
-        console.log('✅ 分类加载成功:', zhCategories);
-        showToast('✅ 字典加载成功，共 ' + zhCategories.length + ' 个分类');
+        showToast('✅ 加载了 ' + zhCategories.length + ' 个分类');
         return data;
+        
     } catch (error) {
         console.error('❌ 加载分类失败:', error);
-        showToast('❌ 加载字典数据失败: ' + error.message);
+        showToast('❌ 加载失败: ' + error.message);
         return [];
     }
 }
-
 async function onCategoryChange() {
     const lang = currentLang;
     const categorySelect = document.getElementById('entryCategory');
-    const selectedValue = categorySelect.value || (window.zhCategories ? window.zhCategories[0] : '');
     
-    // 如果分类数据还没加载，先加载
-    if (!window.zhCategories) {
+    // 如果分类还没加载，先加载
+    if (!window.zhCategories || window.zhCategories.length === 0) {
         await loadCategoriesFromSupabase();
+    }
+    
+    // 如果仍然没有数据，使用硬编码备用
+    if (!window.zhCategories || window.zhCategories.length === 0) {
+        console.warn('⚠️ 使用硬编码分类');
+        window.zhCategories = ['无收入项', '土石方工程', '模板工程', '架子工程', '钢筋工程', '混凝土工程', '砌筑工程'];
+        window.enCategories = ['Non-revenue Work', 'Earthwork', 'Formwork', 'Scaffolding', 'Rebar', 'Concrete Works', 'Masonry'];
     }
     
     const displayCategories = lang === 'zh' ? window.zhCategories : window.enCategories;
@@ -932,12 +949,10 @@ async function onCategoryChange() {
         const option = document.createElement('option');
         option.value = zhCategories[index];
         option.textContent = cat;
-        if (zhCategories[index] === selectedValue) {
-            option.selected = true;
-        }
         categorySelect.appendChild(option);
     });
     
+    // 触发子项更新
     await onSubItemChange();
 }
 
