@@ -11,46 +11,63 @@
         
         .header { background: white; padding: 20px 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .header h1 { color: #1a237e; font-size: 24px; }
+        .header-right { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .user-info { display: flex; align-items: center; gap: 15px; }
         .user-info span { font-weight: 500; color: #1a237e; }
         .btn-logout { padding: 8px 20px; border: 1px solid #e53935; background: white; color: #e53935; border-radius: 6px; cursor: pointer; }
         .btn-logout:hover { background: #e53935; color: white; }
         
+        .lang-toggle { display: flex; gap: 4px; background: #f0f0f0; padding: 3px; border-radius: 6px; }
+        .lang-btn { padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; background: transparent; transition: 0.2s; }
+        .lang-btn.active { background: #4a90d9; color: white; }
+        .lang-btn:hover:not(.active) { background: #ddd; }
+        
         .tabs { display: flex; gap: 5px; margin-bottom: 20px; background: white; padding: 5px; border-radius: 10px; flex-wrap: wrap; }
         .tab-btn { padding: 12px 24px; border: none; background: transparent; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 15px; transition: all 0.3s; }
         .tab-btn:hover { background: #f0f7ff; }
         .tab-btn.active { background: #4a90d9; color: white; }
+        .tab-btn.hidden { display: none; }
         .tab-content { display: none; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .tab-content.active { display: block; }
         
         .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin: 15px 0; }
         .form-group { display: flex; flex-direction: column; gap: 5px; }
         .form-group label { font-weight: 500; font-size: 13px; color: #555; }
-        .form-group input, .form-group select { padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .form-group input, .form-group select { padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background: white; }
         .form-group input:focus, .form-group select:focus { border-color: #4a90d9; outline: none; }
+        .form-group input:disabled { background: #f5f5f5; color: #999; }
         
         .btn { padding: 10px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
         .btn-primary { background: #4a90d9; color: white; }
         .btn-primary:hover { background: #357abd; }
         .btn-success { background: #4caf50; color: white; }
+        .btn-success:hover { background: #388e3c; }
         .btn-danger { background: #e53935; color: white; }
+        .btn-danger:hover { background: #c62828; }
         .btn-secondary { background: #e0e0e0; color: #333; }
         .btn-secondary:hover { background: #d0d0d0; }
+        .btn-warning { background: #ff9800; color: white; }
+        .btn-warning:hover { background: #f57c00; }
+        .btn-sm { padding: 5px 12px; font-size: 12px; }
         
-        .table-container { overflow-x: auto; max-height: 400px; overflow-y: auto; margin-top: 15px; }
+        .table-container { overflow-x: auto; max-height: 500px; overflow-y: auto; margin-top: 15px; }
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
         table thead { position: sticky; top: 0; z-index: 10; }
-        table th { background: #4a90d9; color: white; padding: 10px 14px; text-align: left; }
+        table th { background: #4a90d9; color: white; padding: 10px 14px; text-align: left; white-space: nowrap; }
         table td { padding: 8px 14px; border-bottom: 1px solid #e8edf4; }
         table tbody tr:hover td { background-color: #f0f7ff; }
+        table .row-matched { background: #e8f5e9; }
+        table .row-unmatched { background: #ffebee; }
         
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
-        .stat-card { background: white; padding: 15px 20px; border-radius: 8px; border-left: 4px solid #4a90d9; }
+        .stat-card { background: white; padding: 15px 20px; border-radius: 8px; border-left: 4px solid #4a90d9; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
         .stat-number { font-size: 28px; font-weight: 700; color: #1a237e; }
         .stat-label { font-size: 13px; color: #666; margin-top: 4px; }
         
         .pending-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid #f0f0f0; }
         .pending-item:hover { background: #f8faff; }
+        .pending-item .info { flex: 1; }
+        .pending-item .actions { display: flex; gap: 8px; }
         
         .login-box { max-width: 420px; margin: 80px auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
         .login-box h2 { text-align: center; color: #1a237e; margin-bottom: 5px; font-size: 28px; }
@@ -59,6 +76,9 @@
         .login-box input:focus { border-color: #4a90d9; outline: none; }
         .login-box .btn { width: 100%; padding: 12px; font-size: 16px; margin-top: 10px; }
         .login-message { text-align: center; margin-top: 10px; font-size: 14px; min-height: 24px; }
+        .login-lang { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .login-lang button { padding: 6px 20px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; background: white; }
+        .login-lang button.active { background: #4a90d9; color: white; border-color: #4a90d9; }
         
         .loading { display: none; text-align: center; padding: 20px; }
         .loading.show { display: block; }
@@ -70,16 +90,27 @@
         
         .att-input { width: 60px; padding: 5px 8px; border: 1px solid #ddd; border-radius: 4px; text-align: center; }
         .att-input:focus { border-color: #4a90d9; outline: none; }
+        .att-input-wide { width: 120px; }
         
         .cloud-badge { display: inline-block; background: #e3f2fd; color: #1565c0; padding: 2px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+        .status-dot.green { background: #4caf50; }
+        .status-dot.red { background: #e53935; }
+        
+        .danger-zone { border: 2px solid #ffcdd2; border-radius: 8px; padding: 20px; margin-top: 15px; background: #fff5f5; }
+        .danger-zone h3 { color: #c62828; }
+        
+        .section-divider { border: none; border-top: 2px solid #e8edf4; margin: 25px 0; }
         
         @media (max-width: 768px) {
             .form-row { grid-template-columns: 1fr; }
             .tabs { flex-wrap: wrap; }
             .tab-btn { flex: 1; text-align: center; padding: 10px; font-size: 13px; }
             .header { flex-direction: column; align-items: stretch; text-align: center; }
+            .header-right { justify-content: center; }
             .user-info { justify-content: center; }
             .login-box { margin: 40px 20px; padding: 30px 20px; }
+            .stats { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
@@ -88,14 +119,17 @@
 <!-- ===== 登录界面 ===== -->
 <div id="loginPage">
     <div class="login-box">
-        <h2>🏗️ 施工日报填报系统</h2>
-        <p class="subtitle">Marsa LNG Project · Civil Department</p>
-        <p style="text-align:center;font-size:12px;color:#4caf50;margin-bottom:10px;">📦 本地存储 · 无需网络</p>
-        <input type="text" id="loginUsername" placeholder="用户名" value="admin">
-        <input type="password" id="loginPassword" placeholder="密码" value="142857jj">
-        <button class="btn btn-primary" onclick="handleLogin()">🔑 登录</button>
+        <h2 id="loginTitle">🏗️ 施工日报填报系统</h2>
+        <p id="loginSubtitle" class="subtitle">Marsa LNG Project · Civil Department</p>
+        <div class="login-lang">
+            <button id="loginLangZh" class="active" onclick="setLoginLang('zh')">中文</button>
+            <button id="loginLangEn" onclick="setLoginLang('en')">English</button>
+        </div>
+        <input type="text" id="loginUsername" placeholder="用户名 / Username" value="admin">
+        <input type="password" id="loginPassword" placeholder="密码 / Password" value="142857jj">
+        <button class="btn btn-primary" onclick="handleLogin()">🔑 登录 / Login</button>
         <div id="loginMessage" class="login-message"></div>
-        <!-- 删除了测试账号显示 -->
+        <p style="text-align:center;font-size:11px;color:#b0bec5;margin-top:16px;">Civil Work Daily Report System · By Zack Leo</p>
     </div>
 </div>
 
@@ -103,32 +137,38 @@
 <div id="mainApp" style="display:none;">
     <div class="container">
         <div class="header">
-            <h1>🏗️ 施工日报填报系统 <span class="cloud-badge">📦 本地版</span></h1>
-            <div class="user-info">
-                <span id="userDisplayName">👤 用户</span>
-                <span id="userRole" style="font-size:12px;color:#888;"></span>
-                <button class="btn-logout" onclick="handleLogout()">🚪 退出</button>
+            <h1 id="appTitle">🏗️ 施工日报填报系统 <span class="cloud-badge">📦 本地版</span></h1>
+            <div class="header-right">
+                <div class="lang-toggle">
+                    <button class="lang-btn active" onclick="setLang('zh')">中文</button>
+                    <button class="lang-btn" onclick="setLang('en')">EN</button>
+                </div>
+                <div class="user-info">
+                    <span id="userDisplayName">👤 用户</span>
+                    <span id="userRole" style="font-size:12px;color:#888;"></span>
+                    <button class="btn-logout" onclick="handleLogout()">🚪 退出</button>
+                </div>
             </div>
         </div>
         
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('entry')">📝 施工量录入</button>
-            <button class="tab-btn" onclick="switchTab('attendance')">👷 出勤日报</button>
-            <button class="tab-btn" onclick="switchTab('overview')">📊 数据总览</button>
-            <button class="tab-btn" onclick="switchTab('verify')">✅ 工时核对</button>
-            <button class="tab-btn" onclick="switchTab('settings')">⚙️ 设置</button>
+        <div class="tabs" id="tabHeaders">
+            <button class="tab-btn active" onclick="switchTab('entry')" data-tab="entry">📝 施工量录入</button>
+            <button class="tab-btn" onclick="switchTab('attendance')" data-tab="attendance">👷 出勤日报</button>
+            <button class="tab-btn" onclick="switchTab('overview')" data-tab="overview">📊 数据总览</button>
+            <button class="tab-btn" onclick="switchTab('verify')" data-tab="verify">✅ 工时核对</button>
+            <button class="tab-btn" onclick="switchTab('settings')" data-tab="settings">⚙️ 设置</button>
         </div>
         
         <!-- ===== Tab: 录入 ===== -->
         <div id="tab-entry" class="tab-content active">
-            <h2>📝 施工量录入</h2>
+            <h2 id="entryTitle">📝 施工量录入</h2>
             <div class="form-row">
                 <div class="form-group">
-                    <label>📅 日期</label>
+                    <label id="lblDate">📅 日期</label>
                     <input type="date" id="entryDate">
                 </div>
                 <div class="form-group">
-                    <label>📍 区域</label>
+                    <label id="lblArea">📍 区域</label>
                     <select id="entryArea">
                         <option value="110">110</option>
                         <option value="210">210</option>
@@ -143,195 +183,203 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>👷 班组</label>
+                    <label id="lblTeam">👷 班组</label>
                     <select id="entryTeam">
-                        <option value="马玉奇(Ma Yuqi)">马玉奇</option>
-                        <option value="王建(Wang Jian)">王建</option>
+                        <option value="马玉奇(Ma Yuqi)">马玉奇(Ma Yuqi)</option>
+                        <option value="王建(Wang Jian)">王建(Wang Jian)</option>
                         <option value="Kumar">Kumar</option>
-                        <option value="郭传海(Guo Chuanhai)">郭传海</option>
-                        <option value="曹桂龙(Cao Guilong)">曹桂龙</option>
-                        <option value="陈传军(Chen Chuanjun)">陈传军</option>
-                        <option value="王世杰(Wang Shijie)">王世杰</option>
+                        <option value="郭传海(Guo Chuanhai)">郭传海(Guo Chuanhai)</option>
+                        <option value="曹桂龙(Cao Guilong)">曹桂龙(Cao Guilong)</option>
+                        <option value="陈传军(Chen Chuanjun)">陈传军(Chen Chuanjun)</option>
+                        <option value="王世杰(Wang Shijie)">王世杰(Wang Shijie)</option>
                         <option value="Sheharyar">Sheharyar</option>
                         <option value="Anwar">Anwar</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>🏷️ 位号</label>
-                    <input type="text" id="entryTag" placeholder="输入位号">
+                    <label id="lblTag">🏷️ 位号</label>
+                    <input type="text" id="entryTag" placeholder="输入位号 / Tag No.">
                 </div>
             </div>
             
-            <div style="font-weight:600;font-size:15px;color:#1a237e;margin-top:15px;">🛠️ 工作内容</div>
+            <div style="font-weight:600;font-size:15px;color:#1a237e;margin-top:15px;" id="workTitle">🛠️ 工作内容</div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>分部分项</label>
+                    <label id="lblCategory">分部分项</label>
                     <select id="entryCategory" onchange="onCategoryChange()">
                         <option value="无收入项">无收入项</option>
                         <option value="土石方工程">土石方工程</option>
                         <option value="模板工程">模板工程</option>
+                        <option value="架子工程">架子工程</option>
                         <option value="钢筋工程">钢筋工程</option>
                         <option value="混凝土工程">混凝土工程</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>工作内容</label>
+                    <label id="lblSubItem">工作内容</label>
                     <select id="entrySubItem" onchange="onSubItemChange()"></select>
                 </div>
                 <div class="form-group">
-                    <label>编号</label>
+                    <label id="lblCode">编号</label>
                     <input type="text" id="entryCode" disabled>
                 </div>
                 <div class="form-group">
-                    <label>单位</label>
+                    <label id="lblUnit">单位</label>
                     <input type="text" id="entryUnit" disabled>
                 </div>
             </div>
             
             <div class="form-row">
                 <div class="form-group">
-                    <label>📊 完成量</label>
+                    <label id="lblQty">📊 完成量</label>
                     <input type="number" id="entryQty" value="0" step="0.1">
                 </div>
                 <div class="form-group">
-                    <label>📏 地管长度 (m)</label>
+                    <label id="lblPipe">📏 地管长度 (m)</label>
                     <input type="number" id="entryPipe" value="0" step="0.1">
                 </div>
                 <div class="form-group">
-                    <label>👷 人数</label>
+                    <label id="lblManpower">👷 人数</label>
                     <input type="number" id="entryManpower" value="0">
                 </div>
                 <div class="form-group">
-                    <label>⏱️ 工时</label>
+                    <label id="lblManhours">⏱️ 工时</label>
                     <input type="number" id="entryManhours" value="0" step="0.5">
                 </div>
                 <div class="form-group">
-                    <label>🌍 外籍</label>
+                    <label id="lblForeign">🌍 外籍</label>
                     <input type="number" id="entryForeign" value="0">
                 </div>
                 <div class="form-group">
-                    <label>📝 备注</label>
-                    <input type="text" id="entryRemark" placeholder="备注">
+                    <label id="lblRemark">📝 备注</label>
+                    <input type="text" id="entryRemark" placeholder="备注 / Remark">
                 </div>
             </div>
             
             <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
-                <button class="btn btn-primary" onclick="addToPending()">➕ 添加到待提交列表</button>
-                <button class="btn btn-secondary" onclick="addNoWork()">🚫 今日无作业</button>
+                <button class="btn btn-primary" onclick="addToPending()" id="btnAddPending">➕ 添加到待提交列表</button>
+                <button class="btn btn-secondary" onclick="addNoWork()" id="btnNoWork">🚫 今日无作业</button>
             </div>
             
             <div id="pendingList" style="margin-top:30px;">
-                <h3>📋 待提交列表 (<span id="pendingCount">0</span> 项)</h3>
+                <h3 id="pendingTitle">📋 待提交列表 (<span id="pendingCount">0</span> 项)</h3>
                 <div id="pendingItems"></div>
                 <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
-                    <button class="btn btn-success" onclick="submitAll()">🚀 提交所有记录</button>
-                    <button class="btn btn-danger" onclick="clearPending()">🗑️ 清空列表</button>
+                    <button class="btn btn-success" onclick="submitAll()" id="btnSubmitAll">🚀 提交所有记录</button>
+                    <button class="btn btn-danger" onclick="clearPending()" id="btnClearPending">🗑️ 清空列表</button>
                 </div>
             </div>
         </div>
         
         <!-- ===== Tab: 出勤 ===== -->
         <div id="tab-attendance" class="tab-content">
-            <h2>👷 出勤日报（班组长）</h2>
+            <h2 id="attTitle">👷 出勤日报（班组长）</h2>
             <div class="form-row">
                 <div class="form-group">
-                    <label>📅 日期</label>
+                    <label id="lblAttDate">📅 日期</label>
                     <input type="date" id="attDate">
                 </div>
                 <div class="form-group">
-                    <label>👷 班组</label>
+                    <label id="lblAttTeam">👷 班组</label>
                     <select id="attTeam">
-                        <option value="马玉奇(Ma Yuqi)">马玉奇</option>
-                        <option value="王建(Wang Jian)">王建</option>
+                        <option value="马玉奇(Ma Yuqi)">马玉奇(Ma Yuqi)</option>
+                        <option value="王建(Wang Jian)">王建(Wang Jian)</option>
                         <option value="Kumar">Kumar</option>
-                        <option value="郭传海(Guo Chuanhai)">郭传海</option>
-                        <option value="曹桂龙(Cao Guilong)">曹桂龙</option>
-                        <option value="陈传军(Chen Chuanjun)">陈传军</option>
-                        <option value="王世杰(Wang Shijie)">王世杰</option>
+                        <option value="郭传海(Guo Chuanhai)">郭传海(Guo Chuanhai)</option>
+                        <option value="曹桂龙(Cao Guilong)">曹桂龙(Cao Guilong)</option>
+                        <option value="陈传军(Chen Chuanjun)">陈传军(Chen Chuanjun)</option>
+                        <option value="王世杰(Wang Shijie)">王世杰(Wang Shijie)</option>
                         <option value="Sheharyar">Sheharyar</option>
                         <option value="Anwar">Anwar</option>
                     </select>
                 </div>
+                <div class="form-group" style="justify-content:flex-end;">
+                    <button class="btn btn-secondary" onclick="loadAttendance()" id="btnRefreshAtt">🔄 刷新</button>
+                </div>
             </div>
             <div id="attendanceTable"></div>
-            <button class="btn btn-primary" onclick="saveAttendance()" style="margin-top:15px;">✅ 提交考勤</button>
-            <hr style="margin:20px 0;border:none;border-top:2px solid #e8edf4;">
-            <h4>📊 今日报工汇总</h4>
+            <button class="btn btn-primary" onclick="saveAttendance()" style="margin-top:15px;" id="btnSaveAtt">✅ 提交考勤</button>
+            <hr class="section-divider">
+            <h4 id="attSummaryTitle">📊 今日报工汇总</h4>
             <div id="attendanceSummary"></div>
         </div>
         
         <!-- ===== Tab: 总览 ===== -->
         <div id="tab-overview" class="tab-content">
-            <h2>📊 数据总览</h2>
+            <h2 id="overviewTitle">📊 数据总览</h2>
             <div class="form-row">
                 <div class="form-group">
-                    <label>📅 选择日期</label>
+                    <label id="lblOverviewDate">📅 选择日期</label>
                     <input type="date" id="overviewDate">
                 </div>
-                <div class="form-group" style="justify-content:flex-end;">
-                    <button class="btn btn-secondary" onclick="loadOverview()">🔄 刷新</button>
-                    <button class="btn btn-secondary" onclick="exportData()" style="margin-left:10px;">📥 导出CSV</button>
+                <div class="form-group" style="justify-content:flex-end; flex-direction:row; gap:10px; flex-wrap:wrap;">
+                    <button class="btn btn-secondary" onclick="loadOverview()" id="btnRefreshOverview">🔄 刷新</button>
+                    <button class="btn btn-secondary" onclick="exportData()" id="btnExportOverview">📥 导出CSV</button>
+                    <button class="btn btn-secondary" onclick="exportAllData()" id="btnExportAll">📥 导出全部</button>
                 </div>
             </div>
-            <h4>📊 各区域填报状态</h4>
+            <h4 id="areaStatusTitle">📊 各区域填报状态</h4>
             <div id="areaStatus" style="display:flex;flex-wrap:wrap;gap:10px;margin:10px 0;"></div>
-            <h4>📋 当日数据</h4>
+            <h4 id="dailyDataTitle">📋 当日数据</h4>
             <div id="overviewTable" class="table-container"></div>
-            <hr style="margin:20px 0;border:none;border-top:2px solid #e8edf4;">
-            <h4>📋 全部数据</h4>
+            <hr class="section-divider">
+            <h4 id="allDataTitle">📋 全部数据</h4>
             <div id="allDataTable" class="table-container"></div>
         </div>
         
         <!-- ===== Tab: 核对 ===== -->
         <div id="tab-verify" class="tab-content">
-            <h2>✅ 工时与出勤核对</h2>
+            <h2 id="verifyTitle">✅ 工时与出勤核对</h2>
             <div class="form-row">
                 <div class="form-group">
-                    <label>📅 日期</label>
+                    <label id="lblVerifyDate">📅 日期</label>
                     <input type="date" id="verifyDate">
                 </div>
                 <div class="form-group">
-                    <label>👷 班组</label>
+                    <label id="lblVerifyTeam">👷 班组</label>
                     <select id="verifyTeam">
-                        <option value="all">全部</option>
-                        <option value="马玉奇(Ma Yuqi)">马玉奇</option>
-                        <option value="王建(Wang Jian)">王建</option>
+                        <option value="all" id="optAll">全部</option>
+                        <option value="马玉奇(Ma Yuqi)">马玉奇(Ma Yuqi)</option>
+                        <option value="王建(Wang Jian)">王建(Wang Jian)</option>
                         <option value="Kumar">Kumar</option>
-                        <option value="郭传海(Guo Chuanhai)">郭传海</option>
-                        <option value="曹桂龙(Cao Guilong)">曹桂龙</option>
-                        <option value="陈传军(Chen Chuanjun)">陈传军</option>
-                        <option value="王世杰(Wang Shijie)">王世杰</option>
+                        <option value="郭传海(Guo Chuanhai)">郭传海(Guo Chuanhai)</option>
+                        <option value="曹桂龙(Cao Guilong)">曹桂龙(Cao Guilong)</option>
+                        <option value="陈传军(Chen Chuanjun)">陈传军(Chen Chuanjun)</option>
+                        <option value="王世杰(Wang Shijie)">王世杰(Wang Shijie)</option>
                         <option value="Sheharyar">Sheharyar</option>
                         <option value="Anwar">Anwar</option>
                     </select>
                 </div>
+                <div class="form-group" style="justify-content:flex-end;">
+                    <button class="btn btn-secondary" onclick="loadVerification()" id="btnVerify">🔍 查询</button>
+                </div>
             </div>
-            <button class="btn btn-secondary" onclick="loadVerification()">🔍 查询</button>
             <div id="verifyResult" style="margin-top:15px;"></div>
+            <div id="verifyStats" style="margin-top:15px;"></div>
         </div>
         
         <!-- ===== Tab: 设置 ===== -->
         <div id="tab-settings" class="tab-content">
-            <h2>⚙️ 设置</h2>
-            <h3>👥 用户管理</h3>
+            <h2 id="settingsTitle">⚙️ 设置</h2>
+            <h3 id="userMgmtTitle">👥 用户管理</h3>
             <div id="userList"></div>
-            <hr style="margin:20px 0;border:none;border-top:2px solid #e8edf4;">
-            <h3>➕ 添加用户</h3>
+            <hr class="section-divider">
+            <h3 id="addUserTitle">➕ 添加用户</h3>
             <div class="form-row">
                 <div class="form-group">
-                    <label>用户名</label>
+                    <label id="lblNewUser">用户名</label>
                     <input type="text" id="newUsername" placeholder="用户名">
                 </div>
                 <div class="form-group">
-                    <label>密码</label>
+                    <label id="lblNewPass">密码</label>
                     <input type="text" id="newPassword" placeholder="密码">
                 </div>
                 <div class="form-group">
-                    <label>显示名称</label>
+                    <label id="lblNewDisplay">显示名称</label>
                     <input type="text" id="newDisplayName" placeholder="显示名称">
                 </div>
                 <div class="form-group">
-                    <label>角色</label>
+                    <label id="lblNewRole">角色</label>
                     <select id="newRole">
                         <option value="admin">admin</option>
                         <option value="viewer">viewer</option>
@@ -339,15 +387,22 @@
                     </select>
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="addUser()">➕ 添加用户</button>
-            <hr style="margin:20px 0;border:none;border-top:2px solid #e8edf4;">
-            <h3>⚠️ 危险操作</h3>
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                <button class="btn btn-secondary" onclick="exportBackup()">💾 备份数据</button>
-                <button class="btn btn-danger" onclick="clearZeroData()">🧹 清理零数据</button>
-                <button class="btn btn-danger" onclick="deduplicateData()">🔄 去重</button>
-                <button class="btn btn-danger" onclick="resetAllData()">💣 重置</button>
+            <button class="btn btn-primary" onclick="addUser()" id="btnAddUser">➕ 添加用户</button>
+            <hr class="section-divider">
+            <h3 id="dangerTitle">⚠️ 危险操作</h3>
+            <div class="danger-zone">
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn btn-secondary" onclick="exportBackup()" id="btnBackup">💾 备份数据</button>
+                    <button class="btn btn-secondary" onclick="importBackup()" id="btnImport">📂 恢复备份</button>
+                    <button class="btn btn-warning" onclick="clearZeroData()" id="btnClearZero">🧹 清理零数据</button>
+                    <button class="btn btn-warning" onclick="deduplicateData()" id="btnDedup">🔄 去重</button>
+                    <button class="btn btn-danger" onclick="resetAllData()" id="btnReset">💣 重置所有数据</button>
+                </div>
+                <p style="margin-top:10px;font-size:13px;color:#666;" id="dangerHint">⚠️ 清理零数据将删除所有数量为0的记录，去重将删除重复记录，重置将删除所有数据。</p>
             </div>
+            <hr class="section-divider">
+            <h3 id="loginLogsTitle">📋 登录记录</h3>
+            <div id="loginLogs"></div>
         </div>
     </div>
 </div>
@@ -360,30 +415,354 @@
 
 <script>
 // ============================================================
+//  国际化 (i18n)
+// ============================================================
+const I18N = {
+    zh: {
+        appTitle: '🏗️ 施工日报填报系统',
+        loginTitle: '🏗️ 施工日报填报系统',
+        loginSub: 'Marsa LNG Project · Civil Department',
+        loginUser: '用户名',
+        loginPass: '密码',
+        loginBtn: '🔑 登录',
+        logout: '🚪 退出',
+        loginError: '❌ 用户名或密码错误',
+        loginWelcome: '🎉 欢迎回来，',
+        date: '📅 日期',
+        area: '📍 区域',
+        team: '👷 班组',
+        tag: '🏷️ 位号',
+        category: '分部分项',
+        subItem: '工作内容',
+        code: '编号',
+        unit: '单位',
+        qty: '📊 完成量',
+        pipe: '📏 地管长度 (m)',
+        manpower: '👷 人数',
+        manhours: '⏱️ 工时',
+        foreign: '🌍 外籍',
+        remark: '📝 备注',
+        workTitle: '🛠️ 工作内容',
+        addPending: '➕ 添加到待提交列表',
+        noWork: '🚫 今日无作业',
+        submitAll: '🚀 提交所有记录',
+        clearPending: '🗑️ 清空列表',
+        refresh: '🔄 刷新',
+        exportCSV: '📥 导出CSV',
+        exportAll: '📥 导出全部',
+        saveAtt: '✅ 提交考勤',
+        query: '🔍 查询',
+        addUser: '➕ 添加用户',
+        backup: '💾 备份数据',
+        importBackup: '📂 恢复备份',
+        clearZero: '🧹 清理零数据',
+        dedup: '🔄 去重',
+        reset: '💣 重置所有数据',
+        entryTitle: '📝 施工量录入',
+        attTitle: '👷 出勤日报（班组长）',
+        overviewTitle: '📊 数据总览',
+        verifyTitle: '✅ 工时与出勤核对',
+        settingsTitle: '⚙️ 设置',
+        pendingTitle: '📋 待提交列表',
+        attSummaryTitle: '📊 今日报工汇总',
+        areaStatusTitle: '📊 各区域填报状态',
+        dailyDataTitle: '📋 当日数据',
+        allDataTitle: '📋 全部数据',
+        userMgmtTitle: '👥 用户管理',
+        addUserTitle: '➕ 添加用户',
+        dangerTitle: '⚠️ 危险操作',
+        loginLogsTitle: '📋 登录记录',
+        dangerHint: '⚠️ 清理零数据将删除所有数量为0的记录，去重将删除重复记录，重置将删除所有数据。',
+        workerType: '工种',
+        expected: '应到',
+        present: '实到',
+        absent: '缺勤',
+        foreignLabel: '外籍',
+        remarkLabel: '备注',
+        matched: '匹配',
+        diff: '差值',
+        teamCol: '班组',
+        detail: '出勤明细',
+        noData: '暂无数据',
+        confirmClear: '确定清空所有待提交吗？',
+        confirmSubmit: '提交 {count} 条记录？',
+        confirmReset: '⚠️ 确定要重置所有数据吗？此操作不可恢复！',
+        confirmReset2: '再次确认：真的要删除所有数据吗？',
+        confirmClearZero: '⚠️ 确定要清理零数据记录吗？',
+        confirmDedup: '🔄 确定要去重吗？',
+        successSubmit: '🎉 成功提交 {count} 条记录！',
+        successSaved: '✅ 考勤保存成功！',
+        successExported: '📥 导出成功！',
+        successBackup: '💾 备份成功！',
+        successRestore: '📂 恢复成功！',
+        successClearZero: '🧹 已删除 {count} 条零数据记录',
+        successDedup: '🔄 已删除 {count} 条重复记录',
+        successReset: '💣 所有数据已重置',
+        successAddUser: '✅ 用户 {name} 添加成功',
+        errorNoData: '❌ 没有数据可导出',
+        errorFillAll: '❌ 请填写日期、区域和班组',
+        errorUserExists: '❌ 用户名已存在',
+        errorFillComplete: '❌ 请填写完整信息',
+        noPending: '暂无待提交记录',
+        noDataDate: '该日期暂无数据',
+        deleteConfirm: '确定删除用户 {name} 吗？',
+        userDeleted: '✅ 用户已删除',
+    },
+    en: {
+        appTitle: '🏗️ Civil Work Daily Report',
+        loginTitle: '🏗️ Civil Work Daily Report',
+        loginSub: 'Marsa LNG Project · Civil Department',
+        loginUser: 'Username',
+        loginPass: 'Password',
+        loginBtn: '🔑 Login',
+        logout: '🚪 Logout',
+        loginError: '❌ Invalid username or password',
+        loginWelcome: '🎉 Welcome back, ',
+        date: '📅 Date',
+        area: '📍 Area',
+        team: '👷 Team',
+        tag: '🏷️ Tag No.',
+        category: 'Sub-item',
+        subItem: 'Work Description',
+        code: 'Code',
+        unit: 'Unit',
+        qty: '📊 Qty.',
+        pipe: '📏 UG Pipe (m)',
+        manpower: '👷 Manpower',
+        manhours: '⏱️ Manhours',
+        foreign: '🌍 Non-Chinese',
+        remark: '📝 Remark',
+        workTitle: '🛠️ Work Description',
+        addPending: '➕ Add to Pending',
+        noWork: '🚫 No Work Today',
+        submitAll: '🚀 Submit All',
+        clearPending: '🗑️ Clear List',
+        refresh: '🔄 Refresh',
+        exportCSV: '📥 Export CSV',
+        exportAll: '📥 Export All',
+        saveAtt: '✅ Save Attendance',
+        query: '🔍 Query',
+        addUser: '➕ Add User',
+        backup: '💾 Backup Data',
+        importBackup: '📂 Restore Backup',
+        clearZero: '🧹 Clear Zero Data',
+        dedup: '🔄 Deduplicate',
+        reset: '💣 Reset All Data',
+        entryTitle: '📝 Daily Work Entry',
+        attTitle: '👷 Team Attendance Report',
+        overviewTitle: '📊 Data Overview',
+        verifyTitle: '✅ Manpower Verification',
+        settingsTitle: '⚙️ Settings',
+        pendingTitle: '📋 Pending Submissions',
+        attSummaryTitle: '📊 Today\'s Summary',
+        areaStatusTitle: '📊 Area Submission Status',
+        dailyDataTitle: '📋 Daily Data',
+        allDataTitle: '📋 All Data',
+        userMgmtTitle: '👥 User Management',
+        addUserTitle: '➕ Add User',
+        dangerTitle: '⚠️ Danger Zone',
+        loginLogsTitle: '📋 Login Logs',
+        dangerHint: '⚠️ Clear zero data will delete all records with zero values. Deduplicate will remove duplicates. Reset will delete ALL data.',
+        workerType: 'Worker Type',
+        expected: 'Expected',
+        present: 'Present',
+        absent: 'Absent',
+        foreignLabel: 'Foreign',
+        remarkLabel: 'Remark',
+        matched: 'Matched',
+        diff: 'Diff',
+        teamCol: 'Team',
+        detail: 'Detail',
+        noData: 'No data available',
+        confirmClear: 'Clear all pending items?',
+        confirmSubmit: 'Submit {count} records?',
+        confirmReset: '⚠️ Reset ALL data? This cannot be undone!',
+        confirmReset2: 'Confirm: delete ALL data?',
+        confirmClearZero: '⚠️ Clear zero data records?',
+        confirmDedup: '🔄 Deduplicate data?',
+        successSubmit: '🎉 Successfully submitted {count} records!',
+        successSaved: '✅ Attendance saved!',
+        successExported: '📥 Export successful!',
+        successBackup: '💾 Backup successful!',
+        successRestore: '📂 Restore successful!',
+        successClearZero: '🧹 Deleted {count} zero-data records',
+        successDedup: '🔄 Deleted {count} duplicate records',
+        successReset: '💣 All data has been reset',
+        successAddUser: '✅ User {name} added successfully',
+        errorNoData: '❌ No data to export',
+        errorFillAll: '❌ Please fill in date, area and team',
+        errorUserExists: '❌ Username already exists',
+        errorFillComplete: '❌ Please fill in all fields',
+        noPending: 'No pending items',
+        noDataDate: 'No data for this date',
+        deleteConfirm: 'Delete user {name}?',
+        userDeleted: '✅ User deleted',
+    }
+};
+
+let currentLang = 'zh';
+
+function t(key) {
+    return I18N[currentLang][key] || key;
+}
+
+function setLang(lang) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-toggle .lang-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.lang-toggle .lang-btn:${lang === 'zh' ? 'first-child' : 'last-child'}`).classList.add('active');
+    updateUI();
+}
+
+function setLoginLang(lang) {
+    currentLang = lang;
+    document.querySelectorAll('.login-lang button').forEach(b => b.classList.remove('active'));
+    document.getElementById(`loginLang${lang === 'zh' ? 'Zh' : 'En'}`).classList.add('active');
+    updateLoginUI();
+}
+
+function updateLoginUI() {
+    document.getElementById('loginTitle').textContent = t('loginTitle');
+    document.getElementById('loginSubtitle').textContent = t('loginSub');
+    document.getElementById('loginUsername').placeholder = t('loginUser') + ' / Username';
+    document.getElementById('loginPassword').placeholder = t('loginPass') + ' / Password';
+    document.querySelector('.login-box .btn-primary').textContent = t('loginBtn');
+}
+
+function updateUI() {
+    // 标题
+    document.getElementById('appTitle').innerHTML = t('appTitle') + ' <span class="cloud-badge">📦 本地版</span>';
+    document.getElementById('entryTitle').textContent = t('entryTitle');
+    document.getElementById('attTitle').textContent = t('attTitle');
+    document.getElementById('overviewTitle').textContent = t('overviewTitle');
+    document.getElementById('verifyTitle').textContent = t('verifyTitle');
+    document.getElementById('settingsTitle').textContent = t('settingsTitle');
+    
+    // 标签
+    document.getElementById('lblDate').textContent = t('date');
+    document.getElementById('lblArea').textContent = t('area');
+    document.getElementById('lblTeam').textContent = t('team');
+    document.getElementById('lblTag').textContent = t('tag');
+    document.getElementById('lblCategory').textContent = t('category');
+    document.getElementById('lblSubItem').textContent = t('subItem');
+    document.getElementById('lblCode').textContent = t('code');
+    document.getElementById('lblUnit').textContent = t('unit');
+    document.getElementById('lblQty').textContent = t('qty');
+    document.getElementById('lblPipe').textContent = t('pipe');
+    document.getElementById('lblManpower').textContent = t('manpower');
+    document.getElementById('lblManhours').textContent = t('manhours');
+    document.getElementById('lblForeign').textContent = t('foreign');
+    document.getElementById('lblRemark').textContent = t('remark');
+    document.getElementById('workTitle').textContent = t('workTitle');
+    document.getElementById('lblAttDate').textContent = t('date');
+    document.getElementById('lblAttTeam').textContent = t('team');
+    document.getElementById('lblOverviewDate').textContent = t('date');
+    document.getElementById('lblVerifyDate').textContent = t('date');
+    document.getElementById('lblVerifyTeam').textContent = t('team');
+    document.getElementById('lblNewUser').textContent = t('loginUser');
+    document.getElementById('lblNewPass').textContent = t('loginPass');
+    document.getElementById('lblNewDisplay').textContent = currentLang === 'zh' ? '显示名称' : 'Display Name';
+    document.getElementById('lblNewRole').textContent = currentLang === 'zh' ? '角色' : 'Role';
+    
+    // 按钮
+    document.getElementById('btnAddPending').textContent = t('addPending');
+    document.getElementById('btnNoWork').textContent = t('noWork');
+    document.getElementById('btnSubmitAll').textContent = t('submitAll');
+    document.getElementById('btnClearPending').textContent = t('clearPending');
+    document.getElementById('btnRefreshAtt').textContent = t('refresh');
+    document.getElementById('btnRefreshOverview').textContent = t('refresh');
+    document.getElementById('btnExportOverview').textContent = t('exportCSV');
+    document.getElementById('btnExportAll').textContent = t('exportAll');
+    document.getElementById('btnSaveAtt').textContent = t('saveAtt');
+    document.getElementById('btnVerify').textContent = t('query');
+    document.getElementById('btnAddUser').textContent = t('addUser');
+    document.getElementById('btnBackup').textContent = t('backup');
+    document.getElementById('btnImport').textContent = t('importBackup');
+    document.getElementById('btnClearZero').textContent = t('clearZero');
+    document.getElementById('btnDedup').textContent = t('dedup');
+    document.getElementById('btnReset').textContent = t('reset');
+    document.getElementById('dangerHint').textContent = t('dangerHint');
+    
+    // 标题
+    document.getElementById('pendingTitle').innerHTML = t('pendingTitle') + ' (<span id="pendingCount">' + pendingItems.length + '</span> ' + (currentLang === 'zh' ? '项' : 'items') + ')';
+    document.getElementById('attSummaryTitle').textContent = t('attSummaryTitle');
+    document.getElementById('areaStatusTitle').textContent = t('areaStatusTitle');
+    document.getElementById('dailyDataTitle').textContent = t('dailyDataTitle');
+    document.getElementById('allDataTitle').textContent = t('allDataTitle');
+    document.getElementById('userMgmtTitle').textContent = t('userMgmtTitle');
+    document.getElementById('addUserTitle').textContent = t('addUserTitle');
+    document.getElementById('dangerTitle').textContent = t('dangerTitle');
+    document.getElementById('loginLogsTitle').textContent = t('loginLogsTitle');
+    document.getElementById('optAll').textContent = currentLang === 'zh' ? '全部' : 'All';
+    
+    // Tab按钮 - 保留图标，只改文字
+    const tabMap = {
+        '📝 施工量录入': '📝 ' + t('entryTitle').replace('📝 ', ''),
+        '👷 出勤日报': '👷 ' + t('attTitle').replace('👷 ', ''),
+        '📊 数据总览': '📊 ' + t('overviewTitle').replace('📊 ', ''),
+        '✅ 工时核对': '✅ ' + t('verifyTitle').replace('✅ ', ''),
+        '⚙️ 设置': '⚙️ ' + t('settingsTitle').replace('⚙️ ', '')
+    };
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        const key = btn.textContent.trim();
+        for (const [orig, trans] of Object.entries(tabMap)) {
+            if (key === orig || key === trans || key.includes(orig.replace(/[📝👷📊✅⚙️]\s*/, ''))) {
+                btn.textContent = trans;
+                break;
+            }
+        }
+    });
+    
+    // 重新加载数据以更新显示
+    renderPending();
+    loadAttendance();
+    loadOverview();
+    loadUserList();
+    loadVerification();
+    loadLoginLogs();
+}
+
+// ============================================================
 //  用户数据库
 // ============================================================
-const USERS = {
-    'admin': { password: '142857jj', role: 'admin', display_name: '管理员' },
-    '95381694': { password: '1478', role: 'viewer', display_name: '汪行虎' },
-    '96687409': { password: '3318', role: 'viewer', display_name: '魏邦俭' },
-    '96923491': { password: '0610', role: 'viewer', display_name: '沈耀成' },
-    '96685719': { password: '2219', role: 'entry', display_name: '刘建' },
-    '95381480': { password: '6012', role: 'entry', display_name: '董世钟' },
-    '96687421': { password: '8315', role: 'entry', display_name: '吕奇' },
-    '95381531': { password: '6738', role: 'entry', display_name: '伍凡' },
-    '96687380': { password: '8773', role: 'entry', display_name: '项武' },
-    '96685730': { password: '1510', role: 'entry', display_name: '傅俊森' },
-    '96687419': { password: '1819', role: 'entry', display_name: '王世杰' },
-    '96687418': { password: '4738', role: 'entry', display_name: '孙永杰' },
-    '83184896': { password: '4896', role: 'entry', display_name: 'AMIR HOSSAIN' },
-    '76733590': { password: '391X', role: 'entry', display_name: '王建' },
-    '76725659': { password: '3637', role: 'entry', display_name: '李红帅' },
-    '76747460': { password: '3658', role: 'entry', display_name: '李濮龙' },
-    '76722199': { password: '3616', role: 'entry', display_name: '王玉广' },
-    '96687298': { password: '5857', role: 'entry', display_name: '董凤培' },
-    '96687309': { password: '2811', role: 'entry', display_name: '马玉奇' },
-    '74132297': { password: '1514', role: 'entry', display_name: '韩传勃' }
-};
+let USERS = {};
+
+function loadUsers() {
+    const saved = localStorage.getItem('users_data');
+    if (saved) {
+        try {
+            USERS = JSON.parse(saved);
+            return;
+        } catch(e) {}
+    }
+    // 默认用户
+    USERS = {
+        'admin': { password: '142857jj', role: 'admin', display_name: '管理员' },
+        '95381694': { password: '1478', role: 'viewer', display_name: '汪行虎' },
+        '96687409': { password: '3318', role: 'viewer', display_name: '魏邦俭' },
+        '96923491': { password: '0610', role: 'viewer', display_name: '沈耀成' },
+        '96685719': { password: '2219', role: 'entry', display_name: '刘建' },
+        '95381480': { password: '6012', role: 'entry', display_name: '董世钟' },
+        '96687421': { password: '8315', role: 'entry', display_name: '吕奇' },
+        '95381531': { password: '6738', role: 'entry', display_name: '伍凡' },
+        '96687380': { password: '8773', role: 'entry', display_name: '项武' },
+        '96685730': { password: '1510', role: 'entry', display_name: '傅俊森' },
+        '96687419': { password: '1819', role: 'entry', display_name: '王世杰' },
+        '96687418': { password: '4738', role: 'entry', display_name: '孙永杰' },
+        '83184896': { password: '4896', role: 'entry', display_name: 'AMIR HOSSAIN' },
+        '76733590': { password: '391X', role: 'entry', display_name: '王建' },
+        '76725659': { password: '3637', role: 'entry', display_name: '李红帅' },
+        '76747460': { password: '3658', role: 'entry', display_name: '李濮龙' },
+        '76722199': { password: '3616', role: 'entry', display_name: '王玉广' },
+        '96687298': { password: '5857', role: 'entry', display_name: '董凤培' },
+        '96687309': { password: '2811', role: 'entry', display_name: '马玉奇' },
+        '74132297': { password: '1514', role: 'entry', display_name: '韩传勃' }
+    };
+    saveUsers();
+}
+
+function saveUsers() {
+    localStorage.setItem('users_data', JSON.stringify(USERS));
+}
 
 // ============================================================
 //  工作字典
@@ -403,13 +782,28 @@ const WORK_DICT = {
         "人工挖桩间土": { code: "1-1-004", unit: "m3" },
         "人工回填（就地松填）": { code: "1-1-005", unit: "m3" },
         "人工回填（夯填）": { code: "1-1-006", unit: "m3" },
-        "人工配合机械回填": { code: "1-1-007", unit: "m3" }
+        "人工配合机械回填": { code: "1-1-007", unit: "m3" },
+        "人工平整场地、清理铲平机挖余土、配合机械平整水稳层": { code: "1-1-009", unit: "m2" },
+        "人工原土打夯": { code: "1-1-010", unit: "m2" },
+        "人工运土（运距20米以内）": { code: "1-1-011", unit: "m3" },
+        "砂垫层人工找平夯实": { code: "1-1-013", unit: "m3" },
+        "级配砂石人工平整夯实": { code: "1-1-014", unit: "m3" },
+        "铺碎石人工夯实": { code: "1-1-015", unit: "m3" },
+        "截、破砼实心桩（桩径1000mm以内）": { code: "1-1-016", unit: "根" },
+        "人工破砼（有筋）": { code: "1-1-020", unit: "m3" },
+        "人工破砼（无筋）": { code: "1-1-021", unit: "m3" }
     },
     "模板工程": {
         "垫层模板": { code: "1-3-001", unit: "m2" },
         "道路模板": { code: "1-3-002", unit: "m2" },
         "基础模板": { code: "1-3-003", unit: "m2" },
-        "结构模板": { code: "1-3-004", unit: "m2" }
+        "结构模板": { code: "1-3-004", unit: "m2" },
+        "结构（施工层无现浇板）模板": { code: "1-3-005", unit: "m2" }
+    },
+    "架子工程": {
+        "双排脚手架（高度≤6m）": { code: "1-4-001", unit: "m2" },
+        "双排脚手架（高度≤12m）": { code: "1-4-002", unit: "m2" },
+        "双排脚手架（高度≤18m）": { code: "1-4-003", unit: "m2" }
     },
     "钢筋工程": {
         "水池底板及筏板基础": { code: "1-5-001", unit: "t" },
@@ -420,12 +814,19 @@ const WORK_DICT = {
     "混凝土工程": {
         "汽车泵砼浇筑（基础）": { code: "1-7-001", unit: "m3" },
         "汽车泵砼浇筑高度50m内（结构）": { code: "1-7-002", unit: "m3" },
+        "人工上料（二次倒运）手推车运砼浇捣": { code: "1-7-008", unit: "m3" },
         "道路砼（厚200mm）": { code: "1-7-010", unit: "m2" },
-        "混凝土井": { code: "1-7-020", unit: "m3" }
+        "混凝土井": { code: "1-7-020", unit: "m3" },
+        "地坪混凝土浇筑（厚50mm）": { code: "", unit: "m2" },
+        "地坪混凝土浇筑（厚100mm）": { code: "", unit: "m2" },
+        "地坪混凝土浇筑（厚150mm）": { code: "", unit: "m2" },
+        "地坪混凝土浇筑（厚200mm）": { code: "", unit: "m2" }
     }
 };
 
 const WORKER_TYPES = ['木工', '瓦工', '钢筋工', '架子工', '旗手', '小工', '起重工', '测量工', '焊工'];
+const TEAMS = ['马玉奇(Ma Yuqi)', '王建(Wang Jian)', 'Kumar', '郭传海(Guo Chuanhai)', '曹桂龙(Cao Guilong)', '陈传军(Chen Chuanjun)', '王世杰(Wang Shijie)', 'Sheharyar', 'Anwar'];
+const AREAS = ['110', '210', '220', '240', '320', '330', '400', '800', 'precast yard 1', 'precast yard 2'];
 
 // ============================================================
 //  全局变量
@@ -434,6 +835,7 @@ let currentUser = null;
 let currentRole = null;
 let pendingItems = [];
 let isAdmin = false;
+let loginLogs = [];
 
 // ============================================================
 //  登录/登出
@@ -444,20 +846,21 @@ function handleLogin() {
     const msg = document.getElementById('loginMessage');
     
     if (!username || !password) {
-        msg.textContent = '❌ 请输入用户名和密码';
+        msg.textContent = '❌ ' + (currentLang === 'zh' ? '请输入用户名和密码' : 'Please enter username and password');
         msg.style.color = 'red';
         return;
     }
     
+    loadUsers();
     const user = USERS[username];
     if (!user) {
-        msg.textContent = '❌ 用户不存在';
+        msg.textContent = '❌ ' + (currentLang === 'zh' ? '用户不存在' : 'User not found');
         msg.style.color = 'red';
         return;
     }
     
     if (user.password !== password) {
-        msg.textContent = '❌ 密码错误';
+        msg.textContent = '❌ ' + (currentLang === 'zh' ? '密码错误' : 'Incorrect password');
         msg.style.color = 'red';
         return;
     }
@@ -468,31 +871,76 @@ function handleLogin() {
     
     document.getElementById('userDisplayName').textContent = '👤 ' + user.display_name;
     document.getElementById('userRole').textContent = '🔑 ' + user.role;
+    
+    // 显示主界面，隐藏登录界面
     document.getElementById('loginPage').style.display = 'none';
     document.getElementById('mainApp').style.display = 'block';
     
+    // 记录登录日志
+    addLoginLog(username, user.display_name, user.role);
+    
     updatePermissions();
     initApp();
-    showToast('🎉 欢迎回来，' + user.display_name + '！');
+    // 更新UI语言
+    updateUI();
+    // 显示欢迎消息
+    showToast(t('loginWelcome') + user.display_name + '！');
+    msg.textContent = '';
+}
+
+function addLoginLog(username, displayName, role) {
+    const logs = JSON.parse(localStorage.getItem('login_logs') || '[]');
+    logs.push({
+        timestamp: new Date().toLocaleString(),
+        username: username,
+        display_name: displayName,
+        role: role
+    });
+    localStorage.setItem('login_logs', JSON.stringify(logs));
+    loginLogs = logs;
+}
+
+function loadLoginLogs() {
+    loginLogs = JSON.parse(localStorage.getItem('login_logs') || '[]');
+    const container = document.getElementById('loginLogs');
+    if (loginLogs.length === 0) {
+        container.innerHTML = '<p style="color:#999;padding:10px;">' + (currentLang === 'zh' ? '暂无登录记录' : 'No login records') + '</p>';
+        return;
+    }
+    let html = '<table><thead><tr><th>' + (currentLang === 'zh' ? '时间' : 'Time') + '</th><th>' + (currentLang === 'zh' ? '用户' : 'User') + '</th><th>' + (currentLang === 'zh' ? '显示名称' : 'Display Name') + '</th><th>' + (currentLang === 'zh' ? '角色' : 'Role') + '</th></tr></thead><tbody>';
+    loginLogs.slice().reverse().forEach(log => {
+        html += `<tr><td>${log.timestamp}</td><td>${log.username}</td><td>${log.display_name}</td><td>${log.role}</td></tr>`;
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
 }
 
 function handleLogout() {
-    if (confirm('确定要退出吗？')) {
+    if (confirm(currentLang === 'zh' ? '确定要退出吗？' : 'Are you sure to logout?')) {
         currentUser = null;
         currentRole = null;
         document.getElementById('loginPage').style.display = 'block';
         document.getElementById('mainApp').style.display = 'none';
         pendingItems = [];
+        document.getElementById('loginMessage').textContent = '';
     }
 }
 
 function updatePermissions() {
-    if (currentRole === 'viewer') {
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            if (btn.textContent.includes('录入') || btn.textContent.includes('出勤')) {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        const tab = btn.dataset.tab;
+        if (currentRole === 'viewer') {
+            if (tab === 'entry' || tab === 'attendance' || tab === 'settings') {
                 btn.style.display = 'none';
+            } else {
+                btn.style.display = 'inline-block';
             }
-        });
+        } else {
+            btn.style.display = 'inline-block';
+        }
+    });
+    if (currentRole === 'viewer') {
+        switchTab('overview');
     }
 }
 
@@ -506,23 +954,25 @@ function initApp() {
     document.getElementById('overviewDate').value = today;
     document.getElementById('verifyDate').value = today;
     
+    loadUsers();
     onCategoryChange();
     loadPending();
     loadAttendance();
     loadOverview();
     loadUserList();
     loadVerification();
+    loadLoginLogs();
 }
 
 function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add('active');
+    document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
     document.getElementById(`tab-${tab}`).classList.add('active');
     if (tab === 'overview') loadOverview();
     if (tab === 'attendance') loadAttendance();
     if (tab === 'verify') loadVerification();
-    if (tab === 'settings') loadUserList();
+    if (tab === 'settings') { loadUserList(); loadLoginLogs(); }
 }
 
 // ============================================================
@@ -576,14 +1026,26 @@ function addToPending() {
     };
     
     if (!record.Date || !record.Area || !record.Team) {
-        showToast('❌ 请填写日期、区域和班组');
+        showToast(t('errorFillAll'));
+        return;
+    }
+    
+    // 检查是否已存在相同记录
+    const duplicate = pendingItems.some(item => 
+        item.Date === record.Date && 
+        item.Area === record.Area && 
+        item.Team === record.Team && 
+        item["Description of Work"] === record["Description of Work"]
+    );
+    if (duplicate) {
+        showToast(currentLang === 'zh' ? '⚠️ 已存在相同记录' : '⚠️ Duplicate record exists');
         return;
     }
     
     pendingItems.push(record);
     renderPending();
     savePending();
-    showToast('✅ 已添加到待提交列表');
+    showToast('✅ ' + (currentLang === 'zh' ? '已添加到待提交列表' : 'Added to pending list'));
     
     document.getElementById('entryTag').value = '';
     document.getElementById('entryQty').value = '0';
@@ -600,7 +1062,7 @@ function addNoWork() {
     const team = document.getElementById('entryTeam').value;
     
     if (!date || !area || !team) {
-        showToast('❌ 请填写日期、区域和班组');
+        showToast(t('errorFillAll'));
         return;
     }
     
@@ -611,7 +1073,7 @@ function addNoWork() {
         "Tag Number": 'N/A',
         Code: '0-0-000',
         "Sub-item": '无作业',
-        "Description of Work": '区域 ' + area + ' 无施工',
+        "Description of Work": (currentLang === 'zh' ? '区域 ' : 'Area ') + area + (currentLang === 'zh' ? ' 无施工' : ' no work'),
         Unit: 'N/A',
         "Qty.": 0,
         "UG Pipe length (m)": 0,
@@ -625,30 +1087,35 @@ function addNoWork() {
     pendingItems.push(record);
     renderPending();
     savePending();
-    showToast('✅ 已标记 ' + area + ' 今日无作业');
+    showToast('✅ ' + (currentLang === 'zh' ? '已标记 ' + area + ' 今日无作业' : 'Marked ' + area + ' as no work today'));
 }
 
 function renderPending() {
     const container = document.getElementById('pendingItems');
-    const count = document.getElementById('pendingCount');
-    count.textContent = pendingItems.length;
+    const countEl = document.getElementById('pendingCount');
+    countEl.textContent = pendingItems.length;
     
     if (pendingItems.length === 0) {
-        container.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">暂无待提交记录</p>';
+        container.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">' + t('noPending') + '</p>';
         return;
     }
     
     let html = '';
     pendingItems.forEach((item, index) => {
+        const desc = item["Description of Work"] || '';
+        const qty = item["Qty."] || 0;
+        const mp = item.Manpower || 0;
         html += `<div class="pending-item">
-            <div>
-                <strong>${item.Date}</strong> | ${item.Area} | ${item.Team} | ${item["Description of Work"]}
+            <div class="info">
+                <strong>${item.Date}</strong> | ${item.Area} | ${item.Team} | ${desc.substring(0, 30)}${desc.length > 30 ? '...' : ''}
                 <span style="color:#999;font-size:12px;margin-left:10px;">
-                    ${item["Qty."] > 0 ? '数量:' + item["Qty."] : ''}
-                    ${item.Manpower > 0 ? '人数:' + item.Manpower : ''}
+                    ${qty > 0 ? (currentLang === 'zh' ? '数量:' : 'Qty:') + qty : ''}
+                    ${mp > 0 ? (currentLang === 'zh' ? '人数:' : 'MP:') + mp : ''}
                 </span>
             </div>
-            <button class="btn btn-danger" style="padding:4px 12px;font-size:12px;" onclick="removePending(${index})">删除</button>
+            <div class="actions">
+                <button class="btn btn-danger btn-sm" onclick="removePending(${index})">${currentLang === 'zh' ? '删除' : 'Delete'}</button>
+            </div>
         </div>`;
     });
     container.innerHTML = html;
@@ -661,11 +1128,12 @@ function removePending(index) {
 }
 
 function clearPending() {
-    if (confirm('确定清空所有待提交吗？')) {
+    if (pendingItems.length === 0) return;
+    if (confirm(t('confirmClear'))) {
         pendingItems = [];
         renderPending();
         savePending();
-        showToast('🗑️ 已清空待提交列表');
+        showToast('🗑️ ' + (currentLang === 'zh' ? '已清空待提交列表' : 'Pending list cleared'));
     }
 }
 
@@ -687,20 +1155,21 @@ function loadPending() {
 
 function submitAll() {
     if (pendingItems.length === 0) {
-        showToast('❌ 没有待提交的记录');
+        showToast('❌ ' + (currentLang === 'zh' ? '没有待提交的记录' : 'No pending records'));
         return;
     }
-    if (!confirm(`提交 ${pendingItems.length} 条记录？`)) return;
+    if (!confirm(t('confirmSubmit').replace('{count}', pendingItems.length))) return;
     
     let allData = JSON.parse(localStorage.getItem('daily_reports') || '[]');
     allData = allData.concat(pendingItems);
     localStorage.setItem('daily_reports', JSON.stringify(allData));
     
+    const count = pendingItems.length;
     pendingItems = [];
     renderPending();
     savePending();
     loadOverview();
-    showToast(`🎉 成功提交 ${allData.length} 条记录！`);
+    showToast(t('successSubmit').replace('{count}', count));
 }
 
 // ============================================================
@@ -722,38 +1191,34 @@ function renderAttendance(data) {
     const map = {};
     data.forEach(d => map[d["Worker Type"]] = d);
     
-    let html = '<table><thead><tr><th>工种</th><th>应到</th><th>实到</th><th>缺勤</th><th>外籍</th><th>备注</th></tr></thead><tbody>';
-    WORKER_TYPES.forEach(type => {
+    let html = '<table><thead><tr><th>' + t('workerType') + '</th><th>' + t('expected') + '</th><th>' + t('present') + '</th><th>' + t('absent') + '</th><th>' + t('foreignLabel') + '</th><th>' + t('remarkLabel') + '</th></tr></thead><tbody>';
+    WORKER_TYPES.forEach((type) => {
         const row = map[type] || { Total: 0, Present: 0, Foreign: 0, Remark: '' };
         const absent = (row.Total || 0) - (row.Present || 0);
         html += `<tr>
             <td><strong>${type}</strong></td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="Total" value="${row.Total || 0}" min="0"></td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="Present" value="${row.Present || 0}" min="0"></td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="Total" value="${row.Total || 0}" min="0" onchange="updateAbsent(this)"></td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="Present" value="${row.Present || 0}" min="0" onchange="updateAbsent(this)"></td>
             <td style="color:${absent > 0 ? '#c62828' : '#4caf50'};font-weight:bold;">${absent}</td>
             <td><input type="number" class="att-input" data-type="${type}" data-field="Foreign" value="${row.Foreign || 0}" min="0"></td>
-            <td><input type="text" class="att-input" data-type="${type}" data-field="Remark" value="${row.Remark || ''}" placeholder="备注"></td>
+            <td><input type="text" class="att-input att-input-wide" data-type="${type}" data-field="Remark" value="${row.Remark || ''}" placeholder="${t('remarkLabel')}"></td>
         </tr>`;
     });
     html += '</tbody></table>';
     container.innerHTML = html;
-    
-    document.querySelectorAll('.att-input').forEach(inp => {
-        inp.addEventListener('input', function() {
-            const type = this.dataset.type;
-            const total = parseInt(document.querySelector(`.att-input[data-type="${type}"][data-field="Total"]`)?.value) || 0;
-            const present = parseInt(document.querySelector(`.att-input[data-type="${type}"][data-field="Present"]`)?.value) || 0;
-            const absent = total - present;
-            const row = this.closest('tr');
-            if (row) {
-                const cell = row.querySelector('td:nth-child(4)');
-                if (cell) {
-                    cell.textContent = absent;
-                    cell.style.color = absent > 0 ? '#c62828' : '#4caf50';
-                }
-            }
-        });
-    });
+}
+
+function updateAbsent(el) {
+    const row = el.closest('tr');
+    const type = el.dataset.type;
+    const total = parseInt(row.querySelector(`.att-input[data-type="${type}"][data-field="Total"]`)?.value) || 0;
+    const present = parseInt(row.querySelector(`.att-input[data-type="${type}"][data-field="Present"]`)?.value) || 0;
+    const absent = total - present;
+    const cell = row.querySelector('td:nth-child(4)');
+    if (cell) {
+        cell.textContent = absent;
+        cell.style.color = absent > 0 ? '#c62828' : '#4caf50';
+    }
 }
 
 function renderAttendanceSummary(date) {
@@ -762,20 +1227,20 @@ function renderAttendanceSummary(date) {
     const filtered = allData.filter(d => d.Date === date);
     
     if (filtered.length === 0) {
-        container.innerHTML = '<p style="color:#999;padding:10px;">该日期暂无数据，请先填报</p>';
+        container.innerHTML = '<p style="color:#999;padding:10px;">' + t('noDataDate') + '</p>';
         return;
     }
     
-    let html = '<table><thead><tr><th>班组</th><th>出勤明细</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>' + t('teamCol') + '</th><th>' + t('detail') + '</th></tr></thead><tbody>';
     const teams = [...new Set(filtered.map(d => d.Team))];
     teams.forEach(team => {
         const records = filtered.filter(d => d.Team === team);
         let details = records.map(d => {
             const total = d.Total || 0;
             const absent = (d.Total || 0) - (d.Present || 0);
-            return d["Worker Type"] + total + '人' + (absent > 0 ? '(缺勤' + absent + '人)' : '');
+            return d["Worker Type"] + total + (currentLang === 'zh' ? '人' : '') + (absent > 0 ? (currentLang === 'zh' ? '(缺勤' + absent + '人)' : '(absent ' + absent + ')') : '');
         }).join('、');
-        html += `<tr><td>${team}</td><td>${details || '无数据'}</td></tr>`;
+        html += `<tr><td>${team}</td><td>${details || (currentLang === 'zh' ? '无数据' : 'No data')}</td></tr>`;
     });
     html += '</tbody></table>';
     container.innerHTML = html;
@@ -784,7 +1249,7 @@ function renderAttendanceSummary(date) {
 function saveAttendance() {
     const date = document.getElementById('attDate').value;
     const team = document.getElementById('attTeam').value;
-    if (!date || !team) { showToast('❌ 请选择日期和班组'); return; }
+    if (!date || !team) { showToast('❌ ' + (currentLang === 'zh' ? '请选择日期和班组' : 'Please select date and team')); return; }
     
     const records = [];
     document.querySelectorAll('.att-input[data-field="Total"]').forEach(inp => {
@@ -793,25 +1258,32 @@ function saveAttendance() {
         const present = parseInt(document.querySelector(`.att-input[data-type="${type}"][data-field="Present"]`)?.value) || 0;
         const foreign = parseInt(document.querySelector(`.att-input[data-type="${type}"][data-field="Foreign"]`)?.value) || 0;
         const remark = document.querySelector(`.att-input[data-type="${type}"][data-field="Remark"]`)?.value || '';
-        records.push({
-            Date: date,
-            Team: team,
-            "Worker Type": type,
-            Total: total,
-            Present: present,
-            Absent: total - present,
-            Foreign: foreign,
-            Remark: remark,
-            "Reported By": currentUser || 'unknown'
-        });
+        if (total > 0 || present > 0) {
+            records.push({
+                Date: date,
+                Team: team,
+                "Worker Type": type,
+                Total: total,
+                Present: present,
+                Absent: total - present,
+                Foreign: foreign,
+                Remark: remark,
+                "Reported By": currentUser || 'unknown'
+            });
+        }
     });
+    
+    if (records.length === 0) {
+        showToast('❌ ' + (currentLang === 'zh' ? '请至少填报一个工种' : 'Please fill in at least one worker type'));
+        return;
+    }
     
     let allData = JSON.parse(localStorage.getItem('attendance_data') || '[]');
     allData = allData.filter(d => !(d.Date === date && d.Team === team));
     allData = allData.concat(records);
     localStorage.setItem('attendance_data', JSON.stringify(allData));
     
-    showToast('✅ 考勤保存成功！');
+    showToast(t('successSaved'));
     loadAttendance();
 }
 
@@ -823,42 +1295,46 @@ function loadOverview() {
     const allData = JSON.parse(localStorage.getItem('daily_reports') || '[]');
     const filtered = date ? allData.filter(d => d.Date === date) : allData;
     
-    const areas = ['110', '210', '220', '240', '320', '330', '400', '800', 'precast yard 1', 'precast yard 2'];
+    // 区域状态
     const submittedAreas = new Set(filtered.map(d => d.Area));
-    const statusHtml = areas.map(area => {
+    const statusHtml = AREAS.map(area => {
         const isSubmitted = submittedAreas.has(area);
         return `<span style="padding:8px 16px;border-radius:6px;background:${isSubmitted ? '#e8f5e9' : '#ffebee'};color:${isSubmitted ? '#2e7d32' : '#c62828'};border:1px solid ${isSubmitted ? '#a5d6a7' : '#ef9a9a'};">
-            <strong>${area}</strong> ${isSubmitted ? '🟢 已提交' : '🔴 未提交'}
+            <strong>${area}</strong> ${isSubmitted ? '🟢 ' + (currentLang === 'zh' ? '已提交' : 'Submitted') : '🔴 ' + (currentLang === 'zh' ? '未提交' : 'Not Submitted')}
         </span>`;
     }).join('');
     document.getElementById('areaStatus').innerHTML = statusHtml;
     
+    // 当日数据
     const table = document.getElementById('overviewTable');
     if (filtered.length === 0) {
-        table.innerHTML = '<p style="color:#999;padding:20px;">该日期暂无数据</p>';
+        table.innerHTML = '<p style="color:#999;padding:20px;">' + t('noDataDate') + '</p>';
     } else {
-        let html = `<p style="color:#666;margin-bottom:10px;">共 ${filtered.length} 条记录</p>`;
-        html += '<table><thead><tr><th>日期</th><th>区域</th><th>班组</th><th>工作描述</th><th>数量</th><th>人数</th><th>工时</th></tr></thead><tbody>';
+        let html = `<p style="color:#666;margin-bottom:10px;">${currentLang === 'zh' ? '共' : 'Total'} ${filtered.length} ${currentLang === 'zh' ? '条记录' : 'records'}</p>`;
+        html += '<table><thead><tr><th>' + t('date') + '</th><th>' + t('area') + '</th><th>' + t('team') + '</th><th>' + (currentLang === 'zh' ? '工作描述' : 'Description') + '</th><th>' + t('qty') + '</th><th>' + t('manpower') + '</th><th>' + t('manhours') + '</th></tr></thead><tbody>';
         filtered.forEach(d => {
-            html += `<tr><td>${d.Date}</td><td>${d.Area}</td><td>${d.Team}</td><td>${(d["Description of Work"] || '').substring(0, 30)}</td>
+            const desc = d["Description of Work"] || '';
+            html += `<tr><td>${d.Date}</td><td>${d.Area}</td><td>${d.Team}</td><td>${desc.substring(0, 30)}${desc.length > 30 ? '...' : ''}</td>
                 <td>${d["Qty."] || 0}</td><td>${d.Manpower || 0}</td><td>${d.Manhours || 0}</td></tr>`;
         });
         html += '</tbody></table>';
         table.innerHTML = html;
     }
     
+    // 全部数据
     const allTable = document.getElementById('allDataTable');
     if (allData.length === 0) {
-        allTable.innerHTML = '<p style="color:#999;padding:20px;">暂无数据</p>';
+        allTable.innerHTML = '<p style="color:#999;padding:20px;">' + t('noData') + '</p>';
     } else {
-        let html = `<p style="color:#666;margin-bottom:10px;">共 ${allData.length} 条记录</p>`;
-        html += '<table><thead><tr><th>日期</th><th>区域</th><th>班组</th><th>工作描述</th><th>数量</th><th>人数</th><th>工时</th></tr></thead><tbody>';
+        let html = `<p style="color:#666;margin-bottom:10px;">${currentLang === 'zh' ? '共' : 'Total'} ${allData.length} ${currentLang === 'zh' ? '条记录' : 'records'}</p>`;
+        html += '<table><thead><tr><th>' + t('date') + '</th><th>' + t('area') + '</th><th>' + t('team') + '</th><th>' + (currentLang === 'zh' ? '工作描述' : 'Description') + '</th><th>' + t('qty') + '</th><th>' + t('manpower') + '</th><th>' + t('manhours') + '</th></tr></thead><tbody>';
         allData.slice(-100).reverse().forEach(d => {
-            html += `<tr><td>${d.Date}</td><td>${d.Area}</td><td>${d.Team}</td><td>${(d["Description of Work"] || '').substring(0, 30)}</td>
+            const desc = d["Description of Work"] || '';
+            html += `<tr><td>${d.Date}</td><td>${d.Area}</td><td>${d.Team}</td><td>${desc.substring(0, 30)}${desc.length > 30 ? '...' : ''}</td>
                 <td>${d["Qty."] || 0}</td><td>${d.Manpower || 0}</td><td>${d.Manhours || 0}</td></tr>`;
         });
         html += '</tbody></table>';
-        if (allData.length > 100) html += `<p style="color:#999;margin-top:10px;">显示最近100条，共 ${allData.length} 条</p>`;
+        if (allData.length > 100) html += `<p style="color:#999;margin-top:10px;">${currentLang === 'zh' ? '显示最近100条，共' : 'Showing last 100 of'} ${allData.length}</p>`;
         allTable.innerHTML = html;
     }
 }
@@ -867,19 +1343,28 @@ function exportData() {
     const date = document.getElementById('overviewDate').value;
     const allData = JSON.parse(localStorage.getItem('daily_reports') || '[]');
     const filtered = date ? allData.filter(d => d.Date === date) : allData;
-    if (filtered.length === 0) { showToast('❌ 没有数据可导出'); return; }
-    
-    const headers = ['Date', 'Area', 'Team', 'Tag Number', 'Code', 'Sub-item', 'Description of Work', 'Unit', 'Qty.', 'UG Pipe length (m)', 'Manpower', 'Manhours', 'Non-Chinese', 'Remark'];
+    if (filtered.length === 0) { showToast(t('errorNoData')); return; }
+    downloadCSV(filtered, `Daily_Report_${date}.csv`);
+}
+
+function exportAllData() {
+    const allData = JSON.parse(localStorage.getItem('daily_reports') || '[]');
+    if (allData.length === 0) { showToast(t('errorNoData')); return; }
+    downloadCSV(allData, `All_Reports_${new Date().toISOString().split('T')[0]}.csv`);
+}
+
+function downloadCSV(data, filename) {
+    const headers = ['Date', 'Area', 'Team', 'Tag Number', 'Code', 'Sub-item', 'Description of Work', 'Unit', 'Qty.', 'UG Pipe length (m)', 'Manpower', 'Manhours', 'Non-Chinese', 'Remark', 'Created By'];
     let csv = headers.join(',') + '\n';
-    filtered.forEach(row => {
+    data.forEach(row => {
         csv += headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(',') + '\n';
     });
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `Daily_Report_${date}.csv`;
+    link.download = filename;
     link.click();
-    showToast('📥 导出成功！');
+    showToast(t('successExported'));
 }
 
 // ============================================================
@@ -893,10 +1378,11 @@ function loadVerification() {
     const attendance = JSON.parse(localStorage.getItem('attendance_data') || '[]');
     const reports = JSON.parse(localStorage.getItem('daily_reports') || '[]');
     
-    const teams = ['马玉奇(Ma Yuqi)', '王建(Wang Jian)', 'Kumar', '郭传海(Guo Chuanhai)', '曹桂龙(Cao Guilong)', '陈传军(Chen Chuanjun)', '王世杰(Wang Shijie)', 'Sheharyar', 'Anwar'];
-    const filteredTeams = teamFilter === 'all' ? teams : [teamFilter];
+    const filteredTeams = teamFilter === 'all' ? TEAMS : [teamFilter];
     
-    let html = '<table><thead><tr><th>班组</th><th>出勤应到</th><th>出勤实到</th><th>工时人数</th><th>工时</th><th>匹配</th><th>差值</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>' + t('teamCol') + '</th><th>' + t('expected') + '</th><th>' + t('present') + '</th><th>' + t('manpower') + '</th><th>' + t('manhours') + '</th><th>' + t('matched') + '</th><th>' + t('diff') + '</th></tr></thead><tbody>';
+    let totalExpected = 0, totalPresent = 0, totalManpower = 0, totalManhours = 0, matchedCount = 0;
+    let teamsWithData = 0;
     
     filteredTeams.forEach(team => {
         const att = attendance.filter(a => a.Date === date && a.Team === team);
@@ -907,21 +1393,43 @@ function loadVerification() {
         const totalMp = rep.reduce((s, r) => s + (r.Manpower || 0), 0);
         const totalMh = rep.reduce((s, r) => s + (r.Manhours || 0), 0);
         
-        const matched = totalAtt === totalMp;
-        const diff = totalAtt - totalMp;
+        const hasData = totalAtt > 0 || totalMp > 0;
+        if (hasData) teamsWithData++;
         
-        html += `<tr>
+        const matched = totalAtt === totalMp && totalAtt > 0;
+        const diff = totalAtt - totalMp;
+        if (matched && totalAtt > 0) matchedCount++;
+        
+        totalExpected += totalAtt;
+        totalPresent += presentAtt;
+        totalManpower += totalMp;
+        totalManhours += totalMh;
+        
+        const rowClass = hasData ? (matched ? 'row-matched' : 'row-unmatched') : '';
+        html += `<tr class="${rowClass}">
             <td>${team}</td>
             <td>${totalAtt}</td>
             <td>${presentAtt}</td>
             <td>${totalMp}</td>
             <td>${totalMh.toFixed(1)}</td>
-            <td>${matched ? '✅' : '❌'}</td>
-            <td style="color:${diff !== 0 ? '#c62828' : '#4caf50'}">${diff !== 0 ? diff : '0'}</td>
+            <td>${hasData ? (matched ? '✅' : '❌') : '-'}</td>
+            <td style="color:${diff !== 0 && hasData ? '#c62828' : '#4caf50'}">${hasData ? diff : '-'}</td>
         </tr>`;
     });
     html += '</tbody></table>';
     document.getElementById('verifyResult').innerHTML = html;
+    
+    // 统计
+    const statsHtml = `
+        <div class="stats">
+            <div class="stat-card"><div class="stat-number">${totalExpected}</div><div class="stat-label">${currentLang === 'zh' ? '总应到' : 'Total Expected'}</div></div>
+            <div class="stat-card"><div class="stat-number">${totalPresent}</div><div class="stat-label">${currentLang === 'zh' ? '总实到' : 'Total Present'}</div></div>
+            <div class="stat-card"><div class="stat-number">${totalManpower}</div><div class="stat-label">${currentLang === 'zh' ? '总工时人数' : 'Total Manpower'}</div></div>
+            <div class="stat-card"><div class="stat-number">${totalManhours.toFixed(1)}</div><div class="stat-label">${currentLang === 'zh' ? '总工时' : 'Total Manhours'}</div></div>
+            <div class="stat-card"><div class="stat-number">${matchedCount}/${teamsWithData || 1}</div><div class="stat-label">${currentLang === 'zh' ? '匹配班组' : 'Matched Teams'}</div></div>
+        </div>
+    `;
+    document.getElementById('verifyStats').innerHTML = statsHtml;
 }
 
 // ============================================================
@@ -929,13 +1437,33 @@ function loadVerification() {
 // ============================================================
 function loadUserList() {
     const container = document.getElementById('userList');
-    let html = '<table><thead><tr><th>用户名</th><th>显示名称</th><th>角色</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>' + (currentLang === 'zh' ? '用户名' : 'Username') + '</th><th>' + (currentLang === 'zh' ? '显示名称' : 'Display Name') + '</th><th>' + (currentLang === 'zh' ? '角色' : 'Role') + '</th><th>' + (currentLang === 'zh' ? '操作' : 'Action') + '</th></tr></thead><tbody>';
+    let hasUsers = false;
     for (const [username, info] of Object.entries(USERS)) {
         if (username === 'admin') continue;
-        html += `<tr><td>${username}</td><td>${info.display_name}</td><td>${info.role}</td></tr>`;
+        hasUsers = true;
+        html += `<tr>
+            <td>${username}</td>
+            <td>${info.display_name}</td>
+            <td>${info.role}</td>
+            <td><button class="btn btn-danger btn-sm" onclick="deleteUser('${username}')">${currentLang === 'zh' ? '删除' : 'Delete'}</button></td>
+        </tr>`;
+    }
+    if (!hasUsers) {
+        html += `<tr><td colspan="4" style="text-align:center;color:#999;">${currentLang === 'zh' ? '暂无其他用户' : 'No other users'}</td></tr>`;
     }
     html += '</tbody></table>';
     container.innerHTML = html;
+}
+
+function deleteUser(username) {
+    if (username === 'admin') return;
+    if (confirm(t('deleteConfirm').replace('{name}', username))) {
+        delete USERS[username];
+        saveUsers();
+        loadUserList();
+        showToast(t('userDeleted'));
+    }
 }
 
 function addUser() {
@@ -945,16 +1473,17 @@ function addUser() {
     const role = document.getElementById('newRole').value;
     
     if (!username || !password || !displayName) {
-        showToast('❌ 请填写完整信息');
+        showToast(t('errorFillComplete'));
         return;
     }
     if (USERS[username]) {
-        showToast('❌ 用户名已存在');
+        showToast(t('errorUserExists'));
         return;
     }
     
     USERS[username] = { password, role, display_name: displayName };
-    showToast('✅ 用户 ' + displayName + ' 添加成功');
+    saveUsers();
+    showToast(t('successAddUser').replace('{name}', displayName));
     loadUserList();
     document.getElementById('newUsername').value = '';
     document.getElementById('newPassword').value = '';
@@ -966,20 +1495,52 @@ function addUser() {
 // ============================================================
 function exportBackup() {
     const data = {
+        users: USERS,
         daily_reports: JSON.parse(localStorage.getItem('daily_reports') || '[]'),
         attendance_data: JSON.parse(localStorage.getItem('attendance_data') || '[]'),
-        pending_items: pendingItems
+        pending_items: pendingItems,
+        login_logs: JSON.parse(localStorage.getItem('login_logs') || '[]')
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
     link.click();
-    showToast('💾 备份成功！');
+    showToast(t('successBackup'));
+}
+
+function importBackup() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            try {
+                const data = JSON.parse(ev.target.result);
+                if (data.users) { USERS = data.users; saveUsers(); }
+                if (data.daily_reports) localStorage.setItem('daily_reports', JSON.stringify(data.daily_reports));
+                if (data.attendance_data) localStorage.setItem('attendance_data', JSON.stringify(data.attendance_data));
+                if (data.pending_items) { pendingItems = data.pending_items; savePending(); renderPending(); }
+                if (data.login_logs) localStorage.setItem('login_logs', JSON.stringify(data.login_logs));
+                showToast(t('successRestore'));
+                loadOverview();
+                loadAttendance();
+                loadUserList();
+                loadLoginLogs();
+            } catch(err) {
+                showToast('❌ ' + (currentLang === 'zh' ? '恢复失败，文件格式错误' : 'Restore failed, invalid file format'));
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
 }
 
 function clearZeroData() {
-    if (!confirm('⚠️ 确定要清理零数据记录吗？')) return;
+    if (!confirm(t('confirmClearZero'))) return;
     let data = JSON.parse(localStorage.getItem('daily_reports') || '[]');
     const originalCount = data.length;
     data = data.filter(d => {
@@ -988,12 +1549,12 @@ function clearZeroData() {
     });
     const removed = originalCount - data.length;
     localStorage.setItem('daily_reports', JSON.stringify(data));
-    showToast(`🧹 已删除 ${removed} 条零数据记录`);
+    showToast(t('successClearZero').replace('{count}', removed));
     loadOverview();
 }
 
 function deduplicateData() {
-    if (!confirm('🔄 确定要去重吗？')) return;
+    if (!confirm(t('confirmDedup'))) return;
     let data = JSON.parse(localStorage.getItem('daily_reports') || '[]');
     const keys = ['Date', 'Area', 'Team', 'Tag Number', 'Code', 'Description of Work'];
     const seen = new Set();
@@ -1005,21 +1566,26 @@ function deduplicateData() {
     });
     const removed = data.length - deduped.length;
     localStorage.setItem('daily_reports', JSON.stringify(deduped));
-    showToast(`🔄 已删除 ${removed} 条重复记录`);
+    showToast(t('successDedup').replace('{count}', removed));
     loadOverview();
 }
 
 function resetAllData() {
-    if (!confirm('⚠️ 确定要重置所有数据吗？此操作不可恢复！')) return;
-    if (!confirm('再次确认：真的要删除所有数据吗？')) return;
+    if (!confirm(t('confirmReset'))) return;
+    if (!confirm(t('confirmReset2'))) return;
     localStorage.removeItem('daily_reports');
     localStorage.removeItem('attendance_data');
     localStorage.removeItem('pending_items');
+    localStorage.removeItem('login_logs');
+    localStorage.removeItem('users_data');
     pendingItems = [];
+    loadUsers();
     renderPending();
     loadOverview();
     loadAttendance();
-    showToast('💣 所有数据已重置');
+    loadLoginLogs();
+    loadUserList();
+    showToast(t('successReset'));
 }
 
 // ============================================================
@@ -1049,14 +1615,33 @@ setInterval(() => {
 }, 30000);
 
 // ============================================================
-//  启动
+//  启动 - 页面加载完成后初始化
 // ============================================================
 document.addEventListener('DOMContentLoaded', function() {
+    loadUsers();
+    
+    // 设置默认日期
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('entryDate').value = today;
+    document.getElementById('attDate').value = today;
+    document.getElementById('overviewDate').value = today;
+    document.getElementById('verifyDate').value = today;
+    
+    // 初始化工作字典
+    onCategoryChange();
+    
+    // 事件绑定
     document.getElementById('attDate').addEventListener('change', loadAttendance);
     document.getElementById('attTeam').addEventListener('change', loadAttendance);
     document.getElementById('overviewDate').addEventListener('change', loadOverview);
     document.getElementById('verifyDate').addEventListener('change', loadVerification);
     document.getElementById('verifyTeam').addEventListener('change', loadVerification);
+    
+    // 更新登录界面语言
+    updateLoginUI();
+    
+    // 如果有自动登录可以在这里处理
+    console.log('系统已就绪，请登录');
 });
 </script>
 </body>
