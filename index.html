@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>施工日报系统 V3.0</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; padding: 20px; }
@@ -16,10 +15,6 @@
         .user-info span { font-weight: 500; color: #1a237e; }
         .btn-logout { padding: 8px 20px; border: 1px solid #e53935; background: white; color: #e53935; border-radius: 6px; cursor: pointer; }
         .btn-logout:hover { background: #e53935; color: white; }
-        .sync-status { font-size: 12px; padding: 2px 10px; border-radius: 12px; }
-        .sync-status.ok { background: #e8f5e9; color: #2e7d32; }
-        .sync-status.syncing { background: #fff3e0; color: #e65100; }
-        .sync-status.error { background: #ffebee; color: #c62828; }
         
         .tabs { display: flex; gap: 5px; margin-bottom: 20px; background: white; padding: 5px; border-radius: 10px; flex-wrap: wrap; }
         .tab-btn { padding: 12px 24px; border: none; background: transparent; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 15px; transition: all 0.3s; }
@@ -95,13 +90,13 @@
     <div class="login-box">
         <h2>🏗️ 施工日报填报系统</h2>
         <p class="subtitle">Marsa LNG Project · Civil Department</p>
-        <p style="text-align:center;font-size:12px;color:#4caf50;margin-bottom:10px;">☁️ 云端自动同步 · V3.0</p>
+        <p style="text-align:center;font-size:12px;color:#4caf50;margin-bottom:10px;">📦 本地存储 · 无需网络</p>
         <input type="text" id="loginUsername" placeholder="用户名" value="admin">
         <input type="password" id="loginPassword" placeholder="密码" value="142857jj">
         <button class="btn btn-primary" onclick="handleLogin()">🔑 登录</button>
         <div id="loginMessage" class="login-message"></div>
         <div style="margin-top:15px;font-size:12px;color:#999;text-align:center;">
-            <p>管理员: admin / 142857jj | 查看者: 95381694 / 1478</p>
+            管理员: admin / 142857jj | 查看者: 95381694 / 1478
         </div>
     </div>
 </div>
@@ -110,11 +105,10 @@
 <div id="mainApp" style="display:none;">
     <div class="container">
         <div class="header">
-            <h1>🏗️ 施工日报填报系统 <span class="cloud-badge">☁️ V3.0</span></h1>
+            <h1>🏗️ 施工日报填报系统 <span class="cloud-badge">📦 本地版</span></h1>
             <div class="user-info">
                 <span id="userDisplayName">👤 用户</span>
                 <span id="userRole" style="font-size:12px;color:#888;"></span>
-                <span id="syncStatus" class="sync-status ok">✅ 已同步</span>
                 <button class="btn-logout" onclick="handleLogout()">🚪 退出</button>
             </div>
         </div>
@@ -124,23 +118,19 @@
             <button class="tab-btn" onclick="switchTab('attendance')">👷 出勤日报</button>
             <button class="tab-btn" onclick="switchTab('overview')">📊 数据总览</button>
             <button class="tab-btn" onclick="switchTab('verify')">✅ 工时核对</button>
-            <button class="tab-btn" onclick="switchTab('settings')">⚙️ 系统设置</button>
+            <button class="tab-btn" onclick="switchTab('settings')">⚙️ 设置</button>
         </div>
         
-        <!-- ============================================================ -->
-        <!-- Tab: 施工量录入 -->
-        <!-- ============================================================ -->
+        <!-- ===== Tab: 录入 ===== -->
         <div id="tab-entry" class="tab-content active">
             <h2>📝 施工量录入</h2>
-            <div style="font-size:13px;color:#666;margin-bottom:10px;">👤 施工员 · 区域完成量录入</div>
-            
             <div class="form-row">
                 <div class="form-group">
-                    <label>📅 班次日期</label>
+                    <label>📅 日期</label>
                     <input type="date" id="entryDate">
                 </div>
                 <div class="form-group">
-                    <label>📍 负责区域</label>
+                    <label>📍 区域</label>
                     <select id="entryArea">
                         <option value="110">110</option>
                         <option value="210">210</option>
@@ -157,20 +147,20 @@
                 <div class="form-group">
                     <label>👷 班组</label>
                     <select id="entryTeam">
-                        <option value="马玉奇(Ma Yuqi)">马玉奇(Ma Yuqi)</option>
-                        <option value="王建(Wang Jian)">王建(Wang Jian)</option>
+                        <option value="马玉奇(Ma Yuqi)">马玉奇</option>
+                        <option value="王建(Wang Jian)">王建</option>
                         <option value="Kumar">Kumar</option>
-                        <option value="郭传海(Guo Chuanhai)">郭传海(Guo Chuanhai)</option>
-                        <option value="曹桂龙(Cao Guilong)">曹桂龙(Cao Guilong)</option>
-                        <option value="陈传军(Chen Chuanjun)">陈传军(Chen Chuanjun)</option>
-                        <option value="王世杰(Wang Shijie)">王世杰(Wang Shijie)</option>
+                        <option value="郭传海(Guo Chuanhai)">郭传海</option>
+                        <option value="曹桂龙(Cao Guilong)">曹桂龙</option>
+                        <option value="陈传军(Chen Chuanjun)">陈传军</option>
+                        <option value="王世杰(Wang Shijie)">王世杰</option>
                         <option value="Sheharyar">Sheharyar</option>
                         <option value="Anwar">Anwar</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>🏷️ 位号</label>
-                    <input type="text" id="entryTag" placeholder="输入设备号/管线号">
+                    <input type="text" id="entryTag" placeholder="输入位号">
                 </div>
             </div>
             
@@ -236,118 +226,99 @@
                 <h3>📋 待提交列表 (<span id="pendingCount">0</span> 项)</h3>
                 <div id="pendingItems"></div>
                 <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
-                    <button class="btn btn-success" onclick="submitAll()">🚀 一次性提交所有记录</button>
-                    <button class="btn btn-danger" onclick="clearPending()">🗑️ 清空待提交列表</button>
+                    <button class="btn btn-success" onclick="submitAll()">🚀 提交所有记录</button>
+                    <button class="btn btn-danger" onclick="clearPending()">🗑️ 清空列表</button>
                 </div>
             </div>
         </div>
         
-        <!-- ============================================================ -->
-        <!-- Tab: 出勤日报 -->
-        <!-- ============================================================ -->
+        <!-- ===== Tab: 出勤 ===== -->
         <div id="tab-attendance" class="tab-content">
             <h2>👷 出勤日报（班组长）</h2>
-            <div style="font-size:13px;color:#666;margin-bottom:10px;">按工种填报应到和实到，缺勤自动计算</div>
-            
             <div class="form-row">
                 <div class="form-group">
-                    <label>📅 报工日期</label>
+                    <label>📅 日期</label>
                     <input type="date" id="attDate">
                 </div>
                 <div class="form-group">
                     <label>👷 班组</label>
                     <select id="attTeam">
-                        <option value="马玉奇(Ma Yuqi)">马玉奇(Ma Yuqi)</option>
-                        <option value="王建(Wang Jian)">王建(Wang Jian)</option>
+                        <option value="马玉奇(Ma Yuqi)">马玉奇</option>
+                        <option value="王建(Wang Jian)">王建</option>
                         <option value="Kumar">Kumar</option>
-                        <option value="郭传海(Guo Chuanhai)">郭传海(Guo Chuanhai)</option>
-                        <option value="曹桂龙(Cao Guilong)">曹桂龙(Cao Guilong)</option>
-                        <option value="陈传军(Chen Chuanjun)">陈传军(Chen Chuanjun)</option>
-                        <option value="王世杰(Wang Shijie)">王世杰(Wang Shijie)</option>
+                        <option value="郭传海(Guo Chuanhai)">郭传海</option>
+                        <option value="曹桂龙(Cao Guilong)">曹桂龙</option>
+                        <option value="陈传军(Chen Chuanjun)">陈传军</option>
+                        <option value="王世杰(Wang Shijie)">王世杰</option>
                         <option value="Sheharyar">Sheharyar</option>
                         <option value="Anwar">Anwar</option>
                     </select>
                 </div>
             </div>
-            
             <div id="attendanceTable"></div>
-            <button class="btn btn-primary" onclick="saveAttendance()" style="margin-top:15px;">✅ 人数填报完成，确定提交</button>
-            
-            <hr class="blue-divider" style="margin:20px 0;border:none;height:2px;background:linear-gradient(90deg,transparent,#4a90d9,transparent);opacity:0.3;">
+            <button class="btn btn-primary" onclick="saveAttendance()" style="margin-top:15px;">✅ 提交考勤</button>
+            <hr style="margin:20px 0;border:none;border-top:2px solid #e8edf4;">
             <h4>📊 今日报工汇总</h4>
             <div id="attendanceSummary"></div>
         </div>
         
-        <!-- ============================================================ -->
-        <!-- Tab: 数据总览 -->
-        <!-- ============================================================ -->
+        <!-- ===== Tab: 总览 ===== -->
         <div id="tab-overview" class="tab-content">
-            <h2>📊 工程量日报总览</h2>
+            <h2>📊 数据总览</h2>
             <div class="form-row">
                 <div class="form-group">
-                    <label>📅 选择查看日期</label>
+                    <label>📅 选择日期</label>
                     <input type="date" id="overviewDate">
                 </div>
                 <div class="form-group" style="justify-content:flex-end;">
                     <button class="btn btn-secondary" onclick="loadOverview()">🔄 刷新</button>
-                    <button class="btn btn-secondary" onclick="exportData()" style="margin-left:10px;">📥 下载当天数据</button>
+                    <button class="btn btn-secondary" onclick="exportData()" style="margin-left:10px;">📥 导出CSV</button>
                 </div>
             </div>
-            
-            <h4>📊 各区域当日填报状态</h4>
+            <h4>📊 各区域填报状态</h4>
             <div id="areaStatus" style="display:flex;flex-wrap:wrap;gap:10px;margin:10px 0;"></div>
-            
-            <h4>📋 填报数据清单</h4>
+            <h4>📋 当日数据</h4>
             <div id="overviewTable" class="table-container"></div>
-            
-            <hr class="blue-divider" style="margin:20px 0;border:none;height:2px;background:linear-gradient(90deg,transparent,#4a90d9,transparent);opacity:0.3;">
-            <h4>📋 全局数据实时汇总清单（所有日期）</h4>
+            <hr style="margin:20px 0;border:none;border-top:2px solid #e8edf4;">
+            <h4>📋 全部数据</h4>
             <div id="allDataTable" class="table-container"></div>
         </div>
         
-        <!-- ============================================================ -->
-        <!-- Tab: 工时核对 -->
-        <!-- ============================================================ -->
+        <!-- ===== Tab: 核对 ===== -->
         <div id="tab-verify" class="tab-content">
             <h2>✅ 工时与出勤核对</h2>
-            <div style="font-size:13px;color:#666;margin-bottom:10px;">核对各班组工时人数与出勤日报是否匹配</div>
-            
             <div class="form-row">
                 <div class="form-group">
-                    <label>📅 选择核对日期</label>
+                    <label>📅 日期</label>
                     <input type="date" id="verifyDate">
                 </div>
                 <div class="form-group">
-                    <label>👷 筛选班组</label>
+                    <label>👷 班组</label>
                     <select id="verifyTeam">
                         <option value="all">全部</option>
-                        <option value="马玉奇(Ma Yuqi)">马玉奇(Ma Yuqi)</option>
-                        <option value="王建(Wang Jian)">王建(Wang Jian)</option>
+                        <option value="马玉奇(Ma Yuqi)">马玉奇</option>
+                        <option value="王建(Wang Jian)">王建</option>
                         <option value="Kumar">Kumar</option>
-                        <option value="郭传海(Guo Chuanhai)">郭传海(Guo Chuanhai)</option>
-                        <option value="曹桂龙(Cao Guilong)">曹桂龙(Cao Guilong)</option>
-                        <option value="陈传军(Chen Chuanjun)">陈传军(Chen Chuanjun)</option>
-                        <option value="王世杰(Wang Shijie)">王世杰(Wang Shijie)</option>
+                        <option value="郭传海(Guo Chuanhai)">郭传海</option>
+                        <option value="曹桂龙(Cao Guilong)">曹桂龙</option>
+                        <option value="陈传军(Chen Chuanjun)">陈传军</option>
+                        <option value="王世杰(Wang Shijie)">王世杰</option>
                         <option value="Sheharyar">Sheharyar</option>
                         <option value="Anwar">Anwar</option>
                     </select>
                 </div>
             </div>
-            <button class="btn btn-secondary" onclick="loadVerification()">🔄 查询</button>
+            <button class="btn btn-secondary" onclick="loadVerification()">🔍 查询</button>
             <div id="verifyResult" style="margin-top:15px;"></div>
         </div>
         
-        <!-- ============================================================ -->
-        <!-- Tab: 系统设置 -->
-        <!-- ============================================================ -->
+        <!-- ===== Tab: 设置 ===== -->
         <div id="tab-settings" class="tab-content">
-            <h2>⚙️ 系统设置</h2>
-            
-            <h3 style="margin-top:20px;">👥 用户管理</h3>
+            <h2>⚙️ 设置</h2>
+            <h3>👥 用户管理</h3>
             <div id="userList"></div>
-            
-            <hr class="blue-divider" style="margin:20px 0;border:none;height:2px;background:linear-gradient(90deg,transparent,#4a90d9,transparent);opacity:0.3;">
-            <h3>➕ 添加新用户</h3>
+            <hr style="margin:20px 0;border:none;border-top:2px solid #e8edf4;">
+            <h3>➕ 添加用户</h3>
             <div class="form-row">
                 <div class="form-group">
                     <label>用户名</label>
@@ -371,14 +342,13 @@
                 </div>
             </div>
             <button class="btn btn-primary" onclick="addUser()">➕ 添加用户</button>
-            
-            <hr class="blue-divider" style="margin:20px 0;border:none;height:2px;background:linear-gradient(90deg,transparent,#4a90d9,transparent);opacity:0.3;">
-            <h3>⚠️ 危险操作区</h3>
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
-                <button class="btn btn-secondary" onclick="exportAllData()">💾 一键备份</button>
-                <button class="btn btn-danger" onclick="clearAllData()">🧹 清理零数据</button>
-                <button class="btn btn-danger" onclick="deduplicateData()">🔄 一键去重</button>
-                <button class="btn btn-danger" onclick="resetAllData()">💣 重置数据</button>
+            <hr style="margin:20px 0;border:none;border-top:2px solid #e8edf4;">
+            <h3>⚠️ 危险操作</h3>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn btn-secondary" onclick="exportBackup()">💾 备份数据</button>
+                <button class="btn btn-danger" onclick="clearZeroData()">🧹 清理零数据</button>
+                <button class="btn btn-danger" onclick="deduplicateData()">🔄 去重</button>
+                <button class="btn btn-danger" onclick="resetAllData()">💣 重置</button>
             </div>
         </div>
     </div>
@@ -391,14 +361,6 @@
 </div>
 
 <script>
-// ============================================================
-//  配置
-// ============================================================
-const SUPABASE_URL = 'https://zthosewfpsgtaqhtvcyt.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0aG9zZXdmcHNndGFxaHR2Y3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTA3MTksImV4cCI6MjA5ODQyNjcxOX0.Q9E4rDoZtFPGsjoJOUyhHmwNA0MGhzPOl5aymZ1Xjgo';
-
-const supabase = supabase_js.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 // ============================================================
 //  用户数据库
 // ============================================================
@@ -415,14 +377,7 @@ const USERS = {
     '96685730': { password: '1510', role: 'entry', display_name: '傅俊森' },
     '96687419': { password: '1819', role: 'entry', display_name: '王世杰' },
     '96687418': { password: '4738', role: 'entry', display_name: '孙永杰' },
-    '83184896': { password: '4896', role: 'entry', display_name: 'MOAHMMED AMIR HOSSAIN' },
-    '114482299': { password: '2299', role: 'entry', display_name: 'SHSHZAD ASHRAF' },
-    '117873437': { password: '3437', role: 'entry', display_name: 'MUHAMMAD ADIL' },
-    '118254139': { password: '4139', role: 'entry', display_name: 'MOHAMMAD AFZAL' },
-    '118947857': { password: '7857', role: 'entry', display_name: 'ABDUL ALEEM HAFIZ ABDUL LATIF' },
-    '136996706': { password: '6706', role: 'entry', display_name: 'JOHN CHRISTIAN' },
-    '138242877': { password: '2877', role: 'entry', display_name: 'SHEHARYAR MUHAMMAD SALEH' },
-    '141989627': { password: '9627', role: 'entry', display_name: 'MOHAMMED ABDUL NOMAN ABDUL MAJEED' },
+    '83184896': { password: '4896', role: 'entry', display_name: 'AMIR HOSSAIN' },
     '76733590': { password: '391X', role: 'entry', display_name: '王建' },
     '76725659': { password: '3637', role: 'entry', display_name: '李红帅' },
     '76747460': { password: '3658', role: 'entry', display_name: '李濮龙' },
@@ -433,7 +388,7 @@ const USERS = {
 };
 
 // ============================================================
-//  工作字典（与Python完全一致）
+//  工作字典
 // ============================================================
 const WORK_DICT = {
     "无收入项": {
@@ -472,6 +427,8 @@ const WORK_DICT = {
     }
 };
 
+const WORKER_TYPES = ['木工', '瓦工', '钢筋工', '架子工', '旗手', '小工', '起重工', '测量工', '焊工'];
+
 // ============================================================
 //  全局变量
 // ============================================================
@@ -479,9 +436,6 @@ let currentUser = null;
 let currentRole = null;
 let pendingItems = [];
 let isAdmin = false;
-
-// 工种列表
-const WORKER_TYPES = ['木工', '瓦工', '钢筋工', '架子工', '旗手', '小工', '起重工', '测量工', '焊工'];
 
 // ============================================================
 //  登录/登出
@@ -525,7 +479,7 @@ function handleLogin() {
 }
 
 function handleLogout() {
-    if (confirm('确定要退出登录吗？')) {
+    if (confirm('确定要退出吗？')) {
         currentUser = null;
         currentRole = null;
         document.getElementById('loginPage').style.display = 'block';
@@ -535,7 +489,6 @@ function handleLogout() {
 }
 
 function updatePermissions() {
-    // 查看者只能查看
     if (currentRole === 'viewer') {
         document.querySelectorAll('.tab-btn').forEach(btn => {
             if (btn.textContent.includes('录入') || btn.textContent.includes('出勤')) {
@@ -555,9 +508,7 @@ function initApp() {
     document.getElementById('overviewDate').value = today;
     document.getElementById('verifyDate').value = today;
     
-    // 初始化工作字典联动
     onCategoryChange();
-    
     loadPending();
     loadAttendance();
     loadOverview();
@@ -608,8 +559,6 @@ function onSubItemChange() {
 //  待提交管理
 // ============================================================
 function addToPending() {
-    const isNonRevenue = document.getElementById('entryCategory').value === '无收入项';
-    
     const record = {
         Date: document.getElementById('entryDate').value,
         Area: document.getElementById('entryArea').value,
@@ -635,9 +584,9 @@ function addToPending() {
     
     pendingItems.push(record);
     renderPending();
+    savePending();
     showToast('✅ 已添加到待提交列表');
     
-    // 清空输入
     document.getElementById('entryTag').value = '';
     document.getElementById('entryQty').value = '0';
     document.getElementById('entryPipe').value = '0';
@@ -677,6 +626,7 @@ function addNoWork() {
     
     pendingItems.push(record);
     renderPending();
+    savePending();
     showToast('✅ 已标记 ' + area + ' 今日无作业');
 }
 
@@ -709,18 +659,23 @@ function renderPending() {
 function removePending(index) {
     pendingItems.splice(index, 1);
     renderPending();
+    savePending();
 }
 
 function clearPending() {
     if (confirm('确定清空所有待提交吗？')) {
         pendingItems = [];
         renderPending();
+        savePending();
         showToast('🗑️ 已清空待提交列表');
     }
 }
 
+function savePending() {
+    localStorage.setItem('pending_items', JSON.stringify(pendingItems));
+}
+
 function loadPending() {
-    // 从localStorage加载
     const saved = localStorage.getItem('pending_items');
     if (saved) {
         try {
@@ -732,43 +687,22 @@ function loadPending() {
     }
 }
 
-function savePending() {
-    localStorage.setItem('pending_items', JSON.stringify(pendingItems));
-}
-
 function submitAll() {
     if (pendingItems.length === 0) {
         showToast('❌ 没有待提交的记录');
         return;
     }
-    if (!confirm(`提交 ${pendingItems.length} 条记录到云端？`)) return;
+    if (!confirm(`提交 ${pendingItems.length} 条记录？`)) return;
     
-    showLoading(true);
-    try {
-        // 保存到localStorage备份
-        let allData = JSON.parse(localStorage.getItem('daily_reports') || '[]');
-        allData = allData.concat(pendingItems);
-        localStorage.setItem('daily_reports', JSON.stringify(allData));
-        
-        // 同步到Supabase
-        supabase.from('daily_reports').insert(pendingItems).then(result => {
-            if (result.error) {
-                console.warn('云端同步失败:', result.error);
-                showToast('⚠️ 数据已保存到本地，云端同步失败');
-            } else {
-                showToast('🎉 成功提交 ' + pendingItems.length + ' 条记录到云端！');
-            }
-        });
-        
-        pendingItems = [];
-        renderPending();
-        savePending();
-        loadOverview();
-        showToast('✅ 提交成功！');
-    } catch(e) {
-        showToast('❌ 提交失败：' + e.message);
-    }
-    showLoading(false);
+    let allData = JSON.parse(localStorage.getItem('daily_reports') || '[]');
+    allData = allData.concat(pendingItems);
+    localStorage.setItem('daily_reports', JSON.stringify(allData));
+    
+    pendingItems = [];
+    renderPending();
+    savePending();
+    loadOverview();
+    showToast(`🎉 成功提交 ${allData.length} 条记录！`);
 }
 
 // ============================================================
@@ -806,7 +740,6 @@ function renderAttendance(data) {
     html += '</tbody></table>';
     container.innerHTML = html;
     
-    // 自动计算缺勤
     document.querySelectorAll('.att-input').forEach(inp => {
         inp.addEventListener('input', function() {
             const type = this.dataset.type;
@@ -875,22 +808,10 @@ function saveAttendance() {
         });
     });
     
-    // 保存到localStorage
     let allData = JSON.parse(localStorage.getItem('attendance_data') || '[]');
     allData = allData.filter(d => !(d.Date === date && d.Team === team));
     allData = allData.concat(records);
     localStorage.setItem('attendance_data', JSON.stringify(allData));
-    
-    // 同步到Supabase
-    supabase.from('attendance').delete().eq('date', date).eq('team', team).then(() => {
-        supabase.from('attendance').insert(records.map(r => ({
-            date: r.Date, team: r.Team, worker_type: r["Worker Type"],
-            total: r.Total, present: r.Present, absent: r.Absent,
-            foreign_workers: r.Foreign, remark: r.Remark, reported_by: r["Reported By"]
-        }))).then(result => {
-            if (result.error) console.warn('考勤云端同步失败:', result.error);
-        });
-    });
     
     showToast('✅ 考勤保存成功！');
     loadAttendance();
@@ -904,7 +825,6 @@ function loadOverview() {
     const allData = JSON.parse(localStorage.getItem('daily_reports') || '[]');
     const filtered = date ? allData.filter(d => d.Date === date) : allData;
     
-    // 区域状态
     const areas = ['110', '210', '220', '240', '320', '330', '400', '800', 'precast yard 1', 'precast yard 2'];
     const submittedAreas = new Set(filtered.map(d => d.Area));
     const statusHtml = areas.map(area => {
@@ -915,7 +835,6 @@ function loadOverview() {
     }).join('');
     document.getElementById('areaStatus').innerHTML = statusHtml;
     
-    // 表格
     const table = document.getElementById('overviewTable');
     if (filtered.length === 0) {
         table.innerHTML = '<p style="color:#999;padding:20px;">该日期暂无数据</p>';
@@ -930,7 +849,6 @@ function loadOverview() {
         table.innerHTML = html;
     }
     
-    // 全局数据
     const allTable = document.getElementById('allDataTable');
     if (allData.length === 0) {
         allTable.innerHTML = '<p style="color:#999;padding:20px;">暂无数据</p>';
@@ -1009,7 +927,7 @@ function loadVerification() {
 }
 
 // ============================================================
-//  系统设置 - 用户管理
+//  用户管理
 // ============================================================
 function loadUserList() {
     const container = document.getElementById('userList');
@@ -1048,7 +966,7 @@ function addUser() {
 // ============================================================
 //  危险操作
 // ============================================================
-function exportAllData() {
+function exportBackup() {
     const data = {
         daily_reports: JSON.parse(localStorage.getItem('daily_reports') || '[]'),
         attendance_data: JSON.parse(localStorage.getItem('attendance_data') || '[]'),
@@ -1062,7 +980,7 @@ function exportAllData() {
     showToast('💾 备份成功！');
 }
 
-function clearAllData() {
+function clearZeroData() {
     if (!confirm('⚠️ 确定要清理零数据记录吗？')) return;
     let data = JSON.parse(localStorage.getItem('daily_reports') || '[]');
     const originalCount = data.length;
@@ -1126,7 +1044,7 @@ function showToast(msg) {
 }
 
 // ============================================================
-//  自动保存待提交
+//  自动保存
 // ============================================================
 setInterval(() => {
     savePending();
