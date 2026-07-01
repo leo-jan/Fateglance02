@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>施工日报系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        .header { background: white; padding: 20px 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .header h1 { color: #1a237e; font-size: 24px; }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-info span { font-weight: 500; color: #1a237e; }
+        .btn-logout { padding: 8px 20px; border: 1px solid #e53935; background: white; color: #e53935; border-radius: 6px; cursor: pointer; }
+        .btn-logout:hover { background: #e53935; color: white; }
+        .sync-status { font-size: 12px; padding: 2px 10px; border-radius: 12px; }
+        .sync-status.ok { background: #e8f5e9; color: #2e7d32; }
+        .sync-status.syncing { background: #fff3e0; color: #e65100; }
+        .sync-status.error { background: #ffebee; color: #c62828; }
+        
+        .tabs { display: flex; gap: 5px; margin-bottom: 20px; background: white; padding: 5px; border-radius: 10px; flex-wrap: wrap; }
+        .tab-btn { padding: 12px 24px; border: none; background: transparent; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 15px; transition: all 0.3s; }
+        .tab-btn:hover { background: #f0f7ff; }
+        .tab-btn.active { background: #4a90d9; color: white; }
+        .tab-content { display: none; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .tab-content.active { display: block; }
+        
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin: 15px 0; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-weight: 500; font-size: 13px; color: #555; }
+        .form-group input, .form-group select { padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .form-group input:focus, .form-group select:focus { border-color: #4a90d9; outline: none; }
+        
+        .btn { padding: 10px 24px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: #4a90d9; color: white; }
+        .btn-primary:hover { background: #357abd; }
+        .btn-success { background: #4caf50; color: white; }
+        .btn-danger { background: #e53935; color: white; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        .btn-secondary:hover { background: #d0d0d0; }
+        
+        .table-container { overflow-x: auto; max-height: 400px; overflow-y: auto; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        table thead { position: sticky; top: 0; z-index: 10; }
+        table th { background: #4a90d9; color: white; padding: 10px 14px; text-align: left; }
+        table td { padding: 8px 14px; border-bottom: 1px solid #e8edf4; }
+        table tbody tr:hover td { background-color: #f0f7ff; }
+        
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
+        .stat-card { background: white; padding: 15px 20px; border-radius: 8px; border-left: 4px solid #4a90d9; }
+        .stat-number { font-size: 28px; font-weight: 700; color: #1a237e; }
+        .stat-label { font-size: 13px; color: #666; margin-top: 4px; }
+        
+        .pending-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid #f0f0f0; }
+        .pending-item:hover { background: #f8faff; }
+        
+        .login-box { max-width: 420px; margin: 80px auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+        .login-box h2 { text-align: center; color: #1a237e; margin-bottom: 5px; font-size: 28px; }
+        .login-box .subtitle { text-align: center; color: #666; font-size: 14px; margin-bottom: 30px; }
+        .login-box input { width: 100%; padding: 12px 16px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .login-box input:focus { border-color: #4a90d9; outline: none; }
+        .login-box .btn { width: 100%; padding: 12px; font-size: 16px; margin-top: 10px; }
+        .login-message { text-align: center; margin-top: 10px; font-size: 14px; min-height: 24px; }
+        
+        .loading { display: none; text-align: center; padding: 20px; }
+        .loading.show { display: block; }
+        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #4a90d9; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; background: #323232; color: white; border-radius: 8px; z-index: 9999; animation: fadeIn 0.3s; max-width: 400px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .att-input { width: 60px; padding: 5px 8px; border: 1px solid #ddd; border-radius: 4px; text-align: center; }
+        .att-input:focus { border-color: #4a90d9; outline: none; }
+        
+        .cloud-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            .tabs { flex-wrap: wrap; }
+            .tab-btn { flex: 1; text-align: center; padding: 10px; font-size: 13px; }
+            .header { flex-direction: column; align-items: stretch; text-align: center; }
+            .user-info { justify-content: center; }
+            .login-box { margin: 40px 20px; padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== 登录界面 ===== -->
+<div id="loginPage">
+    <div class="login-box">
+        <h2>🏗️ 施工日报系统</h2>
+        <p class="subtitle">Marsa LNG Project · Civil Department</p>
+        <p style="text-align:center;font-size:12px;color:#4caf50;margin-bottom:10px;">☁️ 云端自动同步 · 数据永不丢失</p>
+        <input type="text" id="loginUsername" placeholder="用户名" value="admin">
+        <input type="password" id="loginPassword" placeholder="密码" value="142857jj">
+        <button class="btn btn-primary" onclick="handleLogin()">🔑 登录</button>
+        <div id="loginMessage" class="login-message"></div>
+        <div style="margin-top:15px;font-size:12px;color:#999;text-align:center;">
+            <p>测试账号: admin / 142857jj</p>
+            <p style="font-size:11px;color:#bbb;">查看者: 95381694 / 1478</p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 主界面 ===== -->
+<div id="mainApp" style="display:none;">
+    <div class="container">
+        <div class="header">
+            <h1>🏗️ 施工日报填报系统 <span class="cloud-badge">☁️ 自动同步</span></h1>
+            <div class="user-info">
+                <span id="userDisplayName">👤 用户</span>
+                <span id="userRole" style="font-size:12px;color:#888;"></span>
+                <span id="syncStatus" class="sync-status ok">✅ 已同步</span>
+                <button class="btn-logout" onclick="handleLogout()">🚪 退出</button>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('entry')">📝 施工量录入</button>
+            <button class="tab-btn" onclick="switchTab('attendance')">👷 出勤日报</button>
+            <button class="tab-btn" onclick="switchTab('overview')">📊 数据总览</button>
+            <button class="tab-btn" onclick="switchTab('settings')">⚙️ 设置</button>
+        </div>
+        
+        <!-- Tab: 录入 -->
+        <div id="tab-entry" class="tab-content active">
+            <h2>📝 施工量录入</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>📅 日期</label>
+                    <input type="date" id="entryDate">
+                </div>
+                <div class="form-group">
+                    <label>📍 区域</label>
+                    <select id="entryArea">
+                        <option value="110">110</option>
+                        <option value="210">210</option>
+                        <option value="220">220</option>
+                        <option value="240">240</option>
+                        <option value="320">320</option>
+                        <option value="330">330</option>
+                        <option value="400">400</option>
+                        <option value="800">800</option>
+                        <option value="precast yard 1">precast yard 1</option>
+                        <option value="precast yard 2">precast yard 2</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>👷 班组</label>
+                    <select id="entryTeam">
+                        <option value="马玉奇(Ma Yuqi)">马玉奇</option>
+                        <option value="王建(Wang Jian)">王建</option>
+                        <option value="Kumar">Kumar</option>
+                        <option value="郭传海(Guo Chuanhai)">郭传海</option>
+                        <option value="曹桂龙(Cao Guilong)">曹桂龙</option>
+                        <option value="陈传军(Chen Chuanjun)">陈传军</option>
+                        <option value="王世杰(Wang Shijie)">王世杰</option>
+                        <option value="Sheharyar">Sheharyar</option>
+                        <option value="Anwar">Anwar</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🏷️ 位号</label>
+                    <input type="text" id="entryTag" placeholder="输入位号">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>🛠️ 工作内容</label>
+                    <input type="text" id="entryWork" placeholder="输入工作内容">
+                </div>
+                <div class="form-group">
+                    <label>📊 数量</label>
+                    <input type="number" id="entryQty" value="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>👷 人数</label>
+                    <input type="number" id="entryManpower" value="0">
+                </div>
+                <div class="form-group">
+                    <label>⏱️ 工时</label>
+                    <input type="number" id="entryManhours" value="0" step="0.5">
+                </div>
+                <div class="form-group">
+                    <label>🌍 外籍</label>
+                    <input type="number" id="entryForeign" value="0">
+                </div>
+                <div class="form-group">
+                    <label>📝 备注</label>
+                    <input type="text" id="entryRemark" placeholder="备注">
+                </div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="addToPending()">➕ 添加并自动同步</button>
+                <button class="btn btn-secondary" onclick="addNoWork()">🚫 今日无作业</button>
+            </div>
+            
+            <div id="pendingList" style="margin-top:30px;">
+                <h3>📋 待提交列表 (<span id="pendingCount">0</span> 项)</h3>
+                <div id="pendingItems"></div>
+                <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+                    <button class="btn btn-success" onclick="submitAll()">🚀 提交所有记录</button>
+                    <button class="btn btn-danger" onclick="clearPending()">🗑️ 清空列表</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: 出勤 -->
+        <div id="tab-attendance" class="tab-content">
+            <h2>👷 出勤日报</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>📅 日期</label>
+                    <input type="date" id="attDate">
+                </div>
+                <div class="form-group">
+                    <label>👷 班组</label>
+                    <select id="attTeam">
+                        <option value="马玉奇(Ma Yuqi)">马玉奇</option>
+                        <option value="王建(Wang Jian)">王建</option>
+                        <option value="Kumar">Kumar</option>
+                        <option value="郭传海(Guo Chuanhai)">郭传海</option>
+                        <option value="曹桂龙(Cao Guilong)">曹桂龙</option>
+                        <option value="陈传军(Chen Chuanjun)">陈传军</option>
+                        <option value="王世杰(Wang Shijie)">王世杰</option>
+                        <option value="Sheharyar">Sheharyar</option>
+                        <option value="Anwar">Anwar</option>
+                    </select>
+                </div>
+            </div>
+            <div id="attendanceTable"></div>
+            <button class="btn btn-primary" onclick="saveAttendance()">💾 保存考勤</button>
+        </div>
+        
+        <!-- Tab: 总览 -->
+        <div id="tab-overview" class="tab-content">
+            <h2>📊 数据总览</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>📅 筛选日期</label>
+                    <input type="date" id="overviewDate">
+                </div>
+                <div class="form-group" style="justify-content:flex-end;">
+                    <button class="btn btn-secondary" onclick="loadOverview()">🔄 刷新</button>
+                    <button class="btn btn-secondary" onclick="exportData()" style="margin-left:10px;">📥 导出CSV</button>
+                </div>
+            </div>
+            <div id="overviewStats" class="stats"></div>
+            <div id="overviewTable" class="table-container"></div>
+        </div>
+        
+        <!-- Tab: 设置 -->
+        <div id="tab-settings" class="tab-content">
+            <h2>⚙️ 设置</h2>
+            <div style="display:flex; gap:15px; flex-wrap:wrap; margin-top:20px;">
+                <button class="btn btn-secondary" onclick="exportAllData()">📥 导出JSON备份</button>
+                <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📤 导入JSON</button>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+                <button class="btn btn-danger" onclick="clearAllData()">🗑️ 清除本地数据</button>
+                <button class="btn btn-danger" onclick="clearAllCloudData()">🗑️ 清除云端数据</button>
+            </div>
+            <div id="dataInfo" style="margin-top:20px;padding:15px;background:#f5f5f5;border-radius:8px;">
+                <p><strong>📊 数据统计</strong></p>
+                <p id="dataStats">加载中...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 加载动画 -->
+<div id="loadingOverlay" class="loading">
+    <div class="spinner"></div>
+    <p style="margin-top:10px;color:#666;">加载中...</p>
+</div>
+
+<script>
+// ============================================================
+//  ★★★ 您的 Supabase 配置 ★★★
+// ============================================================
+const SUPABASE_URL = 'https://zthosewfpsgtaqhtvcyt.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0aG9zZXdmcHNndGFxaHR2Y3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTA3MTksImV4cCI6MjA5ODQyNjcxOX0.Q9E4rDoZtFPGsjoJOUyhHmwNA0MGhzPOl5aymZ1Xjgo';
+// ============================================================
+
+const supabase = supabase_js.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ===== 用户数据库 =====
+const USERS = {
+    'admin': { password: '142857jj', role: 'admin', display_name: '管理员' },
+    '95381694': { password: '1478', role: 'viewer', display_name: '汪行虎' },
+    '96687409': { password: '3318', role: 'viewer', display_name: '魏邦俭' },
+    '96923491': { password: '0610', role: 'viewer', display_name: '沈耀成' },
+    '96685719': { password: '2219', role: 'entry', display_name: '刘建' },
+    '95381480': { password: '6012', role: 'entry', display_name: '董世钟' },
+    '96687421': { password: '8315', role: 'entry', display_name: '吕奇' },
+    '95381531': { password: '6738', role: 'entry', display_name: '伍凡' },
+    '96687380': { password: '8773', role: 'entry', display_name: '项武' },
+    '96685730': { password: '1510', role: 'entry', display_name: '傅俊森' },
+    '96687419': { password: '1819', role: 'entry', display_name: '王世杰' },
+    '96687418': { password: '4738', role: 'entry', display_name: '孙永杰' },
+    '83184896': { password: '4896', role: 'entry', display_name: 'MOAHMMED AMIR HOSSAIN' },
+    '114482299': { password: '2299', role: 'entry', display_name: 'SHSHZAD ASHRAF' },
+    '117873437': { password: '3437', role: 'entry', display_name: 'MUHAMMAD ADIL' },
+    '118254139': { password: '4139', role: 'entry', display_name: 'MOHAMMAD AFZAL' },
+    '118947857': { password: '7857', role: 'entry', display_name: 'ABDUL ALEEM HAFIZ ABDUL LATIF' },
+    '136996706': { password: '6706', role: 'entry', display_name: 'JOHN CHRISTIAN' },
+    '138242877': { password: '2877', role: 'entry', display_name: 'SHEHARYAR MUHAMMAD SALEH' },
+    '141989627': { password: '9627', role: 'entry', display_name: 'MOHAMMED ABDUL NOMAN ABDUL MAJEED' },
+    '76733590': { password: '391X', role: 'entry', display_name: '王建' },
+    '76725659': { password: '3637', role: 'entry', display_name: '李红帅' },
+    '76747460': { password: '3658', role: 'entry', display_name: '李濮龙' },
+    '76722199': { password: '3616', role: 'entry', display_name: '王玉广' },
+    '96687298': { password: '5857', role: 'entry', display_name: '董凤培' },
+    '96687309': { password: '2811', role: 'entry', display_name: '马玉奇' },
+    '74132297': { password: '1514', role: 'entry', display_name: '韩传勃' }
+};
+
+let currentUser = null;
+let currentRole = null;
+let pendingItems = [];
+let isSyncing = false;
+
+// ===== 登录 =====
+function handleLogin() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const msg = document.getElementById('loginMessage');
+    
+    if (!username || !password) {
+        msg.textContent = '❌ 请输入用户名和密码';
+        msg.style.color = 'red';
+        return;
+    }
+    
+    const user = USERS[username];
+    if (!user) {
+        msg.textContent = '❌ 用户不存在';
+        msg.style.color = 'red';
+        return;
+    }
+    
+    if (user.password !== password) {
+        msg.textContent = '❌ 密码错误';
+        msg.style.color = 'red';
+        return;
+    }
+    
+    currentUser = username;
+    currentRole = user.role;
+    
+    document.getElementById('userDisplayName').textContent = '👤 ' + user.display_name;
+    document.getElementById('userRole').textContent = '🔑 ' + user.role;
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    
+    updatePermissions();
+    initApp();
+    showToast('🎉 欢迎回来，' + user.display_name + '！');
+}
+
+function handleLogout() {
+    if (confirm('确定要退出登录吗？')) {
+        currentUser = null;
+        currentRole = null;
+        document.getElementById('loginPage').style.display = 'block';
+        document.getElementById('mainApp').style.display = 'none';
+        pendingItems = [];
+    }
+}
+
+function updatePermissions() {
+    if (currentRole === 'viewer') {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            if (btn.textContent.includes('录入') || btn.textContent.includes('出勤')) {
+                btn.style.display = 'none';
+            }
+        });
+    }
+}
+
+// ===== 数据存储 =====
+const STORAGE_KEY = 'daily_report_data';
+const ATTENDANCE_KEY = 'daily_attendance_data';
+const PENDING_KEY = 'pending_items_data';
+
+function setSyncStatus(status, msg) {
+    const el = document.getElementById('syncStatus');
+    el.className = 'sync-status';
+    if (status === 'ok') {
+        el.className = 'sync-status ok';
+        el.textContent = msg || '✅ 已同步';
+    } else if (status === 'syncing') {
+        el.className = 'sync-status syncing';
+        el.textContent = '⏳ 同步中...';
+    } else if (status === 'error') {
+        el.className = 'sync-status error';
+        el.textContent = '❌ ' + msg || '同步失败';
+    }
+}
+
+// ===== 自动同步到云端 =====
+async function autoSyncToCloud(record) {
+    if (isSyncing) return;
+    isSyncing = true;
+    setSyncStatus('syncing');
+    
+    try {
+        // 保存到本地
+        let localData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        localData.push(record);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(localData));
+        
+        // 同步到云端
+        const { error } = await supabase.from('daily_reports').insert([record]);
+        
+        if (error) {
+            console.warn('云端同步失败，数据已保存到本地:', error);
+            setSyncStatus('error', '本地已保存');
+            showToast('⚠️ 数据已保存到本地，云端同步失败');
+        } else {
+            setSyncStatus('ok');
+            showToast('✅ 数据已保存并同步到云端');
+        }
+    } catch (e) {
+        console.error('同步错误:', e);
+        setSyncStatus('error', '网络错误');
+    }
+    
+    isSyncing = false;
+}
+
+// ===== 自动同步考勤到云端 =====
+async function autoSyncAttendanceToCloud(records) {
+    if (isSyncing) return;
+    isSyncing = true;
+    setSyncStatus('syncing');
+    
+    try {
+        // 保存到本地
+        let localData = JSON.parse(localStorage.getItem(ATTENDANCE_KEY) || '[]');
+        const date = records[0]?.date;
+        const team = records[0]?.team;
+        localData = localData.filter(d => !(d.date === date && d.team === team));
+        localData = localData.concat(records);
+        localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(localData));
+        
+        // 同步到云端
+        await supabase.from('attendance').delete().eq('date', date).eq('team', team);
+        const { error } = await supabase.from('attendance').insert(records);
+        
+        if (error) {
+            console.warn('考勤云端同步失败:', error);
+            setSyncStatus('error', '本地已保存');
+            showToast('⚠️ 考勤已保存到本地，云端同步失败');
+        } else {
+            setSyncStatus('ok');
+            showToast('✅ 考勤已保存并同步到云端');
+        }
+    } catch (e) {
+        console.error('同步错误:', e);
+        setSyncStatus('error', '网络错误');
+    }
+    
+    isSyncing = false;
+}
+
+// ===== 从云端加载数据 =====
+async function loadFromCloud() {
+    setSyncStatus('syncing', '⏳ 加载中...');
+    
+    try {
+        // 加载施工数据
+        const { data: reports, error: rError } = await supabase
+            .from('daily_reports')
+            .select('*')
+            .order('created_at', { ascending: false });
+        
+        if (!rError && reports && reports.length > 0) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+        }
+        
+        // 加载考勤数据
+        const { data: attendance, error: aError } = await supabase
+            .from('attendance')
+            .select('*')
+            .order('created_at', { ascending: false });
+        
+        if (!aError && attendance && attendance.length > 0) {
+            localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(attendance));
+        }
+        
+        setSyncStatus('ok');
+        return true;
+    } catch (e) {
+        console.error('加载云端数据失败:', e);
+        setSyncStatus('error', '加载失败');
+        return false;
+    }
+}
+
+// ===== 初始化 =====
+async function initApp() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('entryDate').value = today;
+    document.getElementById('attDate').value = today;
+    document.getElementById('overviewDate').value = today;
+    
+    // 从云端加载数据
+    await loadFromCloud();
+    
+    loadPending();
+    loadAttendance();
+    loadOverview();
+    updateDataInfo();
+    
+    // 每60秒自动同步一次
+    setInterval(async () => {
+        if (pendingItems.length > 0) {
+            await syncPendingToCloud();
+        }
+    }, 60000);
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add('active');
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    if (tab === 'overview') loadOverview();
+    if (tab === 'attendance') loadAttendance();
+    if (tab === 'settings') updateDataInfo();
+}
+
+// ===== 待提交管理（自动同步） =====
+function addToPending() {
+    const record = {
+        date: document.getElementById('entryDate').value,
+        area: document.getElementById('entryArea').value,
+        team: document.getElementById('entryTeam').value,
+        tag: document.getElementById('entryTag').value || 'N/A',
+        work: document.getElementById('entryWork').value || '未填写',
+        qty: parseFloat(document.getElementById('entryQty').value) || 0,
+        manpower: parseInt(document.getElementById('entryManpower').value) || 0,
+        manhours: parseFloat(document.getElementById('entryManhours').value) || 0,
+        foreign_workers: parseInt(document.getElementById('entryForeign').value) || 0,
+        remark: document.getElementById('entryRemark').value || '',
+        created_by: currentUser || 'unknown',
+        created_at: new Date().toISOString()
+    };
+    
+    if (!record.date || !record.area || !record.team) {
+        showToast('❌ 请填写日期、区域和班组');
+        return;
+    }
+    
+    pendingItems.push(record);
+    renderPending();
+    savePending();
+    
+    // 自动同步到云端
+    autoSyncToCloud(record);
+    
+    // 清空输入
+    document.getElementById('entryTag').value = '';
+    document.getElementById('entryWork').value = '';
+    document.getElementById('entryQty').value = '0';
+    document.getElementById('entryManpower').value = '0';
+    document.getElementById('entryManhours').value = '0';
+    document.getElementById('entryForeign').value = '0';
+    document.getElementById('entryRemark').value = '';
+}
+
+function addNoWork() {
+    const record = {
+        date: document.getElementById('entryDate').value,
+        area: document.getElementById('entryArea').value,
+        team: document.getElementById('entryTeam').value,
+        tag: 'N/A',
+        work: '无作业',
+        qty: 0,
+        manpower: 0,
+        manhours: 0,
+        foreign_workers: 0,
+        remark: '无作业',
+        created_by: currentUser || 'unknown',
+        created_at: new Date().toISOString()
+    };
+    
+    if (!record.date || !record.area || !record.team) {
+        showToast('❌ 请填写日期、区域和班组');
+        return;
+    }
+    
+    pendingItems.push(record);
+    renderPending();
+    savePending();
+    autoSyncToCloud(record);
+    showToast('✅ 已标记无作业');
+}
+
+function renderPending() {
+    const container = document.getElementById('pendingItems');
+    const count = document.getElementById('pendingCount');
+    count.textContent = pendingItems.length;
+    
+    if (pendingItems.length === 0) {
+        container.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">暂无待提交记录</p>';
+        return;
+    }
+    
+    let html = '';
+    pendingItems.forEach((item, index) => {
+        html += `<div class="pending-item">
+            <div>
+                <strong>${item.date}</strong> | ${item.area} | ${item.team} | ${item.work}
+                <span style="color:#999;font-size:12px;margin-left:10px;">
+                    ${item.qty > 0 ? '数量:' + item.qty : ''}
+                    ${item.manpower > 0 ? '人数:' + item.manpower : ''}
+                </span>
+            </div>
+            <button class="btn btn-danger" style="padding:4px 12px;font-size:12px;" onclick="removePending(${index})">删除</button>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+function removePending(index) {
+    pendingItems.splice(index, 1);
+    renderPending();
+    savePending();
+}
+
+function clearPending() {
+    if (confirm('确定清空所有待提交吗？')) {
+        pendingItems = [];
+        renderPending();
+        savePending();
+        showToast('🗑️ 已清空');
+    }
+}
+
+function savePending() {
+    localStorage.setItem(PENDING_KEY, JSON.stringify(pendingItems));
+}
+
+function loadPending() {
+    const saved = localStorage.getItem(PENDING_KEY);
+    if (saved) {
+        try {
+            pendingItems = JSON.parse(saved);
+            renderPending();
+        } catch(e) {
+            pendingItems = [];
+        }
+    }
+}
+
+async function syncPendingToCloud() {
+    if (pendingItems.length === 0) return;
+    
+    try {
+        for (const record of pendingItems) {
+            const { error } = await supabase.from('daily_reports').insert([record]);
+            if (error) console.warn('同步失败:', error);
+        }
+        pendingItems = [];
+        renderPending();
+        savePending();
+        setSyncStatus('ok');
+    } catch (e) {
+        console.error('同步待提交失败:', e);
+    }
+}
+
+function submitAll() {
+    if (pendingItems.length === 0) {
+        showToast('❌ 没有待提交的记录');
+        return;
+    }
+    if (!confirm(`提交 ${pendingItems.length} 条记录？`)) return;
+    
+    // 批量同步到云端
+    for (const record of pendingItems) {
+        autoSyncToCloud(record);
+    }
+    
+    pendingItems = [];
+    renderPending();
+    savePending();
+    loadOverview();
+    updateDataInfo();
+    showToast(`🎉 成功提交并同步！`);
+}
+
+// ===== 考勤管理（自动同步） =====
+function loadAttendance() {
+    const date = document.getElementById('attDate').value;
+    const team = document.getElementById('attTeam').value;
+    if (!date) return;
+    
+    const allData = JSON.parse(localStorage.getItem(ATTENDANCE_KEY) || '[]');
+    const filtered = allData.filter(d => d.date === date && d.team === team);
+    renderAttendance(filtered);
+}
+
+function renderAttendance(data) {
+    const container = document.getElementById('attendanceTable');
+    const types = ['木工', '瓦工', '钢筋工', '架子工', '旗手', '小工', '起重工', '测量工', '焊工'];
+    const map = {};
+    data.forEach(d => map[d.worker_type] = d);
+    
+    let html = '<table><thead><tr><th>工种</th><th>应到</th><th>实到</th><th>缺勤</th><th>外籍</th><th>备注</th></tr></thead><tbody>';
+    types.forEach(type => {
+        const row = map[type] || { total: 0, present: 0, foreign_workers: 0, remark: '' };
+        const absent = (row.total || 0) - (row.present || 0);
+        html += `<tr>
+            <td><strong>${type}</strong></td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="total" value="${row.total || 0}" min="0"></td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="present" value="${row.present || 0}" min="0"></td>
+            <td style="color:${absent > 0 ? '#c62828' : '#4caf50'};font-weight:bold;">${absent}</td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="foreign_workers" value="${row.foreign_workers || 0}" min="0"></td>
+            <td><input type="text" class="att-input" data-type="${type}" data-field="remark" value="${row.remark || ''}" placeholder="备注"></td>
+        </tr>`;
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+    
+    document.querySelectorAll('.att-input[data-field="total"], .att-input[data-field="present"]').forEach(inp => {
+        inp.addEventListener('input', function() {
+            const type = this.dataset.type;
+            const total = parseInt(document.querySelector(`.att-input[data-type="${type}"][data-field="total"]`)?.value) || 0;
+            const present = parseInt(document.querySelector(`.att-input[data-type="${type}"][data-field="present"]`)?.value) || 0;
+            const absent = total - present;
+            const row = this.closest('tr');
+            if (row) {
+                const cell = row.querySelector('td:nth-child(4)');
+                if (cell) {
+                    cell.textContent = absent;
+                    cell.style.color = absent > 0 ? '#c62828' : '#4caf50';
+                }
+            }
+        });
+    });
+}
+
+function saveAttendance() {
+    const date = document.getElementById('attDate').value;
+    const team = document.getElementById('attTeam').value;
+    if (!date || !team) { showToast('❌ 请选择日期和班组'); return; }
+    
+    const records = [];
+    document.querySelectorAll('.att-input[data-field="total"]').forEach(inp => {
+        const type = inp.dataset.type;
+        const total = parseInt(inp.value) || 0;
+        const present = parseInt(document.querySelector(`.att-input[data-type="${type}"][data-field="present"]`)?.value) || 0;
+        const foreign = parseInt(document.querySelector(`.att-input[data-type="${type}"][data-field="foreign_workers"]`)?.value) || 0;
+        const remark = document.querySelector(`.att-input[data-type="${type}"][data-field="remark"]`)?.value || '';
+        records.push({
+            date, team, worker_type: type,
+            total, present, absent: total - present,
+            foreign_workers: foreign,
+            remark,
+            created_by: currentUser || 'unknown'
+        });
+    });
+    
+    // 自动同步考勤
+    autoSyncAttendanceToCloud(records);
+    loadAttendance();
+}
+
+// ===== 总览 =====
+function loadOverview() {
+    const date = document.getElementById('overviewDate').value;
+    const allData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    const filtered = date ? allData.filter(d => d.date === date) : allData;
+    renderOverview(filtered);
+}
+
+function renderOverview(data) {
+    const stats = document.getElementById('overviewStats');
+    const totalManpower = data.reduce((s, d) => s + (d.manpower || 0), 0);
+    const totalManhours = data.reduce((s, d) => s + (d.manhours || 0), 0);
+    const areas = new Set(data.map(d => d.area));
+    stats.innerHTML = `
+        <div class="stat-card"><div class="stat-number">${data.length}</div><div class="stat-label">📊 总记录数</div></div>
+        <div class="stat-card"><div class="stat-number">${areas.size}</div><div class="stat-label">📍 区域数</div></div>
+        <div class="stat-card"><div class="stat-number">${totalManpower}</div><div class="stat-label">👷 总人数</div></div>
+        <div class="stat-card"><div class="stat-number">${totalManhours.toFixed(1)}</div><div class="stat-label">⏱️ 总工时</div></div>
+    `;
+    
+    const table = document.getElementById('overviewTable');
+    if (data.length === 0) {
+        table.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">暂无数据</p>';
+        return;
+    }
+    let html = '<table><thead><tr><th>日期</th><th>区域</th><th>班组</th><th>工作</th><th>数量</th><th>人数</th><th>工时</th></tr></thead><tbody>';
+    data.slice(0, 100).forEach(d => {
+        html += `<tr><td>${d.date}</td><td>${d.area}</td><td>${d.team}</td><td>${(d.work || '').substring(0, 30)}</td>
+            <td>${d.qty || 0}</td><td>${d.manpower || 0}</td><td>${d.manhours || 0}</td></tr>`;
+    });
+    html += '</tbody></table>';
+    if (data.length > 100) html += `<p style="color:#999;margin-top:10px;">显示前100条，共 ${data.length} 条</p>`;
+    table.innerHTML = html;
+}
+
+// ===== 导出/导入 =====
+function exportData() {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    if (data.length === 0) { showToast('❌ 没有数据可导出'); return; }
+    
+    const headers = ['date', 'area', 'team', 'work', 'qty', 'manpower', 'manhours', 'foreign_workers', 'remark'];
+    let csv = headers.join(',') + '\n';
+    data.forEach(row => {
+        csv += headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(',') + '\n';
+    });
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `施工日报_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    showToast('📥 导出成功！');
+}
+
+function exportAllData() {
+    const data = {
+        daily_reports: JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'),
+        attendance: JSON.parse(localStorage.getItem(ATTENDANCE_KEY) || '[]'),
+        pending: pendingItems
+    };
+    if (data.daily_reports.length === 0 && data.attendance.length === 0 && data.pending.length === 0) {
+        showToast('❌ 没有数据可导出');
+        return;
+    }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `施工日报_备份_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    showToast('📥 导出成功！');
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.daily_reports) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data.daily_reports));
+            }
+            if (data.attendance) {
+                localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(data.attendance));
+            }
+            if (data.pending) {
+                pendingItems = data.pending;
+                renderPending();
+                savePending();
+            }
+            showToast('✅ 导入成功！');
+            loadOverview();
+            loadAttendance();
+            updateDataInfo();
+        } catch(err) {
+            showToast('❌ 导入失败：' + err.message);
+        }
+    };
+    reader.readAsText(file);
+    document.getElementById('importFile').value = '';
+}
+
+function clearAllData() {
+    if (!confirm('⚠️ 确定要清除所有本地数据吗？')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(ATTENDANCE_KEY);
+    localStorage.removeItem(PENDING_KEY);
+    pendingItems = [];
+    renderPending();
+    loadOverview();
+    loadAttendance();
+    updateDataInfo();
+    showToast('🗑️ 所有本地数据已清除');
+}
+
+async function clearAllCloudData() {
+    if (!confirm('⚠️ 确定要清除所有云端数据吗？此操作不可恢复！')) return;
+    if (!confirm('再次确认：真的要删除所有云端数据吗？')) return;
+    
+    showLoading(true);
+    try {
+        await supabase.from('daily_reports').delete().neq('id', 0);
+        await supabase.from('attendance').delete().neq('id', 0);
+        showToast('🗑️ 所有云端数据已清除');
+        await loadFromCloud();
+        loadOverview();
+        loadAttendance();
+        updateDataInfo();
+    } catch(e) {
+        showToast('❌ 清除云端数据失败：' + e.message);
+    }
+    showLoading(false);
+}
+
+function updateDataInfo() {
+    const dailyData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    const attData = JSON.parse(localStorage.getItem(ATTENDANCE_KEY) || '[]');
+    document.getElementById('dataStats').innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px;">
+            <div style="background:white;padding:10px;border-radius:6px;text-align:center;">
+                <div style="font-size:24px;font-weight:bold;color:#1a237e;">${dailyData.length}</div>
+                <div style="font-size:12px;color:#666;">施工记录</div>
+            </div>
+            <div style="background:white;padding:10px;border-radius:6px;text-align:center;">
+                <div style="font-size:24px;font-weight:bold;color:#1a237e;">${attData.length}</div>
+                <div style="font-size:12px;color:#666;">考勤记录</div>
+            </div>
+            <div style="background:white;padding:10px;border-radius:6px;text-align:center;">
+                <div style="font-size:24px;font-weight:bold;color:#1a237e;">${pendingItems.length}</div>
+                <div style="font-size:12px;color:#666;">待提交</div>
+            </div>
+            <div style="background:white;padding:10px;border-radius:6px;text-align:center;">
+                <div style="font-size:24px;font-weight:bold;color:#1a237e;">${dailyData.reduce((s,d) => s + (d.manhours || 0), 0).toFixed(1)}</div>
+                <div style="font-size:12px;color:#666;">总工时</div>
+            </div>
+        </div>
+    `;
+}
+
+// ===== 工具函数 =====
+function showLoading(show) {
+    document.getElementById('loadingOverlay').classList.toggle('show', show);
+}
+
+function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.5s';
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
+}
+
+// ===== 启动 =====
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('attDate').addEventListener('change', loadAttendance);
+    document.getElementById('attTeam').addEventListener('change', loadAttendance);
+    document.getElementById('overviewDate').addEventListener('change', loadOverview);
+});
+</script>
+</body>
+</html>
