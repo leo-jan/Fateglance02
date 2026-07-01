@@ -863,9 +863,35 @@ let categoryMap = {};
 
 async function loadCategoriesFromSupabase() {
     try {
-        const data = await supabaseQuery('work_dictionary', {
-            select: 'DISTINCT cat_zh, cat_en'
+        console.log('🔍 正在加载分类...');
+        const url = `${SUPABASE_URL}/rest/v1/work_dictionary?select=cat_zh,cat_en`;
+        console.log('请求URL:', url);
+        
+        const response = await fetch(url, {
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            }
         });
+        
+        console.log('响应状态:', response.status);
+        
+        if (!response.ok) {
+            const error = await response.text();
+            console.error('❌ 请求失败:', error);
+            showToast('❌ 加载字典失败: ' + error);
+            return [];
+        }
+        
+        const data = await response.json();
+        console.log('✅ 分类数据返回:', data);
+        
+        if (!data || data.length === 0) {
+            console.warn('⚠️ 分类数据为空');
+            showToast('⚠️ 字典表没有数据');
+            return [];
+        }
+        
         categoryMap = {};
         const zhCategories = [];
         const enCategories = [];
@@ -874,13 +900,16 @@ async function loadCategoriesFromSupabase() {
             zhCategories.push(item.cat_zh);
             enCategories.push(item.cat_en);
         });
-        // 存储到全局
         window.zhCategories = zhCategories;
         window.enCategories = enCategories;
         window.categoryMap = categoryMap;
+        
+        console.log('✅ 分类加载成功:', zhCategories);
+        showToast('✅ 字典加载成功，共 ' + zhCategories.length + ' 个分类');
         return data;
     } catch (error) {
-        console.error('加载分类失败:', error);
+        console.error('❌ 加载分类失败:', error);
+        showToast('❌ 加载字典数据失败: ' + error.message);
         return [];
     }
 }
