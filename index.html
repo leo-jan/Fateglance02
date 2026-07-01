@@ -217,14 +217,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label id="lblCategory">分部分项</label>
-                    <select id="entryCategory" onchange="onCategoryChange()">
-                        <option value="无收入项">无收入项</option>
-                        <option value="土石方工程">土石方工程</option>
-                        <option value="模板工程">模板工程</option>
-                        <option value="架子工程">架子工程</option>
-                        <option value="钢筋工程">钢筋工程</option>
-                        <option value="混凝土工程">混凝土工程</option>
-                    </select>
+                    <select id="entryCategory" onchange="onCategoryChange()"></select>
                 </div>
                 <div class="form-group">
                     <label id="lblSubItem">工作内容</label>
@@ -646,6 +639,8 @@ function setLang(lang) {
     document.querySelectorAll('.lang-toggle .lang-btn').forEach(b => b.classList.remove('active'));
     document.querySelector(`.lang-toggle .lang-btn:${lang === 'zh' ? 'first-child' : 'last-child'}`).classList.add('active');
     updateUI();
+    // 切换语言后重新加载分类下拉
+    onCategoryChange();
 }
 
 function setLoginLang(lang) {
@@ -856,6 +851,156 @@ let isAdmin = false;
 let loginLogs = [];
 
 // ============================================================
+//  分部分项 / 工作内容 中英文映射
+// ============================================================
+const CATEGORY_MAP = {
+    'zh': ['无收入项', '土石方工程', '模板工程', '架子工程', '钢筋工程', '混凝土工程'],
+    'en': ['Non-revenue Work', 'Earthwork', 'Formwork', 'Scaffolding', 'Rebar', 'Concrete Works']
+};
+
+// 注意：这里 value 存储中文，显示文字根据语言切换
+const SUBITEM_MAP = {
+    'zh': {
+        '无收入项': ['送水送饭倒运材料', '开会', '配合测量', '配合材料组', '配合降水', '旗手', '其他杂活'],
+        '土石方工程': ['人工挖土方（深度1.5m以内）', '人工挖桩间土', '人工回填（就地松填）', '人工回填（夯填）', '人工配合机械回填', '人工平整场地、清理铲平机挖余土、配合机械平整水稳层', '人工原土打夯', '人工运土（运距20米以内）', '砂垫层人工找平夯实', '级配砂石人工平整夯实', '铺碎石人工夯实', '截、破砼实心桩（桩径1000mm以内）', '人工破砼（有筋）', '人工破砼（无筋）'],
+        '模板工程': ['垫层模板', '道路模板', '基础模板', '结构模板', '结构（施工层无现浇板）模板'],
+        '架子工程': ['双排脚手架（高度≤6m）', '双排脚手架（高度≤12m）', '双排脚手架（高度≤18m）'],
+        '钢筋工程': ['水池底板及筏板基础', '水池壁板', '基础', '结构'],
+        '混凝土工程': ['汽车泵砼浇筑（基础）', '汽车泵砼浇筑高度50m内（结构）', '人工上料（二次倒运）手推车运砼浇捣', '道路砼（厚200mm）', '混凝土井', '地坪混凝土浇筑（厚50mm）', '地坪混凝土浇筑（厚100mm）', '地坪混凝土浇筑（厚150mm）', '地坪混凝土浇筑（厚200mm）']
+    },
+    'en': {
+        'Non-revenue Work': ['Water/food delivery & material handling', 'Meeting', 'Survey assistance', 'Material team assistance', 'Dewatering assistance', 'Flagman / Signalman', 'Other miscellaneous work'],
+        'Earthwork': ['Manual excavation of earth (depth ≤1.5m)', 'Manual excavation of soil between piles', 'Manual backfill – loose fill (in-place)', 'Manual backfill – compacted fill', 'Manual assistance for machine backfill', 'Manual site leveling, cleaning and leveling machine-excavated surplus soil, assisting machine leveling of water-stabilized layer', 'Manual compaction of natural soil', 'Manual earth transport (haul distance ≤20m)', 'Manual leveling and compaction of sand cushion layer', 'Manual leveling and compaction of graded sand and gravel', 'Manual compaction of crushed stone', 'Cutting/breaking solid concrete piles (pile diameter ≤1000mm)', 'Manual breaking of reinforced concrete', 'Manual breaking of plain concrete (unreinforced)'],
+        'Formwork': ['Lean concrete formwork', 'Road formwork', 'Foundation formwork', 'Structural formwork', 'Structural formwork (floor without cast-in-place slab)'],
+        'Scaffolding': ['Double-row scaffolding (height ≤6m)', 'Double-row scaffolding (height ≤12m)', 'Double-row scaffolding (height ≤18m)'],
+        'Rebar': ['Reservoir bottom slab and raft foundation', 'Reservoir wall / tank wall', 'Foundation', 'Structural'],
+        'Concrete Works': ['Concrete pouring via truck pump (foundation)', 'Concrete pouring via truck pump – structure, height ≤50m', 'Manual material feeding (secondary hauling) and handcart transport for concrete pouring', 'Road concrete (thickness 200mm)', 'Concrete manhole / well', 'Concrete Paving (thickness 50mm)', 'Concrete Paving (thickness 100mm)', 'Concrete Paving (thickness 150mm)', 'Concrete Paving (thickness 200mm)']
+    }
+};
+
+// 用于查询 code/unit 的工作字典（保持原有中文 key）
+const WORK_DICT = {
+    "无收入项": {
+        "送水送饭倒运材料": { code: "N/A", unit: "工时" },
+        "开会": { code: "N/A", unit: "工时" },
+        "配合测量": { code: "N/A", unit: "工时" },
+        "配合材料组": { code: "N/A", unit: "工时" },
+        "配合降水": { code: "N/A", unit: "工时" },
+        "旗手": { code: "N/A", unit: "工时" },
+        "其他杂活": { code: "N/A", unit: "工时" }
+    },
+    "土石方工程": {
+        "人工挖土方（深度1.5m以内）": { code: "1-1-001", unit: "m3" },
+        "人工挖桩间土": { code: "1-1-004", unit: "m3" },
+        "人工回填（就地松填）": { code: "1-1-005", unit: "m3" },
+        "人工回填（夯填）": { code: "1-1-006", unit: "m3" },
+        "人工配合机械回填": { code: "1-1-007", unit: "m3" },
+        "人工平整场地、清理铲平机挖余土、配合机械平整水稳层": { code: "1-1-009", unit: "m2" },
+        "人工原土打夯": { code: "1-1-010", unit: "m2" },
+        "人工运土（运距20米以内）": { code: "1-1-011", unit: "m3" },
+        "砂垫层人工找平夯实": { code: "1-1-013", unit: "m3" },
+        "级配砂石人工平整夯实": { code: "1-1-014", unit: "m3" },
+        "铺碎石人工夯实": { code: "1-1-015", unit: "m3" },
+        "截、破砼实心桩（桩径1000mm以内）": { code: "1-1-016", unit: "根" },
+        "人工破砼（有筋）": { code: "1-1-020", unit: "m3" },
+        "人工破砼（无筋）": { code: "1-1-021", unit: "m3" }
+    },
+    "模板工程": {
+        "垫层模板": { code: "1-3-001", unit: "m2" },
+        "道路模板": { code: "1-3-002", unit: "m2" },
+        "基础模板": { code: "1-3-003", unit: "m2" },
+        "结构模板": { code: "1-3-004", unit: "m2" },
+        "结构（施工层无现浇板）模板": { code: "1-3-005", unit: "m2" }
+    },
+    "架子工程": {
+        "双排脚手架（高度≤6m）": { code: "1-4-001", unit: "m2" },
+        "双排脚手架（高度≤12m）": { code: "1-4-002", unit: "m2" },
+        "双排脚手架（高度≤18m）": { code: "1-4-003", unit: "m2" }
+    },
+    "钢筋工程": {
+        "水池底板及筏板基础": { code: "1-5-001", unit: "t" },
+        "水池壁板": { code: "1-5-002", unit: "t" },
+        "基础": { code: "1-5-003", unit: "t" },
+        "结构": { code: "1-5-004", unit: "t" }
+    },
+    "混凝土工程": {
+        "汽车泵砼浇筑（基础）": { code: "1-7-001", unit: "m3" },
+        "汽车泵砼浇筑高度50m内（结构）": { code: "1-7-002", unit: "m3" },
+        "人工上料（二次倒运）手推车运砼浇捣": { code: "1-7-008", unit: "m3" },
+        "道路砼（厚200mm）": { code: "1-7-010", unit: "m2" },
+        "混凝土井": { code: "1-7-020", unit: "m3" },
+        "地坪混凝土浇筑（厚50mm）": { code: "", unit: "m2" },
+        "地坪混凝土浇筑（厚100mm）": { code: "", unit: "m2" },
+        "地坪混凝土浇筑（厚150mm）": { code: "", unit: "m2" },
+        "地坪混凝土浇筑（厚200mm）": { code: "", unit: "m2" }
+    }
+};
+
+const WORKER_TYPES = ['木工', '瓦工', '钢筋工', '架子工', '旗手', '小工', '起重工', '测量工', '焊工'];
+const TEAMS = ['马玉奇(Ma Yuqi)', '王建(Wang Jian)', 'Kumar', '郭传海(Guo Chuanhai)', '曹桂龙(Cao Guilong)', '陈传军(Chen Chuanjun)', '王世杰(Wang Shijie)', 'Sheharyar', 'Anwar'];
+const AREAS = ['110', '210', '220', '240', '320', '330', '400', '800', 'precast yard 1', 'precast yard 2'];
+
+// ============================================================
+//  工作字典联动（支持中英文）
+// ============================================================
+function onCategoryChange() {
+    const lang = currentLang;
+    const categorySelect = document.getElementById('entryCategory');
+    const selectedValue = categorySelect.value || CATEGORY_MAP['zh'][0];
+    
+    // 获取当前选中的中文分类名
+    const displayCategories = CATEGORY_MAP[lang];
+    const zhCategories = CATEGORY_MAP['zh'];
+    
+    categorySelect.innerHTML = '';
+    displayCategories.forEach((cat, index) => {
+        const option = document.createElement('option');
+        option.value = zhCategories[index]; // 存储中文值作为value
+        option.textContent = cat;
+        if (zhCategories[index] === selectedValue) {
+            option.selected = true;
+        }
+        categorySelect.appendChild(option);
+    });
+    
+    onSubItemChange();
+}
+
+function onSubItemChange() {
+    const lang = currentLang;
+    const category = document.getElementById('entryCategory').value; // 中文分类名
+    const subSelect = document.getElementById('entrySubItem');
+    const selectedValue = subSelect.value || (SUBITEM_MAP['zh'][category] ? SUBITEM_MAP['zh'][category][0] : '');
+    
+    subSelect.innerHTML = '';
+    
+    const zhItems = SUBITEM_MAP['zh'][category] || [];
+    // 根据当前中文分类找到对应的英文分类名
+    const zhIndex = CATEGORY_MAP['zh'].indexOf(category);
+    const enCategory = zhIndex !== -1 ? CATEGORY_MAP['en'][zhIndex] : category;
+    const enItems = SUBITEM_MAP['en'][enCategory] || [];
+    
+    const displayItems = lang === 'zh' ? zhItems : enItems;
+    const valueItems = zhItems; // 存储中文作为value
+    
+    displayItems.forEach((item, index) => {
+        const option = document.createElement('option');
+        const zhValue = valueItems[index] || item;
+        option.value = zhValue;
+        option.textContent = item;
+        if (zhValue === selectedValue) {
+            option.selected = true;
+        }
+        subSelect.appendChild(option);
+    });
+    
+    // 更新编号和单位
+    const info = WORK_DICT[category]?.[subSelect.value] || { code: 'N/A', unit: 'N/A' };
+    document.getElementById('entryCode').value = info.code;
+    document.getElementById('entryUnit').value = info.unit;
+}
+
+// ============================================================
 //  登录/登出
 // ============================================================
 async function loadUsersFromSupabase() {
@@ -1036,98 +1181,6 @@ function switchTab(tab) {
     if (tab === 'attendance') loadAttendance();
     if (tab === 'verify') loadVerification();
     if (tab === 'settings') { loadUserList(); loadLoginLogs(); }
-}
-
-// ============================================================
-//  工作字典
-// ============================================================
-const WORK_DICT = {
-    "无收入项": {
-        "送水送饭倒运材料": { code: "N/A", unit: "工时" },
-        "开会": { code: "N/A", unit: "工时" },
-        "配合测量": { code: "N/A", unit: "工时" },
-        "配合材料组": { code: "N/A", unit: "工时" },
-        "配合降水": { code: "N/A", unit: "工时" },
-        "旗手": { code: "N/A", unit: "工时" },
-        "其他杂活": { code: "N/A", unit: "工时" }
-    },
-    "土石方工程": {
-        "人工挖土方（深度1.5m以内）": { code: "1-1-001", unit: "m3" },
-        "人工挖桩间土": { code: "1-1-004", unit: "m3" },
-        "人工回填（就地松填）": { code: "1-1-005", unit: "m3" },
-        "人工回填（夯填）": { code: "1-1-006", unit: "m3" },
-        "人工配合机械回填": { code: "1-1-007", unit: "m3" },
-        "人工平整场地、清理铲平机挖余土、配合机械平整水稳层": { code: "1-1-009", unit: "m2" },
-        "人工原土打夯": { code: "1-1-010", unit: "m2" },
-        "人工运土（运距20米以内）": { code: "1-1-011", unit: "m3" },
-        "砂垫层人工找平夯实": { code: "1-1-013", unit: "m3" },
-        "级配砂石人工平整夯实": { code: "1-1-014", unit: "m3" },
-        "铺碎石人工夯实": { code: "1-1-015", unit: "m3" },
-        "截、破砼实心桩（桩径1000mm以内）": { code: "1-1-016", unit: "根" },
-        "人工破砼（有筋）": { code: "1-1-020", unit: "m3" },
-        "人工破砼（无筋）": { code: "1-1-021", unit: "m3" }
-    },
-    "模板工程": {
-        "垫层模板": { code: "1-3-001", unit: "m2" },
-        "道路模板": { code: "1-3-002", unit: "m2" },
-        "基础模板": { code: "1-3-003", unit: "m2" },
-        "结构模板": { code: "1-3-004", unit: "m2" },
-        "结构（施工层无现浇板）模板": { code: "1-3-005", unit: "m2" }
-    },
-    "架子工程": {
-        "双排脚手架（高度≤6m）": { code: "1-4-001", unit: "m2" },
-        "双排脚手架（高度≤12m）": { code: "1-4-002", unit: "m2" },
-        "双排脚手架（高度≤18m）": { code: "1-4-003", unit: "m2" }
-    },
-    "钢筋工程": {
-        "水池底板及筏板基础": { code: "1-5-001", unit: "t" },
-        "水池壁板": { code: "1-5-002", unit: "t" },
-        "基础": { code: "1-5-003", unit: "t" },
-        "结构": { code: "1-5-004", unit: "t" }
-    },
-    "混凝土工程": {
-        "汽车泵砼浇筑（基础）": { code: "1-7-001", unit: "m3" },
-        "汽车泵砼浇筑高度50m内（结构）": { code: "1-7-002", unit: "m3" },
-        "人工上料（二次倒运）手推车运砼浇捣": { code: "1-7-008", unit: "m3" },
-        "道路砼（厚200mm）": { code: "1-7-010", unit: "m2" },
-        "混凝土井": { code: "1-7-020", unit: "m3" },
-        "地坪混凝土浇筑（厚50mm）": { code: "", unit: "m2" },
-        "地坪混凝土浇筑（厚100mm）": { code: "", unit: "m2" },
-        "地坪混凝土浇筑（厚150mm）": { code: "", unit: "m2" },
-        "地坪混凝土浇筑（厚200mm）": { code: "", unit: "m2" }
-    }
-};
-
-const WORKER_TYPES = ['木工', '瓦工', '钢筋工', '架子工', '旗手', '小工', '起重工', '测量工', '焊工'];
-const TEAMS = ['马玉奇(Ma Yuqi)', '王建(Wang Jian)', 'Kumar', '郭传海(Guo Chuanhai)', '曹桂龙(Cao Guilong)', '陈传军(Chen Chuanjun)', '王世杰(Wang Shijie)', 'Sheharyar', 'Anwar'];
-const AREAS = ['110', '210', '220', '240', '320', '330', '400', '800', 'precast yard 1', 'precast yard 2'];
-
-// ============================================================
-//  工作字典联动
-// ============================================================
-function onCategoryChange() {
-    const category = document.getElementById('entryCategory').value;
-    const subSelect = document.getElementById('entrySubItem');
-    subSelect.innerHTML = '';
-    
-    const items = WORK_DICT[category] || {};
-    for (const name of Object.keys(items)) {
-        const option = document.createElement('option');
-        option.value = name;
-        option.textContent = name;
-        subSelect.appendChild(option);
-    }
-    onSubItemChange();
-}
-
-function onSubItemChange() {
-    const category = document.getElementById('entryCategory').value;
-    const subItem = document.getElementById('entrySubItem').value;
-    const items = WORK_DICT[category] || {};
-    const info = items[subItem] || { code: 'N/A', unit: 'N/A' };
-    
-    document.getElementById('entryCode').value = info.code;
-    document.getElementById('entryUnit').value = info.unit;
 }
 
 // ============================================================
@@ -1742,7 +1795,6 @@ async function addUser() {
 // ============================================================
 function exportBackup() {
     showToast('📦 ' + (currentLang === 'zh' ? '正在导出备份...' : 'Exporting backup...'));
-    // 从 Supabase 导出所有数据
     Promise.all([
         supabaseQuery('users', { select: '*' }),
         supabaseQuery('daily_reports', { select: '*' }),
@@ -1779,7 +1831,6 @@ function importBackup() {
         reader.onload = async function(ev) {
             try {
                 const data = JSON.parse(ev.target.result);
-                // 导入用户
                 if (data.users) {
                     for (const user of data.users) {
                         await supabaseFetch('users', {
@@ -1788,7 +1839,6 @@ function importBackup() {
                         }).catch(() => {});
                     }
                 }
-                // 导入日报
                 if (data.daily_reports) {
                     for (const report of data.daily_reports) {
                         await supabaseFetch('daily_reports', {
@@ -1797,7 +1847,6 @@ function importBackup() {
                         }).catch(() => {});
                     }
                 }
-                // 导入考勤
                 if (data.attendance_data) {
                     for (const att of data.attendance_data) {
                         await supabaseFetch('attendance', {
@@ -1877,7 +1926,6 @@ async function resetAllData() {
     if (!confirm(t('confirmReset'))) return;
     if (!confirm(t('confirmReset2'))) return;
     try {
-        // 清空所有表
         const tables = ['daily_reports', 'attendance', 'login_logs'];
         for (const table of tables) {
             await supabaseFetch(table, {
@@ -1926,6 +1974,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('overviewDate').value = today;
     document.getElementById('verifyDate').value = today;
     
+    // 初始化分类下拉
     onCategoryChange();
     
     document.getElementById('attDate').addEventListener('change', loadAttendance);
