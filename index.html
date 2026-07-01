@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>施工日报系统 V3.0</title>
+    <title>施工日报系统</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; padding: 20px; }
@@ -133,7 +133,7 @@
         <input type="password" id="loginPassword" placeholder="密码 / Password" value="142857jj">
         <button class="btn btn-primary" onclick="handleLogin()">🔑 登录 / Login</button>
         <div id="loginMessage" class="login-message"></div>
-        <p style="text-align:center;font-size:11px;color:#b0bec5;margin-top:16px;">Civil Work Daily Report System · By Zack Leo</p>
+        <p style="text-align:center;font-size:11px;color:#b0bec5;margin-top:16px;">☁️ 云端版 · Supabase</p>
     </div>
 </div>
 
@@ -141,7 +141,7 @@
 <div id="mainApp" style="display:none;">
     <div class="container">
         <div class="header">
-            <h1 id="appTitle">🏗️ 施工日报填报系统 <span class="cloud-badge">📦 本地版</span></h1>
+            <h1 id="appTitle">🏗️ 施工日报填报系统 <span class="cloud-badge">☁️ 云端版</span></h1>
             <div class="header-right">
                 <div class="lang-toggle">
                     <button class="lang-btn active" onclick="setLang('zh')">中文</button>
@@ -170,7 +170,7 @@
             可用功能：<span id="availableTabsDisplay">施工量录入、出勤日报</span>
         </div>
         
-        <!-- ===== Tab: 录入 (entry + admin) ===== -->
+        <!-- ===== Tab: 录入 ===== -->
         <div id="tab-entry" class="tab-content active">
             <h2 id="entryTitle">📝 施工量录入</h2>
             <div class="form-row">
@@ -282,7 +282,7 @@
             </div>
         </div>
         
-        <!-- ===== Tab: 出勤 (entry + admin) ===== -->
+        <!-- ===== Tab: 出勤 ===== -->
         <div id="tab-attendance" class="tab-content">
             <h2 id="attTitle">👷 出勤日报（班组长）</h2>
             <div class="form-row">
@@ -315,7 +315,7 @@
             <div id="attendanceSummary"></div>
         </div>
         
-        <!-- ===== Tab: 总览 (viewer + admin) ===== -->
+        <!-- ===== Tab: 总览 ===== -->
         <div id="tab-overview" class="tab-content">
             <h2 id="overviewTitle">📊 数据总览</h2>
             <div class="form-row">
@@ -338,7 +338,7 @@
             <div id="allDataTable" class="table-container"></div>
         </div>
         
-        <!-- ===== Tab: 核对 (viewer + admin) ===== -->
+        <!-- ===== Tab: 核对 ===== -->
         <div id="tab-verify" class="tab-content">
             <h2 id="verifyTitle">✅ 工时与出勤核对</h2>
             <div class="form-row">
@@ -369,7 +369,7 @@
             <div id="verifyStats" style="margin-top:15px;"></div>
         </div>
         
-        <!-- ===== Tab: 设置 (仅admin) ===== -->
+        <!-- ===== Tab: 设置 ===== -->
         <div id="tab-settings" class="tab-content">
             <h2 id="settingsTitle">⚙️ 设置</h2>
             <h3 id="userMgmtTitle">👥 用户管理</h3>
@@ -425,6 +425,12 @@
 </div>
 
 <script>
+// ============================================================
+//  Supabase 配置
+// ============================================================
+const SUPABASE_URL = 'https://zthosewfpsgtaqhtvcyt.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0aG9zZXdmcHNndGFxaHR2Y3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTA3MTksImV4cCI6MjA5ODQyNjcxOX0.Q9E4rDoZtFPGsjoJOUyhHmwNA0MGhzPOl5aymZ1Xjgo';
+
 // ============================================================
 //  国际化 (i18n)
 // ============================================================
@@ -658,15 +664,13 @@ function updateLoginUI() {
 }
 
 function updateUI() {
-    // 标题
-    document.getElementById('appTitle').innerHTML = t('appTitle') + ' <span class="cloud-badge">📦 本地版</span>';
+    document.getElementById('appTitle').innerHTML = t('appTitle') + ' <span class="cloud-badge">☁️ 云端版</span>';
     document.getElementById('entryTitle').textContent = t('entryTitle');
     document.getElementById('attTitle').textContent = t('attTitle');
     document.getElementById('overviewTitle').textContent = t('overviewTitle');
     document.getElementById('verifyTitle').textContent = t('verifyTitle');
     document.getElementById('settingsTitle').textContent = t('settingsTitle');
     
-    // 标签
     document.getElementById('lblDate').textContent = t('date');
     document.getElementById('lblArea').textContent = t('area');
     document.getElementById('lblTeam').textContent = t('team');
@@ -692,7 +696,6 @@ function updateUI() {
     document.getElementById('lblNewDisplay').textContent = currentLang === 'zh' ? '显示名称' : 'Display Name';
     document.getElementById('lblNewRole').textContent = currentLang === 'zh' ? '角色' : 'Role';
     
-    // 按钮
     document.getElementById('btnAddPending').textContent = t('addPending');
     document.getElementById('btnNoWork').textContent = t('noWork');
     document.getElementById('btnSubmitAll').textContent = t('submitAll');
@@ -711,7 +714,6 @@ function updateUI() {
     document.getElementById('btnReset').textContent = t('reset');
     document.getElementById('dangerHint').textContent = t('dangerHint');
     
-    // 标题
     document.getElementById('pendingTitle').innerHTML = t('pendingTitle') + ' (<span id="pendingCount">' + pendingItems.length + '</span> ' + (currentLang === 'zh' ? '项' : 'items') + ')';
     document.getElementById('attSummaryTitle').textContent = t('attSummaryTitle');
     document.getElementById('areaStatusTitle').textContent = t('areaStatusTitle');
@@ -723,17 +725,16 @@ function updateUI() {
     document.getElementById('loginLogsTitle').textContent = t('loginLogsTitle');
     document.getElementById('optAll').textContent = currentLang === 'zh' ? '全部' : 'All';
     
-    // Tab按钮
-    const tabMap = {
-        '📝 施工量录入': '📝 ' + t('tabEntry'),
-        '👷 出勤日报': '👷 ' + t('tabAttendance'),
-        '📊 数据总览': '📊 ' + t('tabOverview'),
-        '✅ 工时核对': '✅ ' + t('tabVerify'),
-        '⚙️ 设置': '⚙️ ' + t('tabSettings')
-    };
     document.querySelectorAll('.tab-btn').forEach(btn => {
+        const map = {
+            '📝 施工量录入': '📝 ' + t('tabEntry'),
+            '👷 出勤日报': '👷 ' + t('tabAttendance'),
+            '📊 数据总览': '📊 ' + t('tabOverview'),
+            '✅ 工时核对': '✅ ' + t('tabVerify'),
+            '⚙️ 设置': '⚙️ ' + t('tabSettings')
+        };
         const key = btn.textContent.trim();
-        for (const [orig, trans] of Object.entries(tabMap)) {
+        for (const [orig, trans] of Object.entries(map)) {
             if (key === orig || key === trans || key.includes(orig.replace(/[📝👷📊✅⚙️]\s*/, ''))) {
                 btn.textContent = trans;
                 break;
@@ -741,10 +742,7 @@ function updateUI() {
         }
     });
     
-    // 更新角色提示
     updateRoleHint();
-    
-    // 重新加载数据
     renderPending();
     loadAttendance();
     loadOverview();
@@ -754,11 +752,11 @@ function updateUI() {
 }
 
 // ============================================================
-//  角色提示更新
+//  角色提示
 // ============================================================
 function updateRoleHint() {
     if (!currentUser) return;
-    const user = USERS[currentUser];
+    const user = usersData[currentUser];
     if (!user) return;
     
     const roleNames = {
@@ -783,46 +781,261 @@ function updateRoleHint() {
 }
 
 // ============================================================
-//  用户数据库
+//  Supabase 操作函数
 // ============================================================
-let USERS = {};
-
-function loadUsers() {
-    const saved = localStorage.getItem('users_data');
-    if (saved) {
-        try {
-            USERS = JSON.parse(saved);
-            return;
-        } catch(e) {}
-    }
-    // 默认用户
-    USERS = {
-        'admin': { password: '142857jj', role: 'admin', display_name: '管理员' },
-        '95381694': { password: '1478', role: 'viewer', display_name: '汪行虎' },
-        '96687409': { password: '3318', role: 'viewer', display_name: '魏邦俭' },
-        '96923491': { password: '0610', role: 'viewer', display_name: '沈耀成' },
-        '96685719': { password: '2219', role: 'entry', display_name: '刘建' },
-        '95381480': { password: '6012', role: 'entry', display_name: '董世钟' },
-        '96687421': { password: '8315', role: 'entry', display_name: '吕奇' },
-        '95381531': { password: '6738', role: 'entry', display_name: '伍凡' },
-        '96687380': { password: '8773', role: 'entry', display_name: '项武' },
-        '96685730': { password: '1510', role: 'entry', display_name: '傅俊森' },
-        '96687419': { password: '1819', role: 'entry', display_name: '王世杰' },
-        '96687418': { password: '4738', role: 'entry', display_name: '孙永杰' },
-        '83184896': { password: '4896', role: 'entry', display_name: 'AMIR HOSSAIN' },
-        '76733590': { password: '391X', role: 'entry', display_name: '王建' },
-        '76725659': { password: '3637', role: 'entry', display_name: '李红帅' },
-        '76747460': { password: '3658', role: 'entry', display_name: '李濮龙' },
-        '76722199': { password: '3616', role: 'entry', display_name: '王玉广' },
-        '96687298': { password: '5857', role: 'entry', display_name: '董凤培' },
-        '96687309': { password: '2811', role: 'entry', display_name: '马玉奇' },
-        '74132297': { password: '1514', role: 'entry', display_name: '韩传勃' }
+async function supabaseFetch(table, options = {}) {
+    const { method = 'GET', body = null, headers = {} } = options;
+    const url = `${SUPABASE_URL}/rest/v1/${table}`;
+    const defaultHeaders = {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        ...headers
     };
-    saveUsers();
+    
+    try {
+        const response = await fetch(url, {
+            method,
+            headers: defaultHeaders,
+            body: body ? JSON.stringify(body) : null
+        });
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`Supabase error: ${response.status} - ${error}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Supabase fetch error:', error);
+        throw error;
+    }
 }
 
-function saveUsers() {
-    localStorage.setItem('users_data', JSON.stringify(USERS));
+async function supabaseQuery(table, params = {}) {
+    let url = `${SUPABASE_URL}/rest/v1/${table}`;
+    const queryParams = new URLSearchParams();
+    
+    if (params.select) queryParams.append('select', params.select);
+    if (params.order) queryParams.append('order', params.order);
+    if (params.limit) queryParams.append('limit', params.limit);
+    if (params.eq) {
+        for (const [key, value] of Object.entries(params.eq)) {
+            queryParams.append(`${key}=eq.${encodeURIComponent(value)}`);
+        }
+    }
+    if (params.neq) {
+        for (const [key, value] of Object.entries(params.neq)) {
+            queryParams.append(`${key}=neq.${encodeURIComponent(value)}`);
+        }
+    }
+    
+    if (queryParams.toString()) {
+        url += `?${queryParams.toString()}`;
+    }
+    
+    const response = await fetch(url, {
+        headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json'
+        }
+    });
+    if (!response.ok) {
+        throw new Error(`Supabase query error: ${response.status}`);
+    }
+    return response.json();
+}
+
+// ============================================================
+//  用户数据
+// ============================================================
+let usersData = {};
+let currentUser = null;
+let currentRole = null;
+let pendingItems = [];
+let isAdmin = false;
+let loginLogs = [];
+
+// ============================================================
+//  登录/登出
+// ============================================================
+async function loadUsersFromSupabase() {
+    try {
+        const data = await supabaseQuery('users', { select: '*' });
+        usersData = {};
+        data.forEach(u => {
+            usersData[u.username] = {
+                password: u.password,
+                role: u.role,
+                display_name: u.display_name
+            };
+        });
+        return data;
+    } catch (error) {
+        console.error('加载用户失败:', error);
+        return [];
+    }
+}
+
+async function handleLogin() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const msg = document.getElementById('loginMessage');
+    
+    if (!username || !password) {
+        msg.textContent = '❌ ' + (currentLang === 'zh' ? '请输入用户名和密码' : 'Please enter username and password');
+        msg.style.color = 'red';
+        return;
+    }
+    
+    try {
+        const users = await loadUsersFromSupabase();
+        const user = users.find(u => u.username === username);
+        
+        if (!user) {
+            msg.textContent = '❌ ' + (currentLang === 'zh' ? '用户不存在' : 'User not found');
+            msg.style.color = 'red';
+            return;
+        }
+        
+        if (user.password !== password) {
+            msg.textContent = '❌ ' + (currentLang === 'zh' ? '密码错误' : 'Incorrect password');
+            msg.style.color = 'red';
+            return;
+        }
+        
+        currentUser = username;
+        currentRole = user.role;
+        isAdmin = currentRole === 'admin';
+        
+        document.getElementById('userDisplayName').textContent = '👤 ' + user.display_name;
+        const badge = document.getElementById('userRoleBadge');
+        badge.textContent = t('role' + currentRole.charAt(0).toUpperCase() + currentRole.slice(1));
+        badge.className = 'user-role-badge ' + currentRole;
+        
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        
+        await addLoginLog(username, user.display_name, user.role);
+        updateTabVisibility();
+        updateRoleHint();
+        initApp();
+        updateUI();
+        
+        showToast(t('loginWelcome') + user.display_name + '！');
+        msg.textContent = '';
+    } catch (error) {
+        msg.textContent = '❌ ' + (currentLang === 'zh' ? '连接服务器失败，请重试' : 'Connection failed, please retry');
+        msg.style.color = 'red';
+        console.error(error);
+    }
+}
+
+async function addLoginLog(username, displayName, role) {
+    try {
+        await supabaseFetch('login_logs', {
+            method: 'POST',
+            body: {
+                username: username,
+                display_name: displayName,
+                role: role,
+                timestamp: new Date().toLocaleString()
+            }
+        });
+    } catch (error) {
+        console.error('记录登录日志失败:', error);
+    }
+}
+
+async function loadLoginLogs() {
+    try {
+        const data = await supabaseQuery('login_logs', { 
+            select: '*',
+            order: 'id.desc',
+            limit: '100'
+        });
+        loginLogs = data || [];
+        const container = document.getElementById('loginLogs');
+        if (loginLogs.length === 0) {
+            container.innerHTML = '<p style="color:#999;padding:10px;">' + (currentLang === 'zh' ? '暂无登录记录' : 'No login records') + '</p>';
+            return;
+        }
+        let html = '<table><thead><tr><th>' + (currentLang === 'zh' ? '时间' : 'Time') + '</th><th>' + (currentLang === 'zh' ? '用户' : 'User') + '</th><th>' + (currentLang === 'zh' ? '显示名称' : 'Display Name') + '</th><th>' + (currentLang === 'zh' ? '角色' : 'Role') + '</th></tr></thead><tbody>';
+        loginLogs.forEach(log => {
+            html += `<tr><td>${log.timestamp}</td><td>${log.username}</td><td>${log.display_name}</td><td>${log.role}</td></tr>`;
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    } catch (error) {
+        console.error('加载登录日志失败:', error);
+        document.getElementById('loginLogs').innerHTML = '<p style="color:#999;padding:10px;">加载失败</p>';
+    }
+}
+
+function handleLogout() {
+    if (confirm(currentLang === 'zh' ? '确定要退出吗？' : 'Are you sure to logout?')) {
+        currentUser = null;
+        currentRole = null;
+        document.getElementById('loginPage').style.display = 'block';
+        document.getElementById('mainApp').style.display = 'none';
+        pendingItems = [];
+        document.getElementById('loginMessage').textContent = '';
+    }
+}
+
+// ============================================================
+//  Tab可见性
+// ============================================================
+function updateTabVisibility() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        const roles = btn.dataset.role.split(',');
+        if (roles.includes(currentRole)) {
+            btn.classList.remove('hidden');
+        } else {
+            btn.classList.add('hidden');
+        }
+    });
+    
+    const visibleTabs = document.querySelectorAll('.tab-btn:not(.hidden)');
+    if (visibleTabs.length > 0) {
+        const firstTab = visibleTabs[0];
+        const activeTab = document.querySelector('.tab-btn.active');
+        if (activeTab && activeTab.classList.contains('hidden')) {
+            switchTab(firstTab.dataset.tab);
+        }
+        if (!document.querySelector('.tab-btn.active')) {
+            switchTab(firstTab.dataset.tab);
+        }
+    }
+}
+
+// ============================================================
+//  初始化
+// ============================================================
+function initApp() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('entryDate').value = today;
+    document.getElementById('attDate').value = today;
+    document.getElementById('overviewDate').value = today;
+    document.getElementById('verifyDate').value = today;
+    
+    onCategoryChange();
+    loadPending();
+    loadAttendance();
+    loadOverview();
+    loadUserList();
+    loadVerification();
+    loadLoginLogs();
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    if (tab === 'overview') loadOverview();
+    if (tab === 'attendance') loadAttendance();
+    if (tab === 'verify') loadVerification();
+    if (tab === 'settings') { loadUserList(); loadLoginLogs(); }
 }
 
 // ============================================================
@@ -890,170 +1103,6 @@ const TEAMS = ['马玉奇(Ma Yuqi)', '王建(Wang Jian)', 'Kumar', '郭传海(Gu
 const AREAS = ['110', '210', '220', '240', '320', '330', '400', '800', 'precast yard 1', 'precast yard 2'];
 
 // ============================================================
-//  全局变量
-// ============================================================
-let currentUser = null;
-let currentRole = null;
-let pendingItems = [];
-let isAdmin = false;
-let loginLogs = [];
-
-// ============================================================
-//  登录/登出
-// ============================================================
-function handleLogin() {
-    const username = document.getElementById('loginUsername').value.trim();
-    const password = document.getElementById('loginPassword').value;
-    const msg = document.getElementById('loginMessage');
-    
-    if (!username || !password) {
-        msg.textContent = '❌ ' + (currentLang === 'zh' ? '请输入用户名和密码' : 'Please enter username and password');
-        msg.style.color = 'red';
-        return;
-    }
-    
-    loadUsers();
-    const user = USERS[username];
-    if (!user) {
-        msg.textContent = '❌ ' + (currentLang === 'zh' ? '用户不存在' : 'User not found');
-        msg.style.color = 'red';
-        return;
-    }
-    
-    if (user.password !== password) {
-        msg.textContent = '❌ ' + (currentLang === 'zh' ? '密码错误' : 'Incorrect password');
-        msg.style.color = 'red';
-        return;
-    }
-    
-    currentUser = username;
-    currentRole = user.role;
-    isAdmin = currentRole === 'admin';
-    
-    // 更新用户信息显示
-    document.getElementById('userDisplayName').textContent = '👤 ' + user.display_name;
-    const badge = document.getElementById('userRoleBadge');
-    badge.textContent = t('role' + currentRole.charAt(0).toUpperCase() + currentRole.slice(1));
-    badge.className = 'user-role-badge ' + currentRole;
-    
-    // 显示主界面
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'block';
-    
-    // 记录登录日志
-    addLoginLog(username, user.display_name, user.role);
-    
-    // 根据角色显示对应的Tab
-    updateTabVisibility();
-    updateRoleHint();
-    
-    // 初始化
-    initApp();
-    updateUI();
-    
-    showToast(t('loginWelcome') + user.display_name + '！');
-    msg.textContent = '';
-}
-
-function addLoginLog(username, displayName, role) {
-    const logs = JSON.parse(localStorage.getItem('login_logs') || '[]');
-    logs.push({
-        timestamp: new Date().toLocaleString(),
-        username: username,
-        display_name: displayName,
-        role: role
-    });
-    localStorage.setItem('login_logs', JSON.stringify(logs));
-    loginLogs = logs;
-}
-
-function loadLoginLogs() {
-    loginLogs = JSON.parse(localStorage.getItem('login_logs') || '[]');
-    const container = document.getElementById('loginLogs');
-    if (loginLogs.length === 0) {
-        container.innerHTML = '<p style="color:#999;padding:10px;">' + (currentLang === 'zh' ? '暂无登录记录' : 'No login records') + '</p>';
-        return;
-    }
-    let html = '<table><thead><tr><th>' + (currentLang === 'zh' ? '时间' : 'Time') + '</th><th>' + (currentLang === 'zh' ? '用户' : 'User') + '</th><th>' + (currentLang === 'zh' ? '显示名称' : 'Display Name') + '</th><th>' + (currentLang === 'zh' ? '角色' : 'Role') + '</th></tr></thead><tbody>';
-    loginLogs.slice().reverse().forEach(log => {
-        html += `<tr><td>${log.timestamp}</td><td>${log.username}</td><td>${log.display_name}</td><td>${log.role}</td></tr>`;
-    });
-    html += '</tbody></table>';
-    container.innerHTML = html;
-}
-
-function handleLogout() {
-    if (confirm(currentLang === 'zh' ? '确定要退出吗？' : 'Are you sure to logout?')) {
-        currentUser = null;
-        currentRole = null;
-        document.getElementById('loginPage').style.display = 'block';
-        document.getElementById('mainApp').style.display = 'none';
-        pendingItems = [];
-        document.getElementById('loginMessage').textContent = '';
-    }
-}
-
-// ============================================================
-//  Tab可见性控制
-// ============================================================
-function updateTabVisibility() {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        const roles = btn.dataset.role.split(',');
-        if (roles.includes(currentRole)) {
-            btn.classList.remove('hidden');
-        } else {
-            btn.classList.add('hidden');
-        }
-    });
-    
-    // 默认激活第一个可见的Tab
-    const visibleTabs = document.querySelectorAll('.tab-btn:not(.hidden)');
-    if (visibleTabs.length > 0) {
-        const firstTab = visibleTabs[0];
-        // 如果当前激活的Tab被隐藏了，切换到第一个可见Tab
-        const activeTab = document.querySelector('.tab-btn.active');
-        if (activeTab && activeTab.classList.contains('hidden')) {
-            switchTab(firstTab.dataset.tab);
-        }
-        // 如果没有任何Tab激活，激活第一个
-        if (!document.querySelector('.tab-btn.active')) {
-            switchTab(firstTab.dataset.tab);
-        }
-    }
-}
-
-// ============================================================
-//  初始化
-// ============================================================
-function initApp() {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('entryDate').value = today;
-    document.getElementById('attDate').value = today;
-    document.getElementById('overviewDate').value = today;
-    document.getElementById('verifyDate').value = today;
-    
-    loadUsers();
-    onCategoryChange();
-    loadPending();
-    loadAttendance();
-    loadOverview();
-    loadUserList();
-    loadVerification();
-    loadLoginLogs();
-}
-
-function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
-    document.getElementById(`tab-${tab}`).classList.add('active');
-    if (tab === 'overview') loadOverview();
-    if (tab === 'attendance') loadAttendance();
-    if (tab === 'verify') loadVerification();
-    if (tab === 'settings') { loadUserList(); loadLoginLogs(); }
-}
-
-// ============================================================
 //  工作字典联动
 // ============================================================
 function onCategoryChange() {
@@ -1082,7 +1131,7 @@ function onSubItemChange() {
 }
 
 // ============================================================
-//  待提交管理
+//  待提交管理 (本地暂存)
 // ============================================================
 function addToPending() {
     const record = {
@@ -1230,55 +1279,91 @@ function loadPending() {
     }
 }
 
-function submitAll() {
+// ============================================================
+//  提交到 Supabase
+// ============================================================
+async function submitAll() {
     if (pendingItems.length === 0) {
         showToast('❌ ' + (currentLang === 'zh' ? '没有待提交的记录' : 'No pending records'));
         return;
     }
     if (!confirm(t('confirmSubmit').replace('{count}', pendingItems.length))) return;
     
-    let allData = JSON.parse(localStorage.getItem('daily_reports') || '[]');
-    allData = allData.concat(pendingItems);
-    localStorage.setItem('daily_reports', JSON.stringify(allData));
-    
-    const count = pendingItems.length;
-    pendingItems = [];
-    renderPending();
-    savePending();
-    loadOverview();
-    showToast(t('successSubmit').replace('{count}', count));
+    try {
+        // 转换字段名以匹配数据库
+        const records = pendingItems.map(item => ({
+            date: item.Date,
+            area: item.Area,
+            team: item.Team,
+            tag_number: item["Tag Number"],
+            code: item.Code,
+            sub_item: item["Sub-item"],
+            description: item["Description of Work"],
+            unit: item.Unit,
+            qty: item["Qty."],
+            pipe_length: item["UG Pipe length (m)"],
+            manpower: item.Manpower,
+            manhours: item.Manhours,
+            non_chinese: item["Non-Chinese"],
+            remark: item.Remark,
+            created_by: item["Created By"]
+        }));
+        
+        for (const record of records) {
+            await supabaseFetch('daily_reports', {
+                method: 'POST',
+                body: record
+            });
+        }
+        
+        const count = pendingItems.length;
+        pendingItems = [];
+        renderPending();
+        savePending();
+        loadOverview();
+        showToast(t('successSubmit').replace('{count}', count));
+    } catch (error) {
+        showToast('❌ ' + (currentLang === 'zh' ? '提交失败，请重试' : 'Submit failed, please retry'));
+        console.error(error);
+    }
 }
 
 // ============================================================
-//  出勤日报
+//  出勤日报 (Supabase)
 // ============================================================
-function loadAttendance() {
+async function loadAttendance() {
     const date = document.getElementById('attDate').value;
     const team = document.getElementById('attTeam').value;
     if (!date) return;
     
-    const allData = JSON.parse(localStorage.getItem('attendance_data') || '[]');
-    const filtered = allData.filter(d => d.Date === date && d.Team === team);
-    renderAttendance(filtered);
-    renderAttendanceSummary(date);
+    try {
+        const data = await supabaseQuery('attendance', {
+            eq: { date: date, team: team }
+        });
+        renderAttendance(data || []);
+        renderAttendanceSummary(date);
+    } catch (error) {
+        console.error('加载考勤失败:', error);
+        renderAttendance([]);
+    }
 }
 
 function renderAttendance(data) {
     const container = document.getElementById('attendanceTable');
     const map = {};
-    data.forEach(d => map[d["Worker Type"]] = d);
+    data.forEach(d => map[d.worker_type] = d);
     
     let html = '<table><thead><tr><th>' + t('workerType') + '</th><th>' + t('expected') + '</th><th>' + t('present') + '</th><th>' + t('absent') + '</th><th>' + t('foreignLabel') + '</th><th>' + t('remarkLabel') + '</th></tr></thead><tbody>';
     WORKER_TYPES.forEach((type) => {
-        const row = map[type] || { Total: 0, Present: 0, Foreign: 0, Remark: '' };
-        const absent = (row.Total || 0) - (row.Present || 0);
+        const row = map[type] || { total: 0, present: 0, foreign_count: 0, remark: '' };
+        const absent = (row.total || 0) - (row.present || 0);
         html += `<tr>
             <td><strong>${type}</strong></td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="Total" value="${row.Total || 0}" min="0" onchange="updateAbsent(this)"></td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="Present" value="${row.Present || 0}" min="0" onchange="updateAbsent(this)"></td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="total" value="${row.total || 0}" min="0" onchange="updateAbsent(this)"></td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="present" value="${row.present || 0}" min="0" onchange="updateAbsent(this)"></td>
             <td style="color:${absent > 0 ? '#c62828' : '#4caf50'};font-weight:bold;">${absent}</td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="Foreign" value="${row.Foreign || 0}" min="0"></td>
-            <td><input type="text" class="att-input att-input-wide" data-type="${type}" data-field="Remark" value="${row.Remark || ''}" placeholder="${t('remarkLabel')}"></td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="foreign_count" value="${row.foreign_count || 0}" min="0"></td>
+            <td><input type="text" class="att-input att-input-wide" data-type="${type}" data-field="remark" value="${row.remark || ''}" placeholder="${t('remarkLabel')}"></td>
         </tr>`;
     });
     html += '</tbody></table>';
@@ -1288,8 +1373,8 @@ function renderAttendance(data) {
 function updateAbsent(el) {
     const row = el.closest('tr');
     const type = el.dataset.type;
-    const total = parseInt(row.querySelector(`.att-input[data-type="${type}"][data-field="Total"]`)?.value) || 0;
-    const present = parseInt(row.querySelector(`.att-input[data-type="${type}"][data-field="Present"]`)?.value) || 0;
+    const total = parseInt(row.querySelector(`.att-input[data-type="${type}"][data-field="total"]`)?.value) || 0;
+    const present = parseInt(row.querySelector(`.att-input[data-type="${type}"][data-field="present"]`)?.value) || 0;
     const absent = total - present;
     const cell = row.querySelector('td:nth-child(4)');
     if (cell) {
@@ -1298,54 +1383,58 @@ function updateAbsent(el) {
     }
 }
 
-function renderAttendanceSummary(date) {
+async function renderAttendanceSummary(date) {
     const container = document.getElementById('attendanceSummary');
-    const allData = JSON.parse(localStorage.getItem('attendance_data') || '[]');
-    const filtered = allData.filter(d => d.Date === date);
-    
-    if (filtered.length === 0) {
-        container.innerHTML = '<p style="color:#999;padding:10px;">' + t('noDataDate') + '</p>';
-        return;
+    try {
+        const data = await supabaseQuery('attendance', { eq: { date: date } });
+        
+        if (data.length === 0) {
+            container.innerHTML = '<p style="color:#999;padding:10px;">' + t('noDataDate') + '</p>';
+            return;
+        }
+        
+        let html = '<table><thead><tr><th>' + t('teamCol') + '</th><th>' + t('detail') + '</th></tr></thead><tbody>';
+        const teams = [...new Set(data.map(d => d.team))];
+        teams.forEach(team => {
+            const records = data.filter(d => d.team === team);
+            let details = records.map(d => {
+                const total = d.total || 0;
+                const absent = (d.total || 0) - (d.present || 0);
+                return d.worker_type + total + (currentLang === 'zh' ? '人' : '') + (absent > 0 ? (currentLang === 'zh' ? '(缺勤' + absent + '人)' : '(absent ' + absent + ')') : '');
+            }).join('、');
+            html += `<tr><td>${team}</td><td>${details || (currentLang === 'zh' ? '无数据' : 'No data')}</td></tr>`;
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    } catch (error) {
+        console.error('加载汇总失败:', error);
+        container.innerHTML = '<p style="color:#999;padding:10px;">加载失败</p>';
     }
-    
-    let html = '<table><thead><tr><th>' + t('teamCol') + '</th><th>' + t('detail') + '</th></tr></thead><tbody>';
-    const teams = [...new Set(filtered.map(d => d.Team))];
-    teams.forEach(team => {
-        const records = filtered.filter(d => d.Team === team);
-        let details = records.map(d => {
-            const total = d.Total || 0;
-            const absent = (d.Total || 0) - (d.Present || 0);
-            return d["Worker Type"] + total + (currentLang === 'zh' ? '人' : '') + (absent > 0 ? (currentLang === 'zh' ? '(缺勤' + absent + '人)' : '(absent ' + absent + ')') : '');
-        }).join('、');
-        html += `<tr><td>${team}</td><td>${details || (currentLang === 'zh' ? '无数据' : 'No data')}</td></tr>`;
-    });
-    html += '</tbody></table>';
-    container.innerHTML = html;
 }
 
-function saveAttendance() {
+async function saveAttendance() {
     const date = document.getElementById('attDate').value;
     const team = document.getElementById('attTeam').value;
     if (!date || !team) { showToast('❌ ' + (currentLang === 'zh' ? '请选择日期和班组' : 'Please select date and team')); return; }
     
     const records = [];
-    document.querySelectorAll('.att-input[data-field="Total"]').forEach(inp => {
+    document.querySelectorAll('.att-input[data-field="total"]').forEach(inp => {
         const type = inp.dataset.type;
         const total = parseInt(inp.value) || 0;
-        const present = parseInt(document.querySelector(`.att-input[data-type="${type}"][data-field="Present"]`)?.value) || 0;
-        const foreign = parseInt(document.querySelector(`.att-input[data-type="${type}"][data-field="Foreign"]`)?.value) || 0;
-        const remark = document.querySelector(`.att-input[data-type="${type}"][data-field="Remark"]`)?.value || '';
+        const present = parseInt(document.querySelector(`.att-input[data-type="${type}"][data-field="present"]`)?.value) || 0;
+        const foreign = parseInt(document.querySelector(`.att-input[data-type="${type}"][data-field="foreign_count"]`)?.value) || 0;
+        const remark = document.querySelector(`.att-input[data-type="${type}"][data-field="remark"]`)?.value || '';
         if (total > 0 || present > 0) {
             records.push({
-                Date: date,
-                Team: team,
-                "Worker Type": type,
-                Total: total,
-                Present: present,
-                Absent: total - present,
-                Foreign: foreign,
-                Remark: remark,
-                "Reported By": currentUser || 'unknown'
+                date: date,
+                team: team,
+                worker_type: type,
+                total: total,
+                present: present,
+                absent: total - present,
+                foreign_count: foreign,
+                remark: remark,
+                reported_by: currentUser || 'unknown'
             });
         }
     });
@@ -1355,191 +1444,261 @@ function saveAttendance() {
         return;
     }
     
-    let allData = JSON.parse(localStorage.getItem('attendance_data') || '[]');
-    allData = allData.filter(d => !(d.Date === date && d.Team === team));
-    allData = allData.concat(records);
-    localStorage.setItem('attendance_data', JSON.stringify(allData));
-    
-    showToast(t('successSaved'));
-    loadAttendance();
+    try {
+        // 先删除该日期该班组的旧数据
+        const existing = await supabaseQuery('attendance', {
+            eq: { date: date, team: team }
+        });
+        for (const item of existing) {
+            await supabaseFetch(`attendance?id=eq.${item.id}`, {
+                method: 'DELETE'
+            });
+        }
+        
+        // 插入新数据
+        for (const record of records) {
+            await supabaseFetch('attendance', {
+                method: 'POST',
+                body: record
+            });
+        }
+        
+        showToast(t('successSaved'));
+        loadAttendance();
+    } catch (error) {
+        showToast('❌ ' + (currentLang === 'zh' ? '保存失败，请重试' : 'Save failed, please retry'));
+        console.error(error);
+    }
 }
 
 // ============================================================
-//  数据总览
+//  数据总览 (Supabase)
 // ============================================================
-function loadOverview() {
+async function loadOverview() {
     const date = document.getElementById('overviewDate').value;
-    const allData = JSON.parse(localStorage.getItem('daily_reports') || '[]');
-    const filtered = date ? allData.filter(d => d.Date === date) : allData;
-    
-    const submittedAreas = new Set(filtered.map(d => d.Area));
-    const statusHtml = AREAS.map(area => {
-        const isSubmitted = submittedAreas.has(area);
-        return `<span style="padding:8px 16px;border-radius:6px;background:${isSubmitted ? '#e8f5e9' : '#ffebee'};color:${isSubmitted ? '#2e7d32' : '#c62828'};border:1px solid ${isSubmitted ? '#a5d6a7' : '#ef9a9a'};">
-            <strong>${area}</strong> ${isSubmitted ? '🟢 ' + (currentLang === 'zh' ? '已提交' : 'Submitted') : '🔴 ' + (currentLang === 'zh' ? '未提交' : 'Not Submitted')}
-        </span>`;
-    }).join('');
-    document.getElementById('areaStatus').innerHTML = statusHtml;
-    
-    const table = document.getElementById('overviewTable');
-    if (filtered.length === 0) {
-        table.innerHTML = '<p style="color:#999;padding:20px;">' + t('noDataDate') + '</p>';
-    } else {
-        let html = `<p style="color:#666;margin-bottom:10px;">${currentLang === 'zh' ? '共' : 'Total'} ${filtered.length} ${currentLang === 'zh' ? '条记录' : 'records'}</p>`;
-        html += '<table><thead><tr><th>' + t('date') + '</th><th>' + t('area') + '</th><th>' + t('team') + '</th><th>' + (currentLang === 'zh' ? '工作描述' : 'Description') + '</th><th>' + t('qty') + '</th><th>' + t('manpower') + '</th><th>' + t('manhours') + '</th></tr></thead><tbody>';
-        filtered.forEach(d => {
-            const desc = d["Description of Work"] || '';
-            html += `<tr><td>${d.Date}</td><td>${d.Area}</td><td>${d.Team}</td><td>${desc.substring(0, 30)}${desc.length > 30 ? '...' : ''}</td>
-                <td>${d["Qty."] || 0}</td><td>${d.Manpower || 0}</td><td>${d.Manhours || 0}</td></tr>`;
-        });
-        html += '</tbody></table>';
-        table.innerHTML = html;
-    }
-    
-    const allTable = document.getElementById('allDataTable');
-    if (allData.length === 0) {
-        allTable.innerHTML = '<p style="color:#999;padding:20px;">' + t('noData') + '</p>';
-    } else {
-        let html = `<p style="color:#666;margin-bottom:10px;">${currentLang === 'zh' ? '共' : 'Total'} ${allData.length} ${currentLang === 'zh' ? '条记录' : 'records'}</p>`;
-        html += '<table><thead><tr><th>' + t('date') + '</th><th>' + t('area') + '</th><th>' + t('team') + '</th><th>' + (currentLang === 'zh' ? '工作描述' : 'Description') + '</th><th>' + t('qty') + '</th><th>' + t('manpower') + '</th><th>' + t('manhours') + '</th></tr></thead><tbody>';
-        allData.slice(-100).reverse().forEach(d => {
-            const desc = d["Description of Work"] || '';
-            html += `<tr><td>${d.Date}</td><td>${d.Area}</td><td>${d.Team}</td><td>${desc.substring(0, 30)}${desc.length > 30 ? '...' : ''}</td>
-                <td>${d["Qty."] || 0}</td><td>${d.Manpower || 0}</td><td>${d.Manhours || 0}</td></tr>`;
-        });
-        html += '</tbody></table>';
-        if (allData.length > 100) html += `<p style="color:#999;margin-top:10px;">${currentLang === 'zh' ? '显示最近100条，共' : 'Showing last 100 of'} ${allData.length}</p>`;
-        allTable.innerHTML = html;
+    try {
+        let allData = [];
+        if (date) {
+            allData = await supabaseQuery('daily_reports', { eq: { date: date } });
+        } else {
+            allData = await supabaseQuery('daily_reports', { select: '*' });
+        }
+        
+        const filtered = allData || [];
+        const submittedAreas = new Set(filtered.map(d => d.area));
+        const statusHtml = AREAS.map(area => {
+            const isSubmitted = submittedAreas.has(area);
+            return `<span style="padding:8px 16px;border-radius:6px;background:${isSubmitted ? '#e8f5e9' : '#ffebee'};color:${isSubmitted ? '#2e7d32' : '#c62828'};border:1px solid ${isSubmitted ? '#a5d6a7' : '#ef9a9a'};">
+                <strong>${area}</strong> ${isSubmitted ? '🟢 ' + (currentLang === 'zh' ? '已提交' : 'Submitted') : '🔴 ' + (currentLang === 'zh' ? '未提交' : 'Not Submitted')}
+            </span>`;
+        }).join('');
+        document.getElementById('areaStatus').innerHTML = statusHtml;
+        
+        const table = document.getElementById('overviewTable');
+        if (filtered.length === 0) {
+            table.innerHTML = '<p style="color:#999;padding:20px;">' + t('noDataDate') + '</p>';
+        } else {
+            let html = `<p style="color:#666;margin-bottom:10px;">${currentLang === 'zh' ? '共' : 'Total'} ${filtered.length} ${currentLang === 'zh' ? '条记录' : 'records'}</p>`;
+            html += '<table><thead><tr><th>' + t('date') + '</th><th>' + t('area') + '</th><th>' + t('team') + '</th><th>' + (currentLang === 'zh' ? '工作描述' : 'Description') + '</th><th>' + t('qty') + '</th><th>' + t('manpower') + '</th><th>' + t('manhours') + '</th></tr></thead><tbody>';
+            filtered.forEach(d => {
+                const desc = d.description || '';
+                html += `<tr><td>${d.date}</td><td>${d.area}</td><td>${d.team}</td><td>${desc.substring(0, 30)}${desc.length > 30 ? '...' : ''}</td>
+                    <td>${d.qty || 0}</td><td>${d.manpower || 0}</td><td>${d.manhours || 0}</td></tr>`;
+            });
+            html += '</tbody></table>';
+            table.innerHTML = html;
+        }
+        
+        // 全部数据（最近100条）
+        const allDataTable = document.getElementById('allDataTable');
+        try {
+            const all = await supabaseQuery('daily_reports', { 
+                select: '*',
+                order: 'id.desc',
+                limit: '100'
+            });
+            if (all.length === 0) {
+                allDataTable.innerHTML = '<p style="color:#999;padding:20px;">' + t('noData') + '</p>';
+            } else {
+                let html = `<p style="color:#666;margin-bottom:10px;">${currentLang === 'zh' ? '共' : 'Total'} ${all.length} ${currentLang === 'zh' ? '条记录' : 'records'}</p>`;
+                html += '<table><thead><tr><th>' + t('date') + '</th><th>' + t('area') + '</th><th>' + t('team') + '</th><th>' + (currentLang === 'zh' ? '工作描述' : 'Description') + '</th><th>' + t('qty') + '</th><th>' + t('manpower') + '</th><th>' + t('manhours') + '</th></tr></thead><tbody>';
+                all.forEach(d => {
+                    const desc = d.description || '';
+                    html += `<tr><td>${d.date}</td><td>${d.area}</td><td>${d.team}</td><td>${desc.substring(0, 30)}${desc.length > 30 ? '...' : ''}</td>
+                        <td>${d.qty || 0}</td><td>${d.manpower || 0}</td><td>${d.manhours || 0}</td></tr>`;
+                });
+                html += '</tbody></table>';
+                allDataTable.innerHTML = html;
+            }
+        } catch (error) {
+            allDataTable.innerHTML = '<p style="color:#999;padding:10px;">加载失败</p>';
+        }
+    } catch (error) {
+        console.error('加载数据失败:', error);
+        document.getElementById('overviewTable').innerHTML = '<p style="color:#999;padding:20px;">加载失败</p>';
     }
 }
 
 function exportData() {
     const date = document.getElementById('overviewDate').value;
-    const allData = JSON.parse(localStorage.getItem('daily_reports') || '[]');
-    const filtered = date ? allData.filter(d => d.Date === date) : allData;
-    if (filtered.length === 0) { showToast(t('errorNoData')); return; }
-    downloadCSV(filtered, `Daily_Report_${date}.csv`);
-}
-
-function exportAllData() {
-    const allData = JSON.parse(localStorage.getItem('daily_reports') || '[]');
-    if (allData.length === 0) { showToast(t('errorNoData')); return; }
-    downloadCSV(allData, `All_Reports_${new Date().toISOString().split('T')[0]}.csv`);
-}
-
-function downloadCSV(data, filename) {
-    const headers = ['Date', 'Area', 'Team', 'Tag Number', 'Code', 'Sub-item', 'Description of Work', 'Unit', 'Qty.', 'UG Pipe length (m)', 'Manpower', 'Manhours', 'Non-Chinese', 'Remark', 'Created By'];
-    let csv = headers.join(',') + '\n';
-    data.forEach(row => {
-        csv += headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(',') + '\n';
+    showToast('📥 ' + (currentLang === 'zh' ? '正在导出...' : 'Exporting...'));
+    // 从当前显示的数据导出
+    const table = document.getElementById('overviewTable');
+    const rows = table.querySelectorAll('tbody tr');
+    if (rows.length === 0) { showToast(t('errorNoData')); return; }
+    // 简单导出：从页面表格抓取数据
+    let csv = 'Date,Area,Team,Description,Qty.,Manpower,Manhours\n';
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 7) {
+            csv += `${cells[0].textContent},${cells[1].textContent},${cells[2].textContent},"${cells[3].textContent}",${cells[4].textContent},${cells[5].textContent},${cells[6].textContent}\n`;
+        }
     });
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = filename;
+    link.download = `Daily_Report_${date || 'all'}.csv`;
+    link.click();
+    showToast(t('successExported'));
+}
+
+function exportAllData() {
+    showToast('📥 ' + (currentLang === 'zh' ? '正在导出全部...' : 'Exporting all...'));
+    // 从全部数据表格抓取
+    const table = document.getElementById('allDataTable');
+    const rows = table.querySelectorAll('tbody tr');
+    if (rows.length === 0) { showToast(t('errorNoData')); return; }
+    let csv = 'Date,Area,Team,Description,Qty.,Manpower,Manhours\n';
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 7) {
+            csv += `${cells[0].textContent},${cells[1].textContent},${cells[2].textContent},"${cells[3].textContent}",${cells[4].textContent},${cells[5].textContent},${cells[6].textContent}\n`;
+        }
+    });
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `All_Reports_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     showToast(t('successExported'));
 }
 
 // ============================================================
-//  工时核对
+//  工时核对 (Supabase)
 // ============================================================
-function loadVerification() {
+async function loadVerification() {
     const date = document.getElementById('verifyDate').value;
     const teamFilter = document.getElementById('verifyTeam').value;
     if (!date) return;
     
-    const attendance = JSON.parse(localStorage.getItem('attendance_data') || '[]');
-    const reports = JSON.parse(localStorage.getItem('daily_reports') || '[]');
-    
-    const filteredTeams = teamFilter === 'all' ? TEAMS : [teamFilter];
-    
-    let html = '<table><thead><tr><th>' + t('teamCol') + '</th><th>' + t('expected') + '</th><th>' + t('present') + '</th><th>' + t('manpower') + '</th><th>' + t('manhours') + '</th><th>' + t('matched') + '</th><th>' + t('diff') + '</th></tr></thead><tbody>';
-    let totalExpected = 0, totalPresent = 0, totalManpower = 0, totalManhours = 0, matchedCount = 0;
-    let teamsWithData = 0;
-    
-    filteredTeams.forEach(team => {
-        const att = attendance.filter(a => a.Date === date && a.Team === team);
-        const totalAtt = att.reduce((s, a) => s + (a.Total || 0), 0);
-        const presentAtt = att.reduce((s, a) => s + (a.Present || 0), 0);
+    try {
+        const attendance = await supabaseQuery('attendance', { eq: { date: date } });
+        const reports = await supabaseQuery('daily_reports', { eq: { date: date } });
         
-        const rep = reports.filter(r => r.Date === date && r.Team === team);
-        const totalMp = rep.reduce((s, r) => s + (r.Manpower || 0), 0);
-        const totalMh = rep.reduce((s, r) => s + (r.Manhours || 0), 0);
+        const filteredTeams = teamFilter === 'all' ? TEAMS : [teamFilter];
         
-        const hasData = totalAtt > 0 || totalMp > 0;
-        if (hasData) teamsWithData++;
+        let html = '<table><thead><tr><th>' + t('teamCol') + '</th><th>' + t('expected') + '</th><th>' + t('present') + '</th><th>' + t('manpower') + '</th><th>' + t('manhours') + '</th><th>' + t('matched') + '</th><th>' + t('diff') + '</th></tr></thead><tbody>';
+        let totalExpected = 0, totalPresent = 0, totalManpower = 0, totalManhours = 0, matchedCount = 0;
+        let teamsWithData = 0;
         
-        const matched = totalAtt === totalMp && totalAtt > 0;
-        const diff = totalAtt - totalMp;
-        if (matched && totalAtt > 0) matchedCount++;
+        filteredTeams.forEach(team => {
+            const att = attendance.filter(a => a.team === team);
+            const totalAtt = att.reduce((s, a) => s + (a.total || 0), 0);
+            const presentAtt = att.reduce((s, a) => s + (a.present || 0), 0);
+            
+            const rep = reports.filter(r => r.team === team);
+            const totalMp = rep.reduce((s, r) => s + (r.manpower || 0), 0);
+            const totalMh = rep.reduce((s, r) => s + (r.manhours || 0), 0);
+            
+            const hasData = totalAtt > 0 || totalMp > 0;
+            if (hasData) teamsWithData++;
+            
+            const matched = totalAtt === totalMp && totalAtt > 0;
+            const diff = totalAtt - totalMp;
+            if (matched && totalAtt > 0) matchedCount++;
+            
+            totalExpected += totalAtt;
+            totalPresent += presentAtt;
+            totalManpower += totalMp;
+            totalManhours += totalMh;
+            
+            const rowClass = hasData ? (matched ? 'row-matched' : 'row-unmatched') : '';
+            html += `<tr class="${rowClass}">
+                <td>${team}</td>
+                <td>${totalAtt}</td>
+                <td>${presentAtt}</td>
+                <td>${totalMp}</td>
+                <td>${totalMh.toFixed(1)}</td>
+                <td>${hasData ? (matched ? '✅' : '❌') : '-'}</td>
+                <td style="color:${diff !== 0 && hasData ? '#c62828' : '#4caf50'}">${hasData ? diff : '-'}</td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        document.getElementById('verifyResult').innerHTML = html;
         
-        totalExpected += totalAtt;
-        totalPresent += presentAtt;
-        totalManpower += totalMp;
-        totalManhours += totalMh;
-        
-        const rowClass = hasData ? (matched ? 'row-matched' : 'row-unmatched') : '';
-        html += `<tr class="${rowClass}">
-            <td>${team}</td>
-            <td>${totalAtt}</td>
-            <td>${presentAtt}</td>
-            <td>${totalMp}</td>
-            <td>${totalMh.toFixed(1)}</td>
-            <td>${hasData ? (matched ? '✅' : '❌') : '-'}</td>
-            <td style="color:${diff !== 0 && hasData ? '#c62828' : '#4caf50'}">${hasData ? diff : '-'}</td>
-        </tr>`;
-    });
-    html += '</tbody></table>';
-    document.getElementById('verifyResult').innerHTML = html;
-    
-    const statsHtml = `
-        <div class="stats">
-            <div class="stat-card"><div class="stat-number">${totalExpected}</div><div class="stat-label">${currentLang === 'zh' ? '总应到' : 'Total Expected'}</div></div>
-            <div class="stat-card"><div class="stat-number">${totalPresent}</div><div class="stat-label">${currentLang === 'zh' ? '总实到' : 'Total Present'}</div></div>
-            <div class="stat-card"><div class="stat-number">${totalManpower}</div><div class="stat-label">${currentLang === 'zh' ? '总工时人数' : 'Total Manpower'}</div></div>
-            <div class="stat-card"><div class="stat-number">${totalManhours.toFixed(1)}</div><div class="stat-label">${currentLang === 'zh' ? '总工时' : 'Total Manhours'}</div></div>
-            <div class="stat-card"><div class="stat-number">${matchedCount}/${teamsWithData || 1}</div><div class="stat-label">${currentLang === 'zh' ? '匹配班组' : 'Matched Teams'}</div></div>
-        </div>
-    `;
-    document.getElementById('verifyStats').innerHTML = statsHtml;
+        const statsHtml = `
+            <div class="stats">
+                <div class="stat-card"><div class="stat-number">${totalExpected}</div><div class="stat-label">${currentLang === 'zh' ? '总应到' : 'Total Expected'}</div></div>
+                <div class="stat-card"><div class="stat-number">${totalPresent}</div><div class="stat-label">${currentLang === 'zh' ? '总实到' : 'Total Present'}</div></div>
+                <div class="stat-card"><div class="stat-number">${totalManpower}</div><div class="stat-label">${currentLang === 'zh' ? '总工时人数' : 'Total Manpower'}</div></div>
+                <div class="stat-card"><div class="stat-number">${totalManhours.toFixed(1)}</div><div class="stat-label">${currentLang === 'zh' ? '总工时' : 'Total Manhours'}</div></div>
+                <div class="stat-card"><div class="stat-number">${matchedCount}/${teamsWithData || 1}</div><div class="stat-label">${currentLang === 'zh' ? '匹配班组' : 'Matched Teams'}</div></div>
+            </div>
+        `;
+        document.getElementById('verifyStats').innerHTML = statsHtml;
+    } catch (error) {
+        console.error('加载核对数据失败:', error);
+        document.getElementById('verifyResult').innerHTML = '<p style="color:#999;padding:20px;">加载失败</p>';
+    }
 }
 
 // ============================================================
-//  用户管理 (仅管理员)
+//  用户管理 (Supabase)
 // ============================================================
-function loadUserList() {
-    const container = document.getElementById('userList');
-    let html = '<table><thead><tr><th>' + (currentLang === 'zh' ? '用户名' : 'Username') + '</th><th>' + (currentLang === 'zh' ? '显示名称' : 'Display Name') + '</th><th>' + (currentLang === 'zh' ? '角色' : 'Role') + '</th><th>' + (currentLang === 'zh' ? '操作' : 'Action') + '</th></tr></thead><tbody>';
-    let hasUsers = false;
-    for (const [username, info] of Object.entries(USERS)) {
-        if (username === 'admin') continue;
-        hasUsers = true;
-        html += `<tr>
-            <td>${username}</td>
-            <td>${info.display_name}</td>
-            <td>${info.role}</td>
-            <td><button class="btn btn-danger btn-sm" onclick="deleteUser('${username}')">${currentLang === 'zh' ? '删除' : 'Delete'}</button></td>
-        </tr>`;
+async function loadUserList() {
+    try {
+        const users = await supabaseQuery('users', { select: '*' });
+        const container = document.getElementById('userList');
+        let html = '<table><thead><tr><th>' + (currentLang === 'zh' ? '用户名' : 'Username') + '</th><th>' + (currentLang === 'zh' ? '显示名称' : 'Display Name') + '</th><th>' + (currentLang === 'zh' ? '角色' : 'Role') + '</th><th>' + (currentLang === 'zh' ? '操作' : 'Action') + '</th></tr></thead><tbody>';
+        let hasUsers = false;
+        for (const user of users) {
+            if (user.username === 'admin') continue;
+            hasUsers = true;
+            html += `<tr>
+                <td>${user.username}</td>
+                <td>${user.display_name}</td>
+                <td>${user.role}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="deleteUser('${user.username}')">${currentLang === 'zh' ? '删除' : 'Delete'}</button></td>
+            </tr>`;
+        }
+        if (!hasUsers) {
+            html += `<tr><td colspan="4" style="text-align:center;color:#999;">${currentLang === 'zh' ? '暂无其他用户' : 'No other users'}</td></tr>`;
+        }
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    } catch (error) {
+        console.error('加载用户列表失败:', error);
+        document.getElementById('userList').innerHTML = '<p style="color:#999;padding:10px;">加载失败</p>';
     }
-    if (!hasUsers) {
-        html += `<tr><td colspan="4" style="text-align:center;color:#999;">${currentLang === 'zh' ? '暂无其他用户' : 'No other users'}</td></tr>`;
-    }
-    html += '</tbody></table>';
-    container.innerHTML = html;
 }
 
-function deleteUser(username) {
+async function deleteUser(username) {
     if (username === 'admin') return;
     if (confirm(t('deleteConfirm').replace('{name}', username))) {
-        delete USERS[username];
-        saveUsers();
-        loadUserList();
-        showToast(t('userDeleted'));
+        try {
+            await supabaseFetch(`users?username=eq.${username}`, {
+                method: 'DELETE'
+            });
+            showToast(t('userDeleted'));
+            loadUserList();
+        } catch (error) {
+            showToast('❌ ' + (currentLang === 'zh' ? '删除失败' : 'Delete failed'));
+            console.error(error);
+        }
     }
 }
 
-function addUser() {
+async function addUser() {
     const username = document.getElementById('newUsername').value.trim();
     const password = document.getElementById('newPassword').value;
     const displayName = document.getElementById('newDisplayName').value.trim();
@@ -1549,37 +1708,64 @@ function addUser() {
         showToast(t('errorFillComplete'));
         return;
     }
-    if (USERS[username]) {
-        showToast(t('errorUserExists'));
-        return;
-    }
     
-    USERS[username] = { password, role, display_name: displayName };
-    saveUsers();
-    showToast(t('successAddUser').replace('{name}', displayName));
-    loadUserList();
-    document.getElementById('newUsername').value = '';
-    document.getElementById('newPassword').value = '';
-    document.getElementById('newDisplayName').value = '';
+    try {
+        const existing = await supabaseQuery('users', { eq: { username: username } });
+        if (existing.length > 0) {
+            showToast(t('errorUserExists'));
+            return;
+        }
+        
+        await supabaseFetch('users', {
+            method: 'POST',
+            body: {
+                username: username,
+                password: password,
+                role: role,
+                display_name: displayName
+            }
+        });
+        
+        showToast(t('successAddUser').replace('{name}', displayName));
+        loadUserList();
+        document.getElementById('newUsername').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('newDisplayName').value = '';
+    } catch (error) {
+        showToast('❌ ' + (currentLang === 'zh' ? '添加失败' : 'Add failed'));
+        console.error(error);
+    }
 }
 
 // ============================================================
 //  危险操作 (仅管理员)
 // ============================================================
 function exportBackup() {
-    const data = {
-        users: USERS,
-        daily_reports: JSON.parse(localStorage.getItem('daily_reports') || '[]'),
-        attendance_data: JSON.parse(localStorage.getItem('attendance_data') || '[]'),
-        pending_items: pendingItems,
-        login_logs: JSON.parse(localStorage.getItem('login_logs') || '[]')
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
-    link.click();
-    showToast(t('successBackup'));
+    showToast('📦 ' + (currentLang === 'zh' ? '正在导出备份...' : 'Exporting backup...'));
+    // 从 Supabase 导出所有数据
+    Promise.all([
+        supabaseQuery('users', { select: '*' }),
+        supabaseQuery('daily_reports', { select: '*' }),
+        supabaseQuery('attendance', { select: '*' }),
+        supabaseQuery('login_logs', { select: '*' })
+    ]).then(([users, reports, attendance, logs]) => {
+        const data = {
+            users: users,
+            daily_reports: reports,
+            attendance_data: attendance,
+            login_logs: logs,
+            exported_at: new Date().toISOString()
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        showToast(t('successBackup'));
+    }).catch(error => {
+        showToast('❌ ' + (currentLang === 'zh' ? '备份失败' : 'Backup failed'));
+        console.error(error);
+    });
 }
 
 function importBackup() {
@@ -1590,14 +1776,36 @@ function importBackup() {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = function(ev) {
+        reader.onload = async function(ev) {
             try {
                 const data = JSON.parse(ev.target.result);
-                if (data.users) { USERS = data.users; saveUsers(); }
-                if (data.daily_reports) localStorage.setItem('daily_reports', JSON.stringify(data.daily_reports));
-                if (data.attendance_data) localStorage.setItem('attendance_data', JSON.stringify(data.attendance_data));
-                if (data.pending_items) { pendingItems = data.pending_items; savePending(); renderPending(); }
-                if (data.login_logs) localStorage.setItem('login_logs', JSON.stringify(data.login_logs));
+                // 导入用户
+                if (data.users) {
+                    for (const user of data.users) {
+                        await supabaseFetch('users', {
+                            method: 'POST',
+                            body: user
+                        }).catch(() => {});
+                    }
+                }
+                // 导入日报
+                if (data.daily_reports) {
+                    for (const report of data.daily_reports) {
+                        await supabaseFetch('daily_reports', {
+                            method: 'POST',
+                            body: report
+                        }).catch(() => {});
+                    }
+                }
+                // 导入考勤
+                if (data.attendance_data) {
+                    for (const att of data.attendance_data) {
+                        await supabaseFetch('attendance', {
+                            method: 'POST',
+                            body: att
+                        }).catch(() => {});
+                    }
+                }
                 showToast(t('successRestore'));
                 loadOverview();
                 loadAttendance();
@@ -1612,53 +1820,78 @@ function importBackup() {
     input.click();
 }
 
-function clearZeroData() {
+async function clearZeroData() {
     if (!confirm(t('confirmClearZero'))) return;
-    let data = JSON.parse(localStorage.getItem('daily_reports') || '[]');
-    const originalCount = data.length;
-    data = data.filter(d => {
-        const nums = [d["Qty."] || 0, d["UG Pipe length (m)"] || 0, d.Manpower || 0, d.Manhours || 0, d["Non-Chinese"] || 0];
-        return nums.some(n => n !== 0);
-    });
-    const removed = originalCount - data.length;
-    localStorage.setItem('daily_reports', JSON.stringify(data));
-    showToast(t('successClearZero').replace('{count}', removed));
-    loadOverview();
+    try {
+        const data = await supabaseQuery('daily_reports', { select: '*' });
+        const toDelete = data.filter(d => {
+            const nums = [d.qty || 0, d.pipe_length || 0, d.manpower || 0, d.manhours || 0, d.non_chinese || 0];
+            return nums.every(n => n === 0);
+        });
+        let count = 0;
+        for (const item of toDelete) {
+            await supabaseFetch(`daily_reports?id=eq.${item.id}`, {
+                method: 'DELETE'
+            });
+            count++;
+        }
+        showToast(t('successClearZero').replace('{count}', count));
+        loadOverview();
+    } catch (error) {
+        showToast('❌ ' + (currentLang === 'zh' ? '清理失败' : 'Clear failed'));
+        console.error(error);
+    }
 }
 
-function deduplicateData() {
+async function deduplicateData() {
     if (!confirm(t('confirmDedup'))) return;
-    let data = JSON.parse(localStorage.getItem('daily_reports') || '[]');
-    const keys = ['Date', 'Area', 'Team', 'Tag Number', 'Code', 'Description of Work'];
-    const seen = new Set();
-    const deduped = data.filter(d => {
-        const key = keys.map(k => d[k] || '').join('|');
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-    });
-    const removed = data.length - deduped.length;
-    localStorage.setItem('daily_reports', JSON.stringify(deduped));
-    showToast(t('successDedup').replace('{count}', removed));
-    loadOverview();
+    try {
+        const data = await supabaseQuery('daily_reports', { select: '*' });
+        const keys = ['date', 'area', 'team', 'tag_number', 'code', 'description'];
+        const seen = new Set();
+        const duplicates = [];
+        data.forEach(d => {
+            const key = keys.map(k => d[k] || '').join('|');
+            if (seen.has(key)) {
+                duplicates.push(d);
+            } else {
+                seen.add(key);
+            }
+        });
+        let count = 0;
+        for (const item of duplicates) {
+            await supabaseFetch(`daily_reports?id=eq.${item.id}`, {
+                method: 'DELETE'
+            });
+            count++;
+        }
+        showToast(t('successDedup').replace('{count}', count));
+        loadOverview();
+    } catch (error) {
+        showToast('❌ ' + (currentLang === 'zh' ? '去重失败' : 'Dedup failed'));
+        console.error(error);
+    }
 }
 
-function resetAllData() {
+async function resetAllData() {
     if (!confirm(t('confirmReset'))) return;
     if (!confirm(t('confirmReset2'))) return;
-    localStorage.removeItem('daily_reports');
-    localStorage.removeItem('attendance_data');
-    localStorage.removeItem('pending_items');
-    localStorage.removeItem('login_logs');
-    localStorage.removeItem('users_data');
-    pendingItems = [];
-    loadUsers();
-    renderPending();
-    loadOverview();
-    loadAttendance();
-    loadLoginLogs();
-    loadUserList();
-    showToast(t('successReset'));
+    try {
+        // 清空所有表
+        const tables = ['daily_reports', 'attendance', 'login_logs'];
+        for (const table of tables) {
+            await supabaseFetch(table, {
+                method: 'DELETE'
+            });
+        }
+        showToast(t('successReset'));
+        loadOverview();
+        loadAttendance();
+        loadLoginLogs();
+    } catch (error) {
+        showToast('❌ ' + (currentLang === 'zh' ? '重置失败' : 'Reset failed'));
+        console.error(error);
+    }
 }
 
 // ============================================================
@@ -1677,7 +1910,7 @@ function showToast(msg) {
 }
 
 // ============================================================
-//  自动保存
+//  自动保存 (本地待提交)
 // ============================================================
 setInterval(() => {
     savePending();
@@ -1687,8 +1920,6 @@ setInterval(() => {
 //  启动
 // ============================================================
 document.addEventListener('DOMContentLoaded', function() {
-    loadUsers();
-    
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('entryDate').value = today;
     document.getElementById('attDate').value = today;
