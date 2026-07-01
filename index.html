@@ -62,6 +62,7 @@
         table tbody tr:hover td { background-color: #f0f7ff; }
         table .row-matched { background: #e8f5e9; }
         table .row-unmatched { background: #ffebee; }
+        table .row-total { background: #e3f2fd; font-weight: bold; }
         
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
         .stat-card { background: white; padding: 15px 20px; border-radius: 8px; border-left: 4px solid #4a90d9; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
@@ -95,6 +96,10 @@
         .att-input { width: 60px; padding: 5px 8px; border: 1px solid #ddd; border-radius: 4px; text-align: center; }
         .att-input:focus { border-color: #4a90d9; outline: none; }
         .att-input-wide { width: 120px; }
+        .att-input-small { width: 45px; padding: 4px 4px; border: 1px solid #ddd; border-radius: 4px; text-align: center; font-size: 12px; }
+        .att-input-small:focus { border-color: #4a90d9; outline: none; }
+        .att-row-total { background: #fff8e1; font-weight: 600; }
+        .att-row-total td { border-top: 2px solid #ffb300; }
         
         .cloud-badge { display: inline-block; background: #e3f2fd; color: #1565c0; padding: 2px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; }
         
@@ -106,6 +111,17 @@
         .role-tabs-hint { padding: 10px 16px; background: #f5f5f5; border-radius: 6px; font-size: 13px; color: #666; margin-bottom: 15px; }
         .role-tabs-hint strong { color: #1a237e; }
         
+        .area-distribution { margin-top: 10px; padding: 10px; background: #fafafa; border-radius: 6px; border: 1px solid #e8edf4; }
+        .area-distribution-title { font-size: 13px; font-weight: 600; color: #555; margin-bottom: 8px; }
+        .area-distribution-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 6px; }
+        .area-distribution-item { display: flex; align-items: center; gap: 4px; font-size: 12px; padding: 4px 8px; background: white; border-radius: 4px; border: 1px solid #e8edf4; }
+        .area-distribution-item input { width: 40px; padding: 2px 4px; border: 1px solid #ddd; border-radius: 3px; text-align: center; font-size: 12px; }
+        .area-distribution-item input:focus { border-color: #4a90d9; outline: none; }
+        .area-distribution-item .area-label { min-width: 40px; color: #666; }
+        
+        .info-box { padding: 10px 16px; background: #e3f2fd; border-radius: 6px; border-left: 4px solid #4a90d9; margin: 10px 0; font-size: 13px; color: #1565c0; }
+        .warning-box { padding: 10px 16px; background: #fff3e0; border-radius: 6px; border-left: 4px solid #ff9800; margin: 10px 0; font-size: 13px; color: #e65100; }
+        
         @media (max-width: 768px) {
             .form-row { grid-template-columns: 1fr; }
             .tabs { flex-wrap: wrap; }
@@ -115,6 +131,7 @@
             .user-info { justify-content: center; }
             .login-box { margin: 40px 20px; padding: 30px 20px; }
             .stats { grid-template-columns: 1fr 1fr; }
+            .area-distribution-grid { grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); }
         }
     </style>
 </head>
@@ -157,29 +174,29 @@
         
         <!-- Tab 导航栏 -->
         <div class="tabs" id="tabHeaders">
-            <!-- 录入员和Admin可见 -->
             <button class="tab-btn active" onclick="switchTab('entry')" data-tab="entry" data-role="entry,admin">📝 施工量录入</button>
             <button class="tab-btn" onclick="switchTab('attendance')" data-tab="attendance" data-role="entry,admin">👷 出勤日报</button>
-            <!-- 查看者和Admin可见 -->
             <button class="tab-btn" onclick="switchTab('overview')" data-tab="overview" data-role="viewer,admin">📊 数据总览</button>
             <button class="tab-btn" onclick="switchTab('verify')" data-tab="verify" data-role="viewer,admin">✅ 工时核对</button>
-            <!-- 仅Admin可见 -->
             <button class="tab-btn" onclick="switchTab('settings')" data-tab="settings" data-role="admin">⚙️ 设置</button>
         </div>
         
         <!-- 角色提示 -->
         <div class="role-tabs-hint" id="roleHint">
-            💡 当前角色：<strong id="roleNameDisplay">录入员</strong> · 
-            可用功能：<span id="availableTabsDisplay">施工量录入、出勤日报</span>
+            💡 <span id="roleHintText">当前角色：<strong id="roleNameDisplay">管理员</strong> · 可用功能：<span id="availableTabsDisplay">施工量录入、出勤日报、数据总览、工时核对、设置</span></span>
         </div>
         
         <!-- ===== Tab: 录入 (entry + admin) ===== -->
         <div id="tab-entry" class="tab-content active">
             <h2 id="entryTitle">📝 施工量录入</h2>
+            
+            <!-- 显示当日考勤汇总 -->
+            <div id="entryAttendanceSummary" class="info-box"></div>
+            
             <div class="form-row">
                 <div class="form-group">
                     <label id="lblDate">📅 日期</label>
-                    <input type="date" id="entryDate">
+                    <input type="date" id="entryDate" onchange="onEntryDateChange()">
                 </div>
                 <div class="form-group">
                     <label id="lblArea">📍 区域</label>
@@ -198,7 +215,7 @@
                 </div>
                 <div class="form-group">
                     <label id="lblTeam">👷 班组</label>
-                    <select id="entryTeam">
+                    <select id="entryTeam" onchange="onEntryTeamChange()">
                         <option value="马玉奇(Ma Yuqi)">马玉奇(Ma Yuqi)</option>
                         <option value="王建(Wang Jian)">王建(Wang Jian)</option>
                         <option value="Kumar">Kumar</option>
@@ -214,6 +231,12 @@
                     <label id="lblTag">🏷️ 位号</label>
                     <input type="text" id="entryTag" placeholder="输入位号 / Tag No.">
                 </div>
+            </div>
+            
+            <!-- 显示该班组今日各区域人员分布 -->
+            <div id="entryTeamDistribution" class="area-distribution" style="display:none;">
+                <div class="area-distribution-title" id="distTitle">👷 该班组今日各区域人员分布</div>
+                <div id="teamDistributionGrid" class="area-distribution-grid"></div>
             </div>
             
             <div style="font-weight:600;font-size:15px;color:#1a237e;margin-top:15px;" id="workTitle">🛠️ 工作内容</div>
@@ -254,7 +277,8 @@
                 </div>
                 <div class="form-group">
                     <label id="lblManpower">👷 人数</label>
-                    <input type="number" id="entryManpower" value="0">
+                    <input type="number" id="entryManpower" value="0" onchange="onManpowerChange()">
+                    <span id="manpowerHint" style="font-size:11px;color:#999;"></span>
                 </div>
                 <div class="form-group">
                     <label id="lblManhours">⏱️ 工时</label>
@@ -288,14 +312,17 @@
         <!-- ===== Tab: 出勤 (entry + admin) ===== -->
         <div id="tab-attendance" class="tab-content">
             <h2 id="attTitle">👷 出勤日报（班组长）</h2>
+            <div class="info-box" id="attendanceInfo">
+                📌 请按工种填报各区域人数，每个工种的区域人数总和会自动汇总
+            </div>
             <div class="form-row">
                 <div class="form-group">
                     <label id="lblAttDate">📅 日期</label>
-                    <input type="date" id="attDate">
+                    <input type="date" id="attDate" onchange="loadAttendance()">
                 </div>
                 <div class="form-group">
                     <label id="lblAttTeam">👷 班组</label>
-                    <select id="attTeam">
+                    <select id="attTeam" onchange="loadAttendance()">
                         <option value="马玉奇(Ma Yuqi)">马玉奇(Ma Yuqi)</option>
                         <option value="王建(Wang Jian)">王建(Wang Jian)</option>
                         <option value="Kumar">Kumar</option>
@@ -324,7 +351,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label id="lblOverviewDate">📅 选择日期</label>
-                    <input type="date" id="overviewDate">
+                    <input type="date" id="overviewDate" onchange="loadOverview()">
                 </div>
                 <div class="form-group" style="justify-content:flex-end; flex-direction:row; gap:10px; flex-wrap:wrap;">
                     <button class="btn btn-secondary" onclick="loadOverview()" id="btnRefreshOverview">🔄 刷新</button>
@@ -347,11 +374,11 @@
             <div class="form-row">
                 <div class="form-group">
                     <label id="lblVerifyDate">📅 日期</label>
-                    <input type="date" id="verifyDate">
+                    <input type="date" id="verifyDate" onchange="loadVerification()">
                 </div>
                 <div class="form-group">
                     <label id="lblVerifyTeam">👷 班组</label>
-                    <select id="verifyTeam">
+                    <select id="verifyTeam" onchange="loadVerification()">
                         <option value="all" id="optAll">全部</option>
                         <option value="马玉奇(Ma Yuqi)">马玉奇(Ma Yuqi)</option>
                         <option value="王建(Wang Jian)">王建(Wang Jian)</option>
@@ -498,6 +525,15 @@ const I18N = {
         teamCol: '班组',
         detail: '出勤明细',
         noData: '暂无数据',
+        roleAdmin: '管理员',
+        roleViewer: '查看者',
+        roleEntry: '录入员',
+        roleHint: '当前角色：<strong>{role}</strong> · 可用功能：<span>{tabs}</span>',
+        tabEntry: '施工量录入',
+        tabAttendance: '出勤日报',
+        tabOverview: '数据总览',
+        tabVerify: '工时核对',
+        tabSettings: '设置',
         confirmClear: '确定清空所有待提交吗？',
         confirmSubmit: '提交 {count} 条记录？',
         confirmReset: '⚠️ 确定要重置所有数据吗？此操作不可恢复！',
@@ -521,15 +557,12 @@ const I18N = {
         noDataDate: '该日期暂无数据',
         deleteConfirm: '确定删除用户 {name} 吗？',
         userDeleted: '✅ 用户已删除',
-        roleAdmin: '管理员',
-        roleViewer: '查看者',
-        roleEntry: '录入员',
-        roleHint: '💡 当前角色：<strong>{role}</strong> · 可用功能：<span>{tabs}</span>',
-        tabEntry: '施工量录入',
-        tabAttendance: '出勤日报',
-        tabOverview: '数据总览',
-        tabVerify: '工时核对',
-        tabSettings: '设置',
+        distTitle: '👷 该班组今日各区域人员分布',
+        attInfo: '📌 请按工种填报各区域人数，每个工种的区域人数总和会自动汇总',
+        manpowerHint: '可从今日考勤中分配人数',
+        noAttendance: '⚠️ 该班组今日尚未填报考勤，请先填写出勤日报',
+        total: '合计',
+        areaDist: '区域分布',
     },
     en: {
         appTitle: '🏗️ Civil Work Daily Report',
@@ -597,6 +630,15 @@ const I18N = {
         teamCol: 'Team',
         detail: 'Detail',
         noData: 'No data available',
+        roleAdmin: 'Admin',
+        roleViewer: 'Viewer',
+        roleEntry: 'Entry',
+        roleHint: 'Role: <strong>{role}</strong> · Available: <span>{tabs}</span>',
+        tabEntry: 'Work Entry',
+        tabAttendance: 'Attendance',
+        tabOverview: 'Overview',
+        tabVerify: 'Verification',
+        tabSettings: 'Settings',
         confirmClear: 'Clear all pending items?',
         confirmSubmit: 'Submit {count} records?',
         confirmReset: '⚠️ Reset ALL data? This cannot be undone!',
@@ -620,15 +662,12 @@ const I18N = {
         noDataDate: 'No data for this date',
         deleteConfirm: 'Delete user {name}?',
         userDeleted: '✅ User deleted',
-        roleAdmin: 'Admin',
-        roleViewer: 'Viewer',
-        roleEntry: 'Entry',
-        roleHint: '💡 Role: <strong>{role}</strong> · Available: <span>{tabs}</span>',
-        tabEntry: 'Work Entry',
-        tabAttendance: 'Attendance',
-        tabOverview: 'Overview',
-        tabVerify: 'Verification',
-        tabSettings: 'Settings',
+        distTitle: '👷 Team member distribution by area today',
+        attInfo: '📌 Fill in the number of people in each area by worker type. The sum will be automatically calculated.',
+        manpowerHint: 'Can be assigned from today\'s attendance',
+        noAttendance: '⚠️ This team has not reported attendance today, please fill in attendance first',
+        total: 'Total',
+        areaDist: 'Area Distribution',
     }
 };
 
@@ -725,6 +764,9 @@ function updateUI() {
     document.getElementById('dangerTitle').textContent = t('dangerTitle');
     document.getElementById('loginLogsTitle').textContent = t('loginLogsTitle');
     document.getElementById('optAll').textContent = currentLang === 'zh' ? '全部' : 'All';
+    document.getElementById('attendanceInfo').textContent = t('attInfo');
+    document.getElementById('distTitle').textContent = t('distTitle');
+    document.getElementById('manpowerHint').textContent = t('manpowerHint');
     
     // Tab按钮
     const tabMap = {
@@ -754,6 +796,7 @@ function updateUI() {
     loadUserList();
     loadVerification();
     loadLoginLogs();
+    onEntryDateChange();
 }
 
 // ============================================================
@@ -780,7 +823,7 @@ function updateRoleHint() {
     
     document.getElementById('roleNameDisplay').textContent = roleName;
     document.getElementById('availableTabsDisplay').textContent = tabs.join('、');
-    document.getElementById('roleHint').innerHTML = t('roleHint')
+    document.getElementById('roleHintText').innerHTML = t('roleHint')
         .replace('{role}', roleName)
         .replace('{tabs}', tabs.join('、'));
 }
@@ -798,7 +841,6 @@ function loadUsers() {
             return;
         } catch(e) {}
     }
-    // 默认用户
     USERS = {
         'admin': { password: '142857jj', role: 'admin', display_name: '管理员' },
         '95381694': { password: '1478', role: 'viewer', display_name: '汪行虎' },
@@ -933,24 +975,18 @@ function handleLogin() {
     currentRole = user.role;
     isAdmin = currentRole === 'admin';
     
-    // 更新用户信息显示
     document.getElementById('userDisplayName').textContent = '👤 ' + user.display_name;
     const badge = document.getElementById('userRoleBadge');
     badge.textContent = t('role' + currentRole.charAt(0).toUpperCase() + currentRole.slice(1));
     badge.className = 'user-role-badge ' + currentRole;
     
-    // 显示主界面
     document.getElementById('loginPage').style.display = 'none';
     document.getElementById('mainApp').style.display = 'block';
     
-    // 记录登录日志
     addLoginLog(username, user.display_name, user.role);
     
-    // 根据角色显示对应的Tab
     updateTabVisibility();
     updateRoleHint();
-    
-    // 初始化
     initApp();
     updateUI();
     
@@ -1009,18 +1045,14 @@ function updateTabVisibility() {
         }
     });
     
-    // 默认激活第一个可见的Tab
     const visibleTabs = document.querySelectorAll('.tab-btn:not(.hidden)');
     if (visibleTabs.length > 0) {
-        const firstTab = visibleTabs[0];
-        // 如果当前激活的Tab被隐藏了，切换到第一个可见Tab
         const activeTab = document.querySelector('.tab-btn.active');
         if (activeTab && activeTab.classList.contains('hidden')) {
-            switchTab(firstTab.dataset.tab);
+            switchTab(visibleTabs[0].dataset.tab);
         }
-        // 如果没有任何Tab激活，激活第一个
         if (!document.querySelector('.tab-btn.active')) {
-            switchTab(firstTab.dataset.tab);
+            switchTab(visibleTabs[0].dataset.tab);
         }
     }
 }
@@ -1043,6 +1075,7 @@ function initApp() {
     loadUserList();
     loadVerification();
     loadLoginLogs();
+    onEntryDateChange();
 }
 
 function switchTab(tab) {
@@ -1054,6 +1087,7 @@ function switchTab(tab) {
     if (tab === 'attendance') loadAttendance();
     if (tab === 'verify') loadVerification();
     if (tab === 'settings') { loadUserList(); loadLoginLogs(); }
+    if (tab === 'entry') onEntryDateChange();
 }
 
 // ============================================================
@@ -1085,31 +1119,171 @@ function onSubItemChange() {
 }
 
 // ============================================================
+//  录入界面 - 日期/班组变更时加载考勤信息
+// ============================================================
+function onEntryDateChange() {
+    const date = document.getElementById('entryDate').value;
+    const team = document.getElementById('entryTeam').value;
+    if (!date || !team) return;
+    
+    // 获取该班组今日考勤
+    const allAtt = JSON.parse(localStorage.getItem('attendance_data') || '[]');
+    const teamAtt = allAtt.filter(a => a.Date === date && a.Team === team);
+    
+    const summaryDiv = document.getElementById('entryAttendanceSummary');
+    const distDiv = document.getElementById('entryTeamDistribution');
+    const gridDiv = document.getElementById('teamDistributionGrid');
+    const hintSpan = document.getElementById('manpowerHint');
+    
+    if (teamAtt.length === 0) {
+        summaryDiv.innerHTML = '⚠️ ' + t('noAttendance');
+        summaryDiv.className = 'warning-box';
+        distDiv.style.display = 'none';
+        hintSpan.textContent = '';
+        return;
+    }
+    
+    summaryDiv.className = 'info-box';
+    // 显示各工种汇总
+    let summaryHtml = '📊 <strong>' + (currentLang === 'zh' ? '今日考勤汇总' : 'Today\'s Attendance') + '</strong>：';
+    let totalPeople = 0;
+    const typeMap = {};
+    teamAtt.forEach(a => {
+        const type = a["Worker Type"];
+        const total = a.Total || 0;
+        typeMap[type] = total;
+        totalPeople += total;
+    });
+    const typeNames = Object.keys(typeMap);
+    summaryHtml += typeNames.map(t => t + '：' + typeMap[t] + (currentLang === 'zh' ? '人' : '')).join(' | ');
+    summaryHtml += ' | ' + (currentLang === 'zh' ? '合计' : 'Total') + '：' + totalPeople + (currentLang === 'zh' ? '人' : '');
+    summaryDiv.innerHTML = summaryHtml;
+    
+    // 显示各区域人员分布
+    // 从考勤中提取区域分布数据（如果有的话）
+    const areaData = {};
+    teamAtt.forEach(a => {
+        const type = a["Worker Type"];
+        // 检查是否有区域分布数据（格式：Area_110, Area_210, ...）
+        for (const area of AREAS) {
+            const key = 'Area_' + area;
+            if (a[key] !== undefined && a[key] !== null && a[key] > 0) {
+                if (!areaData[area]) areaData[area] = {};
+                areaData[area][type] = (areaData[area][type] || 0) + a[key];
+            }
+        }
+    });
+    
+    // 如果有区域分布数据，显示
+    const hasAreaData = Object.keys(areaData).length > 0;
+    distDiv.style.display = hasAreaData ? 'block' : 'none';
+    
+    if (hasAreaData) {
+        let gridHtml = '';
+        for (const area of AREAS) {
+            if (areaData[area]) {
+                const types = Object.keys(areaData[area]);
+                const areaTotal = types.reduce((sum, t) => sum + areaData[area][t], 0);
+                gridHtml += `<div class="area-distribution-item">
+                    <span class="area-label"><strong>${area}</strong></span>
+                    ${types.map(t => `<span>${t}:${areaData[area][t]}人</span>`).join(' ')}
+                    <span style="color:#1565c0;font-weight:600;">(共${areaTotal}人)</span>
+                </div>`;
+            }
+        }
+        if (gridHtml) {
+            gridDiv.innerHTML = gridHtml;
+        } else {
+            distDiv.style.display = 'none';
+        }
+    }
+    
+    // 更新人数提示
+    hintSpan.textContent = totalPeople > 0 ? (currentLang === 'zh' ? '今日该班组总人数：' + totalPeople + '人' : 'Today total: ' + totalPeople) : '';
+}
+
+function onEntryTeamChange() {
+    onEntryDateChange();
+}
+
+// ============================================================
+//  录入界面 - 人数变更验证
+// ============================================================
+function onManpowerChange() {
+    const date = document.getElementById('entryDate').value;
+    const team = document.getElementById('entryTeam').value;
+    const mpInput = document.getElementById('entryManpower');
+    const mp = parseInt(mpInput.value) || 0;
+    
+    if (!date || !team) return;
+    
+    const allAtt = JSON.parse(localStorage.getItem('attendance_data') || '[]');
+    const teamAtt = allAtt.filter(a => a.Date === date && a.Team === team);
+    let totalPeople = 0;
+    teamAtt.forEach(a => { totalPeople += a.Total || 0; });
+    
+    const hintSpan = document.getElementById('manpowerHint');
+    if (totalPeople > 0 && mp > totalPeople) {
+        hintSpan.style.color = '#c62828';
+        hintSpan.textContent = '⚠️ ' + (currentLang === 'zh' ? '人数超过今日考勤总人数(' + totalPeople + '人)' : 'Exceeds today\'s attendance total (' + totalPeople + ')');
+    } else if (totalPeople > 0) {
+        hintSpan.style.color = '#4caf50';
+        hintSpan.textContent = '✅ ' + (currentLang === 'zh' ? '今日考勤可分配人数：' + totalPeople + '人，已用：' + mp + '人' : 'Available: ' + totalPeople + ', Used: ' + mp);
+    }
+}
+
+// ============================================================
 //  待提交管理
 // ============================================================
 function addToPending() {
-    const record = {
-        Date: document.getElementById('entryDate').value,
-        Area: document.getElementById('entryArea').value,
-        Team: document.getElementById('entryTeam').value,
-        "Tag Number": document.getElementById('entryTag').value || 'N/A',
-        Code: document.getElementById('entryCode').value,
-        "Sub-item": document.getElementById('entryCategory').value,
-        "Description of Work": document.getElementById('entrySubItem').value,
-        Unit: document.getElementById('entryUnit').value,
-        "Qty.": parseFloat(document.getElementById('entryQty').value) || 0,
-        "UG Pipe length (m)": parseFloat(document.getElementById('entryPipe').value) || 0,
-        Manpower: parseInt(document.getElementById('entryManpower').value) || 0,
-        Manhours: parseFloat(document.getElementById('entryManhours').value) || 0,
-        "Non-Chinese": parseInt(document.getElementById('entryForeign').value) || 0,
-        Remark: document.getElementById('entryRemark').value || '',
-        "Created By": currentUser || 'unknown'
-    };
+    const date = document.getElementById('entryDate').value;
+    const area = document.getElementById('entryArea').value;
+    const team = document.getElementById('entryTeam').value;
+    const tag = document.getElementById('entryTag').value || 'N/A';
+    const category = document.getElementById('entryCategory').value;
+    const subItem = document.getElementById('entrySubItem').value;
+    const code = document.getElementById('entryCode').value;
+    const unit = document.getElementById('entryUnit').value;
+    const qty = parseFloat(document.getElementById('entryQty').value) || 0;
+    const pipe = parseFloat(document.getElementById('entryPipe').value) || 0;
+    const mp = parseInt(document.getElementById('entryManpower').value) || 0;
+    const mh = parseFloat(document.getElementById('entryManhours').value) || 0;
+    const foreign = parseInt(document.getElementById('entryForeign').value) || 0;
+    const remark = document.getElementById('entryRemark').value || '';
     
-    if (!record.Date || !record.Area || !record.Team) {
+    if (!date || !area || !team) {
         showToast(t('errorFillAll'));
         return;
     }
+    
+    // 验证人数是否超过考勤
+    const allAtt = JSON.parse(localStorage.getItem('attendance_data') || '[]');
+    const teamAtt = allAtt.filter(a => a.Date === date && a.Team === team);
+    let totalPeople = 0;
+    teamAtt.forEach(a => { totalPeople += a.Total || 0; });
+    
+    if (totalPeople > 0 && mp > totalPeople) {
+        showToast('⚠️ ' + (currentLang === 'zh' ? '人数(' + mp + '人)超过今日考勤总人数(' + totalPeople + '人)' : 'Manpower (' + mp + ') exceeds attendance total (' + totalPeople + ')'));
+        return;
+    }
+    
+    const record = {
+        Date: date,
+        Area: area,
+        Team: team,
+        "Tag Number": tag,
+        Code: code,
+        "Sub-item": category,
+        "Description of Work": subItem,
+        Unit: unit,
+        "Qty.": qty,
+        "UG Pipe length (m)": pipe,
+        Manpower: mp,
+        Manhours: mh,
+        "Non-Chinese": foreign,
+        Remark: remark,
+        "Created By": currentUser || 'unknown'
+    };
     
     const duplicate = pendingItems.some(item => 
         item.Date === record.Date && 
@@ -1134,6 +1308,7 @@ function addToPending() {
     document.getElementById('entryManhours').value = '0';
     document.getElementById('entryForeign').value = '0';
     document.getElementById('entryRemark').value = '';
+    document.getElementById('manpowerHint').textContent = '';
 }
 
 function addNoWork() {
@@ -1253,7 +1428,7 @@ function submitAll() {
 }
 
 // ============================================================
-//  出勤日报
+//  出勤日报 - 带区域分布
 // ============================================================
 function loadAttendance() {
     const date = document.getElementById('attDate').value;
@@ -1262,43 +1437,163 @@ function loadAttendance() {
     
     const allData = JSON.parse(localStorage.getItem('attendance_data') || '[]');
     const filtered = allData.filter(d => d.Date === date && d.Team === team);
-    renderAttendance(filtered);
+    renderAttendanceWithArea(filtered, date, team);
     renderAttendanceSummary(date);
 }
 
-function renderAttendance(data) {
+function renderAttendanceWithArea(data, date, team) {
     const container = document.getElementById('attendanceTable');
     const map = {};
     data.forEach(d => map[d["Worker Type"]] = d);
     
-    let html = '<table><thead><tr><th>' + t('workerType') + '</th><th>' + t('expected') + '</th><th>' + t('present') + '</th><th>' + t('absent') + '</th><th>' + t('foreignLabel') + '</th><th>' + t('remarkLabel') + '</th></tr></thead><tbody>';
+    let html = '<table><thead><tr><th>' + t('workerType') + '</th>';
+    // 区域列
+    for (const area of AREAS) {
+        html += `<th style="font-size:12px;">${area}</th>`;
+    }
+    html += `<th>${t('total')}</th><th>${t('foreignLabel')}</th><th>${t('remarkLabel')}</th></tr></thead><tbody>`;
+    
+    let grandTotal = 0;
     WORKER_TYPES.forEach((type) => {
-        const row = map[type] || { Total: 0, Present: 0, Foreign: 0, Remark: '' };
-        const absent = (row.Total || 0) - (row.Present || 0);
-        html += `<tr>
-            <td><strong>${type}</strong></td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="Total" value="${row.Total || 0}" min="0" onchange="updateAbsent(this)"></td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="Present" value="${row.Present || 0}" min="0" onchange="updateAbsent(this)"></td>
-            <td style="color:${absent > 0 ? '#c62828' : '#4caf50'};font-weight:bold;">${absent}</td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="Foreign" value="${row.Foreign || 0}" min="0"></td>
-            <td><input type="text" class="att-input att-input-wide" data-type="${type}" data-field="Remark" value="${row.Remark || ''}" placeholder="${t('remarkLabel')}"></td>
-        </tr>`;
+        const row = map[type] || { Total: 0, Foreign: 0, Remark: '' };
+        let rowTotal = 0;
+        html += `<tr>`;
+        html += `<td><strong>${type}</strong></td>`;
+        // 各区域输入
+        for (const area of AREAS) {
+            const key = 'Area_' + area;
+            const val = row[key] || 0;
+            rowTotal += val;
+            html += `<td><input type="number" class="att-input-small" data-type="${type}" data-area="${area}" value="${val}" min="0" onchange="updateAttendanceArea(this)"></td>`;
+        }
+        // 合计（自动计算）
+        html += `<td style="font-weight:bold;color:#1565c0;" class="row-total-${type}">${rowTotal}</td>`;
+        html += `<td><input type="number" class="att-input-small" data-type="${type}" data-field="Foreign" value="${row.Foreign || 0}" min="0"></td>`;
+        html += `<td><input type="text" class="att-input-wide" data-type="${type}" data-field="Remark" value="${row.Remark || ''}" placeholder="${t('remarkLabel')}"></td>`;
+        html += `</tr>`;
+        grandTotal += rowTotal;
     });
+    
+    // 合计行
+    html += `<tr class="att-row-total">
+        <td><strong>${t('total')}</strong></td>`;
+    for (const area of AREAS) {
+        html += `<td id="area-total-${area}" style="font-weight:bold;color:#1565c0;">0</td>`;
+    }
+    html += `<td style="font-weight:bold;color:#1565c0;" id="grand-total">0</td>`;
+    html += `<td></td><td></td>`;
+    html += `</tr>`;
+    
     html += '</tbody></table>';
     container.innerHTML = html;
+    
+    // 计算各区域合计和总合计
+    updateAttendanceTotals();
 }
 
-function updateAbsent(el) {
-    const row = el.closest('tr');
+function updateAttendanceArea(el) {
     const type = el.dataset.type;
-    const total = parseInt(row.querySelector(`.att-input[data-type="${type}"][data-field="Total"]`)?.value) || 0;
-    const present = parseInt(row.querySelector(`.att-input[data-type="${type}"][data-field="Present"]`)?.value) || 0;
-    const absent = total - present;
-    const cell = row.querySelector('td:nth-child(4)');
-    if (cell) {
-        cell.textContent = absent;
-        cell.style.color = absent > 0 ? '#c62828' : '#4caf50';
+    const area = el.dataset.area;
+    const val = parseInt(el.value) || 0;
+    
+    // 更新该工种的合计
+    const row = el.closest('tr');
+    const inputs = row.querySelectorAll(`.att-input-small[data-type="${type}"]`);
+    let total = 0;
+    inputs.forEach(inp => { total += parseInt(inp.value) || 0; });
+    const totalCell = row.querySelector(`.row-total-${type}`);
+    if (totalCell) totalCell.textContent = total;
+    
+    // 更新各区域合计
+    updateAttendanceTotals();
+}
+
+function updateAttendanceTotals() {
+    const container = document.getElementById('attendanceTable');
+    const areaTotals = {};
+    for (const area of AREAS) {
+        areaTotals[area] = 0;
     }
+    let grandTotal = 0;
+    
+    // 遍历所有工种行
+    const rows = container.querySelectorAll('tbody tr:not(.att-row-total)');
+    rows.forEach(row => {
+        for (const area of AREAS) {
+            const inp = row.querySelector(`.att-input-small[data-area="${area}"]`);
+            if (inp) {
+                areaTotals[area] += parseInt(inp.value) || 0;
+            }
+        }
+    });
+    
+    // 更新区域合计显示
+    for (const area of AREAS) {
+        const cell = document.getElementById(`area-total-${area}`);
+        if (cell) {
+            cell.textContent = areaTotals[area];
+            grandTotal += areaTotals[area];
+        }
+    }
+    
+    const grandCell = document.getElementById('grand-total');
+    if (grandCell) grandCell.textContent = grandTotal;
+}
+
+function saveAttendance() {
+    const date = document.getElementById('attDate').value;
+    const team = document.getElementById('attTeam').value;
+    if (!date || !team) { showToast('❌ ' + (currentLang === 'zh' ? '请选择日期和班组' : 'Please select date and team')); return; }
+    
+    const records = [];
+    const container = document.getElementById('attendanceTable');
+    const rows = container.querySelectorAll('tbody tr:not(.att-row-total)');
+    
+    rows.forEach(row => {
+        const type = row.querySelector('td strong')?.textContent || '';
+        const foreign = parseInt(row.querySelector(`.att-input-small[data-field="Foreign"]`)?.value) || 0;
+        const remark = row.querySelector(`.att-input-wide[data-field="Remark"]`)?.value || '';
+        let total = 0;
+        const areaData = {};
+        
+        for (const area of AREAS) {
+            const inp = row.querySelector(`.att-input-small[data-area="${area}"]`);
+            if (inp) {
+                const val = parseInt(inp.value) || 0;
+                areaData['Area_' + area] = val;
+                total += val;
+            }
+        }
+        
+        if (total > 0) {
+            records.push({
+                Date: date,
+                Team: team,
+                "Worker Type": type,
+                Total: total,
+                Present: total, // 实到=应到（缺勤默认为0）
+                Absent: 0,
+                Foreign: foreign,
+                Remark: remark,
+                "Reported By": currentUser || 'unknown',
+                ...areaData
+            });
+        }
+    });
+    
+    if (records.length === 0) {
+        showToast('❌ ' + (currentLang === 'zh' ? '请至少填报一个工种' : 'Please fill in at least one worker type'));
+        return;
+    }
+    
+    let allData = JSON.parse(localStorage.getItem('attendance_data') || '[]');
+    allData = allData.filter(d => !(d.Date === date && d.Team === team));
+    allData = allData.concat(records);
+    localStorage.setItem('attendance_data', JSON.stringify(allData));
+    
+    showToast(t('successSaved'));
+    loadAttendance();
+    onEntryDateChange(); // 更新录入界面的考勤信息
 }
 
 function renderAttendanceSummary(date) {
@@ -1317,54 +1612,12 @@ function renderAttendanceSummary(date) {
         const records = filtered.filter(d => d.Team === team);
         let details = records.map(d => {
             const total = d.Total || 0;
-            const absent = (d.Total || 0) - (d.Present || 0);
-            return d["Worker Type"] + total + (currentLang === 'zh' ? '人' : '') + (absent > 0 ? (currentLang === 'zh' ? '(缺勤' + absent + '人)' : '(absent ' + absent + ')') : '');
+            return d["Worker Type"] + total + (currentLang === 'zh' ? '人' : '');
         }).join('、');
         html += `<tr><td>${team}</td><td>${details || (currentLang === 'zh' ? '无数据' : 'No data')}</td></tr>`;
     });
     html += '</tbody></table>';
     container.innerHTML = html;
-}
-
-function saveAttendance() {
-    const date = document.getElementById('attDate').value;
-    const team = document.getElementById('attTeam').value;
-    if (!date || !team) { showToast('❌ ' + (currentLang === 'zh' ? '请选择日期和班组' : 'Please select date and team')); return; }
-    
-    const records = [];
-    document.querySelectorAll('.att-input[data-field="Total"]').forEach(inp => {
-        const type = inp.dataset.type;
-        const total = parseInt(inp.value) || 0;
-        const present = parseInt(document.querySelector(`.att-input[data-type="${type}"][data-field="Present"]`)?.value) || 0;
-        const foreign = parseInt(document.querySelector(`.att-input[data-type="${type}"][data-field="Foreign"]`)?.value) || 0;
-        const remark = document.querySelector(`.att-input[data-type="${type}"][data-field="Remark"]`)?.value || '';
-        if (total > 0 || present > 0) {
-            records.push({
-                Date: date,
-                Team: team,
-                "Worker Type": type,
-                Total: total,
-                Present: present,
-                Absent: total - present,
-                Foreign: foreign,
-                Remark: remark,
-                "Reported By": currentUser || 'unknown'
-            });
-        }
-    });
-    
-    if (records.length === 0) {
-        showToast('❌ ' + (currentLang === 'zh' ? '请至少填报一个工种' : 'Please fill in at least one worker type'));
-        return;
-    }
-    
-    let allData = JSON.parse(localStorage.getItem('attendance_data') || '[]');
-    allData = allData.filter(d => !(d.Date === date && d.Team === team));
-    allData = allData.concat(records);
-    localStorage.setItem('attendance_data', JSON.stringify(allData));
-    
-    showToast(t('successSaved'));
-    loadAttendance();
 }
 
 // ============================================================
@@ -1509,7 +1762,7 @@ function loadVerification() {
 }
 
 // ============================================================
-//  用户管理 (仅管理员)
+//  用户管理
 // ============================================================
 function loadUserList() {
     const container = document.getElementById('userList');
@@ -1567,7 +1820,7 @@ function addUser() {
 }
 
 // ============================================================
-//  危险操作 (仅管理员)
+//  危险操作
 // ============================================================
 function exportBackup() {
     const data = {
@@ -1606,6 +1859,7 @@ function importBackup() {
                 loadAttendance();
                 loadUserList();
                 loadLoginLogs();
+                onEntryDateChange();
             } catch(err) {
                 showToast('❌ ' + (currentLang === 'zh' ? '恢复失败，文件格式错误' : 'Restore failed, invalid file format'));
             }
@@ -1661,6 +1915,7 @@ function resetAllData() {
     loadAttendance();
     loadLoginLogs();
     loadUserList();
+    onEntryDateChange();
     showToast(t('successReset'));
 }
 
