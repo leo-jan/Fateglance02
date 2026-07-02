@@ -143,7 +143,6 @@
         <!-- Tab 导航栏 -->
         <div class="tabs" id="tabHeaders">
             <button class="tab-btn active" onclick="switchTab('entry')" data-tab="entry" data-role="entry,admin">📝 录入</button>
-            <button class="tab-btn" onclick="switchTab('attendance')" data-tab="attendance" data-role="entry,admin">👷 出勤日报</button>
             <button class="tab-btn" onclick="switchTab('overview')" data-tab="overview" data-role="viewer,admin">📊 数据总览</button>
             <button class="tab-btn" onclick="switchTab('settings')" data-tab="settings" data-role="admin">⚙️ 设置</button>
         </div>
@@ -780,7 +779,6 @@ function updateUI() {
     // 更新 Tab 按钮文字
     const tabMap = {
         '📝 录入': '📝 ' + (currentLang === 'zh' ? '录入' : 'Entry'),
-        '👷 出勤日报': '👷 ' + (currentLang === 'zh' ? '出勤日报' : 'Attendance'),
         '📊 数据总览': '📊 ' + (currentLang === 'zh' ? '数据总览' : 'Overview'),
         '⚙️ 设置': '⚙️ ' + (currentLang === 'zh' ? '设置' : 'Settings')
     };
@@ -817,7 +815,6 @@ function updateUI() {
     });
     renderPending();
     loadAttendance();
-    loadAttendance2();
     loadOverview();
     loadVerification();
     loadUserList();
@@ -953,9 +950,6 @@ function switchTab(tab) {
         renderPending();
         loadAttendance();
     }
-    if (tab === 'attendance') {
-        loadAttendance2();
-    }
     if (tab === 'overview') {
         loadOverview();
     }
@@ -989,14 +983,12 @@ function initApp() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('entryDate').value = today;
     document.getElementById('attDate').value = today;
-    document.getElementById('attDate2').value = today;
     document.getElementById('overviewDate').value = today;
     document.getElementById('verifyDate').value = today;
 
     onCategoryChange();
     loadPending();
     loadAttendance();
-    loadAttendance2();
     loadOverview();
     loadUserList();
     loadVerification();
@@ -1090,6 +1082,13 @@ function addToPending() {
         return;
     }
 
+    // ✅ 先加载最新的 pendingItems
+    const saved = localStorage.getItem('pending_items');
+    if (saved) {
+        try { pendingItems = JSON.parse(saved); } catch(e) { pendingItems = []; }
+    } else { pendingItems = []; }
+
+    // 检查重复
     const duplicate = pendingItems.some(item => 
         (item.Date || item.date) === date && 
         (item.Area || item.area) === area && 
@@ -1132,7 +1131,7 @@ function addToPending() {
     document.getElementById('entryForeign').value = '0';
     document.getElementById('entryRemark').value = '';
 }
-
+    
 function addNoWork() {
     const date = document.getElementById('entryDate').value;
     const area = document.getElementById('entryArea').value;
@@ -1166,22 +1165,44 @@ function addNoWork() {
 }
 
 function renderPending() {
-    const container = document.getElementById('pendingItems');
-    const countEl = document.getElementById('pendingCount');
-
+    console.log('🔄 renderPending 被调用');
+    
+    // ✅ 从 localStorage 加载数据
     const saved = localStorage.getItem('pending_items');
     if (saved) {
-        try { pendingItems = JSON.parse(saved); } catch(e) { pendingItems = []; }
+        try {
+            pendingItems = JSON.parse(saved);
+            console.log('✅ 加载了', pendingItems.length, '条记录');
+        } catch(e) {
+            console.error('解析失败:', e);
+            pendingItems = [];
+        }
+    } else {
+        pendingItems = [];
+        console.log('📭 localStorage 为空');
     }
-
+    
+    const container = document.getElementById('pendingItems');
+    const countEl = document.getElementById('pendingCount');
+    
+    if (!container) {
+        console.error('❌ pendingItems 元素不存在');
+        return;
+    }
+    
+    // 更新数量
+    if (countEl) {
+        countEl.textContent = pendingItems.length;
+    }
+    
+    // 清空容器
     container.innerHTML = '';
-    countEl.textContent = pendingItems.length;
-
+    
     if (pendingItems.length === 0) {
         container.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">' + t('noPending') + '</p>';
         return;
     }
-
+    
     let html = '';
     pendingItems.forEach((item, index) => {
         const date = item.Date || item.date || '';
@@ -1191,8 +1212,8 @@ function renderPending() {
         const qty = item.Qty || item.qty || 0;
         const manpower = item.Manpower || item.manpower || 0;
         
-        html += `<div class="pending-item">
-            <div class="info">
+        html += `<div class="pending-item" style="display:flex;justify-content:space-between;align-items:center;padding:10px 15px;border-bottom:1px solid #f0f0f0;">
+            <div class="info" style="flex:1;">
                 <strong>${date}</strong> | ${area} | ${team} | ${desc}
                 <span style="color:#999;font-size:12px;margin-left:10px;">
                     ${qty > 0 ? '数量:' + qty : ''}
@@ -1200,20 +1221,33 @@ function renderPending() {
                 </span>
             </div>
             <div class="actions">
-                <button class="btn btn-danger btn-sm" onclick="removePending(${index})">删除</button>
+                <button class="btn btn-danger btn-sm" onclick="removePending(${index})" style="padding:5px 12px;font-size:12px;background:#e53935;color:white;border:none;border-radius:4px;cursor:pointer;">删除</button>
             </div>
         </div>`;
     });
     container.innerHTML = html;
+    console.log('✅ 渲染完成，共', pendingItems.length, '条记录');
 }
-
+    
 function removePending(index) {
+    // ✅ 先加载最新数据
+    const saved = localStorage.getItem('pending_items');
+    if (saved) {
+        try { pendingItems = JSON.parse(saved); } catch(e) { pendingItems = []; }
+    } else { pendingItems = []; }
+    
     pendingItems.splice(index, 1);
     localStorage.setItem('pending_items', JSON.stringify(pendingItems));
     renderPending();
 }
 
 function clearPending() {
+    // ✅ 先加载最新数据
+    const saved = localStorage.getItem('pending_items');
+    if (saved) {
+        try { pendingItems = JSON.parse(saved); } catch(e) { pendingItems = []; }
+    } else { pendingItems = []; }
+    
     if (pendingItems.length === 0) {
         showToast('⚠️ 列表已经是空的');
         return;
@@ -1235,6 +1269,12 @@ function loadPending() {
 }
 
 async function submitAll() {
+    // ✅ 先加载最新数据
+    const saved = localStorage.getItem('pending_items');
+    if (saved) {
+        try { pendingItems = JSON.parse(saved); } catch(e) { pendingItems = []; }
+    } else { pendingItems = []; }
+    
     if (pendingItems.length === 0) {
         showToast('❌ ' + t('noPending'));
         return;
@@ -1284,35 +1324,6 @@ async function submitAll() {
 // ============================================================
 //  出勤日报
 // ============================================================
-async function loadAttendance() {
-    const date = document.getElementById('attDate').value;
-    const team = document.getElementById('attTeam').value;
-    if (!date) return;
-
-    try {
-        const data = await getAttendance(date, team);
-        renderAttendance(data, 'attendanceTable');
-        renderAttendanceSummary(date, 'attendanceSummary');
-    } catch (e) {
-        console.error('加载考勤失败:', e);
-        renderAttendance([], 'attendanceTable');
-    }
-}
-
-async function loadAttendance2() {
-    const date = document.getElementById('attDate2').value;
-    const team = document.getElementById('attTeam2').value;
-    if (!date) return;
-
-    try {
-        const data = await getAttendance(date, team);
-        renderAttendance(data, 'attendanceTable2');
-        renderAttendanceSummary(date, 'attendanceSummary2');
-    } catch (e) {
-        console.error('加载考勤失败:', e);
-        renderAttendance([], 'attendanceTable2');
-    }
-}
 
 function renderAttendance(data, tableId) {
     const container = document.getElementById(tableId);
