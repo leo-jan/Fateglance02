@@ -1,3 +1,4 @@
+// api/reports.js
 import { neon } from '@vercel/postgres';
 
 export default async function handler(req, res) {
@@ -21,7 +22,7 @@ export default async function handler(req, res) {
             }
             
             const result = await neon(query, params);
-            // ✅ 把数据库字段转成前端期望的格式
+            // 转换成前端期望的字段名
             const rows = result.rows.map(r => ({
                 Date: r.date,
                 Area: r.area,
