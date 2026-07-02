@@ -109,17 +109,16 @@
 <!-- ===== 登录界面 ===== -->
 <div id="loginPage">
     <div class="login-box">
-        <h2 id="loginTitle">🏗️ 施工日报填报系统</h2>
+        <h2 id="loginTitle">施工日报填报系统</h2>
         <p id="loginSubtitle" class="subtitle">Marsa LNG Project · Civil Department</p>
         <div class="login-lang">
             <button id="loginLangZh" class="active" onclick="setLoginLang('zh')">中文</button>
             <button id="loginLangEn" onclick="setLoginLang('en')">English</button>
         </div>
-        <input type="text" id="loginUsername" placeholder="用户名" value="admin">
-        <input type="password" id="loginPassword" placeholder="密码" value="142857jj">
-        <button class="btn btn-primary" onclick="handleLogin()">🔑 登录</button>
+        <input type="text" id="loginUsername" placeholder="用户名">
+        <input type="password" id="loginPassword" placeholder="密码">
+        <button class="btn btn-primary" onclick="handleLogin()">登录</button>
         <div id="loginMessage" class="login-message"></div>
-        <p style="text-align:center;font-size:11px;color:#b0bec5;margin-top:16px;">☁️ Neon 云端版</p>
     </div>
 </div>
 
@@ -127,7 +126,7 @@
 <div id="mainApp" style="display:none;">
     <div class="container">
         <div class="header">
-            <h1 id="appTitle">🏗️ 施工日报填报系统 <span class="cloud-badge">☁️ Neon</span></h1>
+            <h1 id="appTitle">施工日报填报系统</h1>
             <div class="header-right">
                 <div class="lang-toggle">
                     <button class="lang-btn active" onclick="setLang('zh')">中文</button>
@@ -136,7 +135,7 @@
                 <div class="user-info">
                     <span id="userDisplayName">👤 用户</span>
                     <span id="userRoleBadge" class="user-role-badge"></span>
-                    <button class="btn-logout" onclick="handleLogout()">🚪 退出</button>
+                    <button class="btn-logout" onclick="handleLogout()">退出</button>
                 </div>
             </div>
         </div>
@@ -146,7 +145,6 @@
             <button class="tab-btn active" onclick="switchTab('entry')" data-tab="entry" data-role="entry,admin">📝 录入</button>
             <button class="tab-btn" onclick="switchTab('attendance')" data-tab="attendance" data-role="entry,admin">👷 出勤日报</button>
             <button class="tab-btn" onclick="switchTab('overview')" data-tab="overview" data-role="viewer,admin">📊 数据总览</button>
-            <button class="tab-btn" onclick="switchTab('verify')" data-tab="verify" data-role="viewer,admin">✅ 工时核对</button>
             <button class="tab-btn" onclick="switchTab('settings')" data-tab="settings" data-role="admin">⚙️ 设置</button>
         </div>
 
@@ -157,7 +155,6 @@
             <div class="sub-tabs">
                 <button class="sub-tab-btn active" onclick="switchSubTab('attendance_sub')" data-subtab="attendance_sub">👷 出勤日报</button>
                 <button class="sub-tab-btn" onclick="switchSubTab('entry_sub')" data-subtab="entry_sub">📝 施工员录入</button>
-                <button class="sub-tab-btn" onclick="switchSubTab('foreman_sub')" data-subtab="foreman_sub">⏱️ 班组长补充</button>
                 <button class="sub-tab-btn" onclick="switchSubTab('verify_sub')" data-subtab="verify_sub">✅ 核对结果</button>
             </div>
 
@@ -165,12 +162,8 @@
             <div id="subtab-attendance_sub" class="sub-tab-content">
                 <h3 data-i18n="attTitle">👷 出勤日报（班组长）</h3>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label data-i18n="date">📅 日期</label>
-                        <input type="date" id="attDate">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="team">👷 班组</label>
+                    <div class="form-group"><label data-i18n="date">📅 日期</label><input type="date" id="attDate"></div>
+                    <div class="form-group"><label data-i18n="team">👷 班组</label>
                         <select id="attTeam">
                             <option value="马玉奇(Ma Yuqi)">马玉奇</option>
                             <option value="王建(Wang Jian)">王建</option>
@@ -198,27 +191,18 @@
             <div id="subtab-entry_sub" class="sub-tab-content hidden">
                 <h3 data-i18n="entryTitle">📝 施工员录入</h3>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label data-i18n="date">📅 日期</label>
-                        <input type="date" id="entryDate">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="area">📍 区域</label>
+                    <div class="form-group"><label data-i18n="date">📅 日期</label><input type="date" id="entryDate"></div>
+                    <div class="form-group"><label data-i18n="area">📍 区域</label>
                         <select id="entryArea">
-                            <option value="110">110</option>
-                            <option value="210">210</option>
-                            <option value="220">220</option>
-                            <option value="240">240</option>
-                            <option value="320">320</option>
-                            <option value="330">330</option>
-                            <option value="400">400</option>
-                            <option value="800">800</option>
+                            <option value="110">110</option><option value="210">210</option>
+                            <option value="220">220</option><option value="240">240</option>
+                            <option value="320">320</option><option value="330">330</option>
+                            <option value="400">400</option><option value="800">800</option>
                             <option value="precast yard 1">precast yard 1</option>
                             <option value="precast yard 2">precast yard 2</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label data-i18n="team">👷 班组</label>
+                    <div class="form-group"><label data-i18n="team">👷 班组</label>
                         <select id="entryTeam">
                             <option value="马玉奇(Ma Yuqi)">马玉奇</option>
                             <option value="王建(Wang Jian)">王建</option>
@@ -231,88 +215,42 @@
                             <option value="Anwar">Anwar</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>🏷️ 位号</label>
-                        <input type="text" id="entryTag" placeholder="输入位号">
-                    </div>
+                    <div class="form-group"><label>🏷️ 位号</label><input type="text" id="entryTag" placeholder="输入位号"></div>
                 </div>
 
-                <div style="font-weight:600;font-size:15px;color:#1a237e;margin-top:15px;">🛠️ 工作内容</div>
+                <div style="font-weight:600;font-size:15px;color:#1a237e;margin-top:15px;" data-i18n="work_desc">🛠️ 工作内容</div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>分部分项</label>
-                        <select id="entryCategory" onchange="onCategoryChange()">
-                            <option value="无收入项">无收入项</option>
-                            <option value="土石方工程">土石方工程</option>
-                            <option value="模板工程">模板工程</option>
-                            <option value="架子工程">架子工程</option>
-                            <option value="钢筋工程">钢筋工程</option>
-                            <option value="砌筑工程">砌筑工程</option>
-                            <option value="混凝土工程">混凝土工程</option>
-                        </select>
+                    <div class="form-group"><label data-i18n="sub_item">分部分项</label>
+                        <select id="entryCategory" onchange="onCategoryChange()"></select>
                     </div>
-                    <div class="form-group">
-                        <label>工作内容</label>
+                    <div class="form-group"><label data-i18n="work_content">工作内容</label>
                         <select id="entrySubItem" onchange="onSubItemChange()"></select>
                     </div>
-                    <div class="form-group">
-                        <label>编号</label>
-                        <input type="text" id="entryCode" disabled>
-                    </div>
-                    <div class="form-group">
-                        <label>单位</label>
-                        <input type="text" id="entryUnit" disabled>
-                    </div>
+                    <div class="form-group"><label data-i18n="code">编号</label><input type="text" id="entryCode" disabled></div>
+                    <div class="form-group"><label data-i18n="unit">单位</label><input type="text" id="entryUnit" disabled></div>
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group">
-                        <label data-i18n="qty">📊 完成量</label>
-                        <input type="number" id="entryQty" value="0" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label>📏 地管长度 (m)</label>
-                        <input type="number" id="entryPipe" value="0" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="manpower">👷 人数</label>
-                        <input type="number" id="entryManpower" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="manhours">⏱️ 工时</label>
-                        <input type="number" id="entryManhours" value="0" step="0.5">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="foreign">🌍 外籍</label>
-                        <input type="number" id="entryForeign" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="remark">📝 备注</label>
-                        <input type="text" id="entryRemark" placeholder="备注">
-                    </div>
+                    <div class="form-group"><label data-i18n="qty">📊 完成量</label><input type="number" id="entryQty" value="0" step="0.1"></div>
+                    <div class="form-group"><label data-i18n="pipe_length">📏 地管长度 (m)</label><input type="number" id="entryPipe" value="0" step="0.1"></div>
+                    <div class="form-group"><label data-i18n="manpower">👷 人数</label><input type="number" id="entryManpower" value="0"></div>
+                    <div class="form-group"><label data-i18n="manhours">⏱️ 工时</label><input type="number" id="entryManhours" value="0" step="0.5"></div>
+                    <div class="form-group"><label data-i18n="non_chinese">🌍 外籍</label><input type="number" id="entryForeign" value="0"></div>
+                    <div class="form-group"><label data-i18n="remark">📝 备注</label><input type="text" id="entryRemark" placeholder="备注"></div>
                 </div>
 
                 <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
-                    <button class="btn btn-primary" onclick="addToPending()" data-i18n="addPending">➕ 添加到待提交列表</button>
-                    <button class="btn btn-secondary" onclick="addNoWork()" data-i18n="noWork">🚫 今日无作业</button>
+                    <button class="btn btn-primary" onclick="addToPending()" data-i18n="add_btn">➕ 添加到待提交列表</button>
+                    <button class="btn btn-secondary" onclick="addNoWork()" data-i18n="no_work_btn">🚫 今日无作业</button>
                 </div>
 
                 <div id="pendingList" style="margin-top:30px;">
-                    <h3 data-i18n="pendingTitle">📋 待提交列表 (<span id="pendingCount">0</span> 项)</h3>
+                    <h3 data-i18n="pending_title">📋 待提交列表 (<span id="pendingCount">0</span> 项)</h3>
                     <div id="pendingItems"></div>
                     <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
-                        <button class="btn btn-success" onclick="submitAll()" data-i18n="submitAll">🚀 提交所有记录</button>
-                        <button class="btn btn-danger" onclick="clearPending()" data-i18n="clearPending">🗑️ 清空列表</button>
+                        <button class="btn btn-success" onclick="submitAll()" data-i18n="submit_btn">🚀 提交所有记录</button>
+                        <button class="btn btn-danger" onclick="clearPending()" data-i18n="clear_pending">🗑️ 清空列表</button>
                     </div>
-                </div>
-            </div>
-
-            <!-- 子Tab: 班组长补充 -->
-            <div id="subtab-foreman_sub" class="sub-tab-content hidden">
-                <h3>⏱️ 班组长补充（工时人数）</h3>
-                <p style="color:#666;margin-bottom:15px;">修改已提交记录的工时和人数</p>
-                <div id="foremanContent">
-                    <p style="color:#999;">请先在"施工员录入"中提交数据</p>
                 </div>
             </div>
 
@@ -320,12 +258,8 @@
             <div id="subtab-verify_sub" class="sub-tab-content hidden">
                 <h3 data-i18n="verifyTitle">✅ 工时与出勤核对</h3>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label data-i18n="date">📅 日期</label>
-                        <input type="date" id="verifyDate">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="team">👷 班组</label>
+                    <div class="form-group"><label data-i18n="date">📅 日期</label><input type="date" id="verifyDate"></div>
+                    <div class="form-group"><label data-i18n="team">👷 班组</label>
                         <select id="verifyTeam">
                             <option value="all">全部</option>
                             <option value="马玉奇(Ma Yuqi)">马玉奇</option>
@@ -352,12 +286,8 @@
         <div id="tab-attendance" class="tab-content">
             <h2 data-i18n="attTitle">👷 出勤日报（班组长）</h2>
             <div class="form-row">
-                <div class="form-group">
-                    <label data-i18n="date">📅 日期</label>
-                    <input type="date" id="attDate2">
-                </div>
-                <div class="form-group">
-                    <label data-i18n="team">👷 班组</label>
+                <div class="form-group"><label data-i18n="date">📅 日期</label><input type="date" id="attDate2"></div>
+                <div class="form-group"><label data-i18n="team">👷 班组</label>
                     <select id="attTeam2">
                         <option value="马玉奇(Ma Yuqi)">马玉奇</option>
                         <option value="王建(Wang Jian)">王建</option>
@@ -385,78 +315,34 @@
         <div id="tab-overview" class="tab-content">
             <h2 data-i18n="overviewTitle">📊 数据总览</h2>
             <div class="form-row">
-                <div class="form-group">
-                    <label data-i18n="date">📅 选择日期</label>
-                    <input type="date" id="overviewDate">
-                </div>
+                <div class="form-group"><label data-i18n="date">📅 选择日期</label><input type="date" id="overviewDate"></div>
                 <div class="form-group" style="justify-content:flex-end; flex-direction:row; gap:10px; flex-wrap:wrap;">
                     <button class="btn btn-secondary" onclick="loadOverview()" data-i18n="refresh">🔄 刷新</button>
-                    <button class="btn btn-secondary" onclick="exportData()" data-i18n="exportCSV">📥 导出CSV</button>
-                    <button class="btn btn-secondary" onclick="exportAllData()" data-i18n="exportAll">📥 导出全部</button>
+                    <button class="btn btn-secondary" onclick="exportData()" data-i18n="export_title">📥 导出CSV</button>
+                    <button class="btn btn-secondary" onclick="exportAllData()" data-i18n="export_title">📥 导出全部</button>
                 </div>
             </div>
-            <h4 data-i18n="areaStatusTitle">📊 各区域填报状态</h4>
+            <h4 data-i18n="h_status">📊 各区域填报状态</h4>
             <div id="areaStatus" style="display:flex;flex-wrap:wrap;gap:10px;margin:10px 0;"></div>
-            <h4 data-i18n="dailyDataTitle">📋 当日数据</h4>
+            <h4 data-i18n="h_data">📋 当日数据</h4>
             <div id="overviewTable" class="table-container"></div>
             <hr class="section-divider">
-            <h4 data-i18n="allDataTitle">📋 全部数据</h4>
+            <h4 data-i18n="h_data">📋 全部数据</h4>
             <div id="allDataTable" class="table-container"></div>
-        </div>
-
-        <!-- ===== Tab: 核对 ===== -->
-        <div id="tab-verify" class="tab-content">
-            <h2 data-i18n="verifyTitle">✅ 工时与出勤核对</h2>
-            <div class="form-row">
-                <div class="form-group">
-                    <label data-i18n="date">📅 日期</label>
-                    <input type="date" id="verifyDate2">
-                </div>
-                <div class="form-group">
-                    <label data-i18n="team">👷 班组</label>
-                    <select id="verifyTeam2">
-                        <option value="all">全部</option>
-                        <option value="马玉奇(Ma Yuqi)">马玉奇</option>
-                        <option value="王建(Wang Jian)">王建</option>
-                        <option value="Kumar">Kumar</option>
-                        <option value="郭传海(Guo Chuanhai)">郭传海</option>
-                        <option value="曹桂龙(Cao Guilong)">曹桂龙</option>
-                        <option value="陈传军(Chen Chuanjun)">陈传军</option>
-                        <option value="王世杰(Wang Shijie)">王世杰</option>
-                        <option value="Sheharyar">Sheharyar</option>
-                        <option value="Anwar">Anwar</option>
-                    </select>
-                </div>
-                <div class="form-group" style="justify-content:flex-end;">
-                    <button class="btn btn-secondary" onclick="loadVerification2()" data-i18n="query">🔍 查询</button>
-                </div>
-            </div>
-            <div id="verifyResult2" style="margin-top:15px;"></div>
-            <div id="verifyStats2" style="margin-top:15px;"></div>
         </div>
 
         <!-- ===== Tab: 设置 ===== -->
         <div id="tab-settings" class="tab-content">
             <h2 data-i18n="settingsTitle">⚙️ 设置</h2>
-            <h3 data-i18n="userMgmtTitle">👥 用户管理</h3>
+            <h3 data-i18n="user_management">👥 用户管理</h3>
             <div id="userList"></div>
             <hr class="section-divider">
-            <h3 data-i18n="addUserTitle">➕ 添加用户</h3>
+            <h3 data-i18n="add_user">➕ 添加用户</h3>
             <div class="form-row">
-                <div class="form-group">
-                    <label data-i18n="loginUser">用户名</label>
-                    <input type="text" id="newUsername" placeholder="用户名">
-                </div>
-                <div class="form-group">
-                    <label data-i18n="loginPass">密码</label>
-                    <input type="text" id="newPassword" placeholder="密码">
-                </div>
-                <div class="form-group">
-                    <label>显示名称</label>
-                    <input type="text" id="newDisplayName" placeholder="显示名称">
-                </div>
-                <div class="form-group">
-                    <label>角色</label>
+                <div class="form-group"><label data-i18n="username">用户名</label><input type="text" id="newUsername" placeholder="用户名"></div>
+                <div class="form-group"><label data-i18n="password">密码</label><input type="text" id="newPassword" placeholder="密码"></div>
+                <div class="form-group"><label>显示名称</label><input type="text" id="newDisplayName" placeholder="显示名称"></div>
+                <div class="form-group"><label>角色</label>
                     <select id="newRole">
                         <option value="admin">admin</option>
                         <option value="viewer">viewer</option>
@@ -464,9 +350,9 @@
                     </select>
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="addUser()" data-i18n="addUser">➕ 添加用户</button>
+            <button class="btn btn-primary" onclick="addUser()" data-i18n="add_user">➕ 添加用户</button>
             <hr class="section-divider">
-            <h3 data-i18n="dangerTitle">⚠️ 危险操作</h3>
+            <h3 data-i18n="danger_zone">⚠️ 危险操作</h3>
             <div class="danger-zone">
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                     <button class="btn btn-secondary" onclick="exportBackup()" data-i18n="backup">💾 备份数据</button>
@@ -478,7 +364,7 @@
                 <p style="margin-top:10px;font-size:13px;color:#666;" data-i18n="dangerHint">⚠️ 清理零数据将删除所有数量为0的记录，去重将删除重复记录，重置将删除所有数据。</p>
             </div>
             <hr class="section-divider">
-            <h3 data-i18n="loginLogsTitle">📋 登录记录</h3>
+            <h3 data-i18n="login_logs">📋 登录记录</h3>
             <div id="loginLogs"></div>
         </div>
     </div>
@@ -524,129 +410,129 @@ const USERS = {
 };
 
 // ============================================================
-//  工作字典
+//  工作字典（完整版带英文）- 这里只放部分，完整版需要全部
 // ============================================================
 const WORK_DICT = {
     "无收入项": {
-        "送水送饭倒运材料": { code: "N/A", unit: "工时" },
-        "开会": { code: "N/A", unit: "工时" },
-        "配合测量": { code: "N/A", unit: "工时" },
-        "配合材料组": { code: "N/A", unit: "工时" },
-        "配合降水": { code: "N/A", unit: "工时" },
-        "旗手": { code: "N/A", unit: "工时" },
-        "其他杂活": { code: "N/A", unit: "工时" }
+        "送水送饭倒运材料": { code: "N/A", unit: "工时", en: "Water/food delivery & material handling" },
+        "开会": { code: "N/A", unit: "工时", en: "Meeting" },
+        "配合测量": { code: "N/A", unit: "工时", en: "Survey assistance" },
+        "配合材料组": { code: "N/A", unit: "工时", en: "Material team assistance" },
+        "配合降水": { code: "N/A", unit: "工时", en: "Dewatering assistance" },
+        "旗手": { code: "N/A", unit: "工时", en: "Flagman / Signalman" },
+        "其他杂活": { code: "N/A", unit: "工时", en: "Other miscellaneous work" }
     },
     "土石方工程": {
-        "人工挖土方（深度1.5m以内）": { code: "1-1-001", unit: "m3" },
-        "人工挖桩间土": { code: "1-1-004", unit: "m3" },
-        "人工回填（就地松填）": { code: "1-1-005", unit: "m3" },
-        "人工回填（夯填）": { code: "1-1-006", unit: "m3" },
-        "人工配合机械回填": { code: "1-1-007", unit: "m3" },
-        "人工平整场地、清理铲平机挖余土、配合机械平整水稳层": { code: "1-1-009", unit: "m2" },
-        "人工原土打夯": { code: "1-1-010", unit: "m2" },
-        "人工运土（运距20米以内）": { code: "1-1-011", unit: "m3" },
-        "砂垫层人工找平夯实": { code: "1-1-013", unit: "m3" },
-        "级配砂石人工平整夯实": { code: "1-1-014", unit: "m3" },
-        "铺碎石人工夯实": { code: "1-1-015", unit: "m3" },
-        "截、破砼实心桩（桩径1000mm以内）": { code: "1-1-016", unit: "根" },
-        "人工破砼（有筋）": { code: "1-1-020", unit: "m3" },
-        "人工破砼（无筋）": { code: "1-1-021", unit: "m3" },
-        "扣件修理": { code: "1-1-022", unit: "个" },
-        "钢管打捆装车": { code: "1-1-023", unit: "t" },
-        "周转材料装卸车（机械配合）": { code: "1-1-024", unit: "t" },
-        "周转材料装卸车（纯人工）": { code: "1-1-025", unit: "t" },
-        "场地盖土网 覆盖、回收、整理": { code: "1-1-026", unit: "m2" },
-        "机械土方（挖、装、运，运距1公里内）": { code: "1-1-034", unit: "m3" }
+        "人工挖土方（深度1.5m以内）": { code: "1-1-001", unit: "m3", en: "Manual excavation of earth (depth ≤1.5m)" },
+        "人工挖桩间土": { code: "1-1-004", unit: "m3", en: "Manual excavation of soil between piles" },
+        "人工回填（就地松填）": { code: "1-1-005", unit: "m3", en: "Manual backfill – loose fill" },
+        "人工回填（夯填）": { code: "1-1-006", unit: "m3", en: "Manual backfill – compacted fill" },
+        "人工配合机械回填": { code: "1-1-007", unit: "m3", en: "Manual assistance for machine backfill" },
+        "人工平整场地": { code: "1-1-009", unit: "m2", en: "Manual site leveling" },
+        "人工原土打夯": { code: "1-1-010", unit: "m2", en: "Manual compaction of natural soil" },
+        "人工运土（运距20米以内）": { code: "1-1-011", unit: "m3", en: "Manual earth transport (≤20m)" },
+        "砂垫层人工找平夯实": { code: "1-1-013", unit: "m3", en: "Manual leveling and compaction of sand cushion" },
+        "级配砂石人工平整夯实": { code: "1-1-014", unit: "m3", en: "Manual leveling of graded sand and gravel" },
+        "铺碎石人工夯实": { code: "1-1-015", unit: "m3", en: "Manual compaction of crushed stone" },
+        "截破砼实心桩": { code: "1-1-016", unit: "根", en: "Cutting/breaking solid concrete piles" },
+        "人工破砼（有筋）": { code: "1-1-020", unit: "m3", en: "Manual breaking of reinforced concrete" },
+        "人工破砼（无筋）": { code: "1-1-021", unit: "m3", en: "Manual breaking of plain concrete" },
+        "扣件修理": { code: "1-1-022", unit: "个", en: "Repair of couplers/scaffold fittings" },
+        "钢管打捆装车": { code: "1-1-023", unit: "t", en: "Bundling and loading of steel pipes" },
+        "周转材料装卸车（机械配合）": { code: "1-1-024", unit: "t", en: "Loading/unloading of reusable materials (with machine)" },
+        "周转材料装卸车（纯人工）": { code: "1-1-025", unit: "t", en: "Loading/unloading of reusable materials (manual)" },
+        "场地盖土网覆盖回收整理": { code: "1-1-026", unit: "m2", en: "Site dust net – covering, recovery, organizing" },
+        "机械土方（挖装运1公里内）": { code: "1-1-034", unit: "m3", en: "Machine earthwork (within 1km)" }
     },
     "模板工程": {
-        "垫层模板": { code: "1-3-001", unit: "m2" },
-        "道路模板": { code: "1-3-002", unit: "m2" },
-        "基础模板": { code: "1-3-003", unit: "m2" },
-        "结构模板": { code: "1-3-004", unit: "m2" },
-        "结构（施工层无现浇板）模板": { code: "1-3-005", unit: "m2" },
-        "预留洞制、安、拆（深1m以内）": { code: "1-3-008", unit: "个" },
-        "预留洞制、安、拆（深1m以上）": { code: "1-3-009", unit: "个" },
-        "套管安装（Φ500mm以内）": { code: "1-3-010", unit: "个" },
-        "套管安装（Φ1000mm以内）": { code: "1-3-011", unit: "个" },
-        "套管安装（Φ1000mm以上）": { code: "1-3-012", unit: "个" },
-        "对拉螺杆（对拉扁铁）制作": { code: "1-3-013", unit: "根" },
-        "预埋螺栓安装（Φ20mm以内）": { code: "1-3-014", unit: "根" },
-        "预埋螺栓安装（Φ20-40mm以内）": { code: "1-3-015", unit: "根" },
-        "预埋螺栓安装（Φ40-60mm以内）": { code: "1-3-016", unit: "根" },
-        "预埋铁件安装（周长800mm以内）": { code: "1-3-019", unit: "块" },
-        "预埋铁件安装（周长2000mm以内）": { code: "1-3-021", unit: "块" },
-        "预埋铁件安装（周长2000mm以上）": { code: "1-3-023", unit: "块" }
+        "垫层模板": { code: "1-3-001", unit: "m2", en: "Lean concrete formwork" },
+        "道路模板": { code: "1-3-002", unit: "m2", en: "Road formwork" },
+        "基础模板": { code: "1-3-003", unit: "m2", en: "Foundation formwork" },
+        "结构模板": { code: "1-3-004", unit: "m2", en: "Structural formwork" },
+        "结构（施工层无现浇板）模板": { code: "1-3-005", unit: "m2", en: "Structural formwork (no cast-in-place slab)" },
+        "预留洞制安拆（深1m以内）": { code: "1-3-008", unit: "个", en: "Fabrication/installation/removal of openings ≤1m" },
+        "预留洞制安拆（深1m以上）": { code: "1-3-009", unit: "个", en: "Fabrication/installation/removal of openings >1m" },
+        "套管安装（Φ500mm以内）": { code: "1-3-010", unit: "个", en: "Sleeve installation (≤Φ500mm)" },
+        "套管安装（Φ1000mm以内）": { code: "1-3-011", unit: "个", en: "Sleeve installation (≤Φ1000mm)" },
+        "套管安装（Φ1000mm以上）": { code: "1-3-012", unit: "个", en: "Sleeve installation (>Φ1000mm)" },
+        "对拉螺杆（对拉扁铁）制作": { code: "1-3-013", unit: "根", en: "Fabrication of through-tie rods" },
+        "预埋螺栓安装（Φ20mm以内）": { code: "1-3-014", unit: "根", en: "Installation of embedded bolts (≤Φ20mm)" },
+        "预埋螺栓安装（Φ20-40mm）": { code: "1-3-015", unit: "根", en: "Installation of embedded bolts (Φ20–40mm)" },
+        "预埋螺栓安装（Φ40-60mm）": { code: "1-3-016", unit: "根", en: "Installation of embedded bolts (Φ40–60mm)" },
+        "预埋铁件安装（周长800mm以内）": { code: "1-3-019", unit: "块", en: "Installation of embedded steel parts (perimeter ≤800mm)" },
+        "预埋铁件安装（周长2000mm以内）": { code: "1-3-021", unit: "块", en: "Installation of embedded steel parts (perimeter ≤2000mm)" },
+        "预埋铁件安装（周长2000mm以上）": { code: "1-3-023", unit: "块", en: "Installation of embedded steel parts (perimeter >2000mm)" }
     },
     "架子工程": {
-        "双排脚手架（高度≤6m）": { code: "1-4-001", unit: "m2" },
-        "双排脚手架（高度≤12m）": { code: "1-4-002", unit: "m2" },
-        "双排脚手架（高度≤18m）": { code: "1-4-003", unit: "m2" },
-        "双排脚手架（高度≤24m）": { code: "1-4-004", unit: "m2" },
-        "双排脚手架（高度≤30m）": { code: "1-4-005", unit: "m2" },
-        "双排脚手架（高度30m以上）": { code: "1-4-006", unit: "m2" },
-        "承重（支模）满堂脚手架,基本层（高度5m以内）立杆间距1200*1200mm以内": { code: "1-4-007", unit: "m3" },
-        "承重（支模）满堂脚手架,基本层（高度5m以内）立杆间距1000*1000mm以内": { code: "1-4-008", unit: "m2" },
-        "承重（支模）满堂脚手架,基本层（高度5m以内）立杆间距600*600mm以内": { code: "1-4-009", unit: "m2" },
-        "承重（支模）满堂脚手架,基本层（高度5m以内）立杆间距500*500mm以内": { code: "1-4-010", unit: "m2" },
-        "承重（支模）满堂脚手架,基本层（高度5m以内）每增高1m增加": { code: "1-4-011", unit: "m2" },
-        "承重（高支模）满堂脚手架（压缩机、汽轮机）立杆间距400*400mm以内": { code: "1-4-012", unit: "m2" },
-        "非承重满堂脚手架基本层（高度5m以内）立杆间距1600*1600mm以内": { code: "1-4-013", unit: "m2" },
-        "非承重满堂脚手架基本层（高度5m以内）每增高1m增加": { code: "1-4-014", unit: "m2" },
-        "单排脚手架(高度≤6m)": { code: "1-4-015", unit: "m2" },
-        "单排脚手架(高度≤12m)": { code: "1-4-016", unit: "m2" },
-        "挑檐、挑梁架（不计标高纯架子高度）单杆斜立外挑高度≤6m": { code: "1-4-017", unit: "m2" },
-        "挑檐、挑梁架（不计标高纯架子高度）单杆斜立外挑高度＞6m≤10m": { code: "1-4-018", unit: "m2" },
-        "挑檐、挑梁架（不计标高纯架子高度）单杆斜立外挑高度＞10m": { code: "1-4-019", unit: "m2" },
-        "独立柱（井式）脚手架（高度5m以内）": { code: "1-4-020", unit: "座" },
-        "独立柱（井式）脚手架（高度10m以内）": { code: "1-4-021", unit: "座" },
-        "独立柱（井式）脚手架（高度15m以内）": { code: "1-4-022", unit: "座" },
-        "独立柱（井式）脚手架（高度20m以内）": { code: "1-4-023", unit: "座" },
-        "独立柱（井式）脚手架（高度20m以上）": { code: "1-4-024", unit: "座" },
-        "吊架(跳板离地高度5m以内)": { code: "1-4-025", unit: "m2" },
-        "吊架(跳板离地高度10m以内)": { code: "1-4-026", unit: "m2" },
-        "吊架(跳板离地高度15m以内)": { code: "1-4-027", unit: "m2" },
-        "吊架(跳板离地高度20m以内)": { code: "1-4-028", unit: "m2" },
-        "吊架(跳板离地高度20m以上)": { code: "1-4-029", unit: "m2" },
-        "水平兜网": { code: "1-4-030", unit: "m2" },
-        "斜道": { code: "1-4-031", unit: "跑" },
-        "钢管安全维护(双杆)": { code: "1-4-032", unit: "m" },
-        "钢管安全维护(单杆)": { code: "1-4-033", unit: "m" },
-        "钢筋棚、木工棚、铆焊棚、材料棚等搭拆": { code: "1-4-041", unit: "m2" }
+        "双排脚手架（高度≤6m）": { code: "1-4-001", unit: "m2", en: "Double-row scaffolding (height ≤6m)" },
+        "双排脚手架（高度≤12m）": { code: "1-4-002", unit: "m2", en: "Double-row scaffolding (height ≤12m)" },
+        "双排脚手架（高度≤18m）": { code: "1-4-003", unit: "m2", en: "Double-row scaffolding (height ≤18m)" },
+        "双排脚手架（高度≤24m）": { code: "1-4-004", unit: "m2", en: "Double-row scaffolding (height ≤24m)" },
+        "双排脚手架（高度≤30m）": { code: "1-4-005", unit: "m2", en: "Double-row scaffolding (height ≤30m)" },
+        "双排脚手架（高度30m以上）": { code: "1-4-006", unit: "m2", en: "Double-row scaffolding (height >30m)" },
+        "承重满堂脚手架立杆1200*1200": { code: "1-4-007", unit: "m3", en: "Load-bearing full scaffolding post 1200×1200mm" },
+        "承重满堂脚手架立杆1000*1000": { code: "1-4-008", unit: "m2", en: "Load-bearing full scaffolding post 1000×1000mm" },
+        "承重满堂脚手架立杆600*600": { code: "1-4-009", unit: "m2", en: "Load-bearing full scaffolding post 600×600mm" },
+        "承重满堂脚手架立杆500*500": { code: "1-4-010", unit: "m2", en: "Load-bearing full scaffolding post 500×500mm" },
+        "承重满堂脚手架每增高1m": { code: "1-4-011", unit: "m2", en: "Load-bearing full scaffolding +1m height" },
+        "高支模满堂脚手架400*400": { code: "1-4-012", unit: "m2", en: "Heavy-duty full scaffolding 400×400mm" },
+        "非承重满堂脚手架1600*1600": { code: "1-4-013", unit: "m2", en: "Non-load-bearing full scaffolding 1600×1600mm" },
+        "非承重满堂脚手架每增高1m": { code: "1-4-014", unit: "m2", en: "Non-load-bearing full scaffolding +1m height" },
+        "单排脚手架(高度≤6m)": { code: "1-4-015", unit: "m2", en: "Single-row scaffolding (height ≤6m)" },
+        "单排脚手架(高度≤12m)": { code: "1-4-016", unit: "m2", en: "Single-row scaffolding (height ≤12m)" },
+        "挑檐挑梁架≤6m": { code: "1-4-017", unit: "m2", en: "Eaves/balcony bracket ≤6m" },
+        "挑檐挑梁架6-10m": { code: "1-4-018", unit: "m2", en: "Eaves/balcony bracket 6-10m" },
+        "挑檐挑梁架>10m": { code: "1-4-019", unit: "m2", en: "Eaves/balcony bracket >10m" },
+        "独立柱脚手架（高度5m以内）": { code: "1-4-020", unit: "座", en: "Independent column scaffolding (height ≤5m)" },
+        "独立柱脚手架（高度10m以内）": { code: "1-4-021", unit: "座", en: "Independent column scaffolding (height ≤10m)" },
+        "独立柱脚手架（高度15m以内）": { code: "1-4-022", unit: "座", en: "Independent column scaffolding (height ≤15m)" },
+        "独立柱脚手架（高度20m以内）": { code: "1-4-023", unit: "座", en: "Independent column scaffolding (height ≤20m)" },
+        "独立柱脚手架（高度20m以上）": { code: "1-4-024", unit: "座", en: "Independent column scaffolding (height >20m)" },
+        "吊架(跳板高度5m以内)": { code: "1-4-025", unit: "m2", en: "Suspended scaffold (height ≤5m)" },
+        "吊架(跳板高度10m以内)": { code: "1-4-026", unit: "m2", en: "Suspended scaffold (height ≤10m)" },
+        "吊架(跳板高度15m以内)": { code: "1-4-027", unit: "m2", en: "Suspended scaffold (height ≤15m)" },
+        "吊架(跳板高度20m以内)": { code: "1-4-028", unit: "m2", en: "Suspended scaffold (height ≤20m)" },
+        "吊架(跳板高度20m以上)": { code: "1-4-029", unit: "m2", en: "Suspended scaffold (height >20m)" },
+        "水平兜网": { code: "1-4-030", unit: "m2", en: "Horizontal safety net" },
+        "斜道": { code: "1-4-031", unit: "跑", en: "Ramp / inclined access way" },
+        "钢管安全维护(双杆)": { code: "1-4-032", unit: "m", en: "Steel pipe safety barrier (double rail)" },
+        "钢管安全维护(单杆)": { code: "1-4-033", unit: "m", en: "Steel pipe safety barrier (single rail)" },
+        "钢筋棚木工棚铆焊棚搭拆": { code: "1-4-041", unit: "m2", en: "Rebar/carpentry/welding workshop erection/dismantling" }
     },
     "钢筋工程": {
-        "水池底板及筏板基础": { code: "1-5-001", unit: "t" },
-        "水池壁板": { code: "1-5-002", unit: "t" },
-        "基础": { code: "1-5-003", unit: "t" },
-        "结构": { code: "1-5-004", unit: "t" },
-        "钢筋搭接焊": { code: "1-5-008", unit: "头" },
-        "植筋Φ10mm以内": { code: "1-5-009", unit: "根" },
-        "植筋Φ12mm-14mm": { code: "1-5-010", unit: "根" },
-        "植筋Φ16mm-18mm": { code: "1-5-011", unit: "根" },
-        "植筋Φ20mm-25mm": { code: "1-5-012", unit: "根" },
-        "植筋Φ25mm以上": { code: "1-5-013", unit: "根" }
+        "水池底板及筏板基础": { code: "1-5-001", unit: "t", en: "Reservoir bottom slab and raft foundation" },
+        "水池壁板": { code: "1-5-002", unit: "t", en: "Reservoir wall / tank wall" },
+        "基础": { code: "1-5-003", unit: "t", en: "Foundation" },
+        "结构": { code: "1-5-004", unit: "t", en: "Structural" },
+        "钢筋搭接焊": { code: "1-5-008", unit: "头", en: "Rebar lap welding" },
+        "植筋Φ10mm以内": { code: "1-5-009", unit: "根", en: "Rebar doweling (≤Φ10mm)" },
+        "植筋Φ12mm-14mm": { code: "1-5-010", unit: "根", en: "Rebar doweling (Φ12–14mm)" },
+        "植筋Φ16mm-18mm": { code: "1-5-011", unit: "根", en: "Rebar doweling (Φ16–18mm)" },
+        "植筋Φ20mm-25mm": { code: "1-5-012", unit: "根", en: "Rebar doweling (Φ20–25mm)" },
+        "植筋Φ25mm以上": { code: "1-5-013", unit: "根", en: "Rebar doweling (>Φ25mm)" }
     },
     "砌筑工程": {
-        "砌基础（小红砖）": { code: "1-6-001", unit: "m3" }
+        "砌基础（小红砖）": { code: "1-6-001", unit: "m3", en: "Masonry foundation (common brick)" }
     },
     "混凝土工程": {
-        "汽车泵砼浇筑（基础）": { code: "1-7-001", unit: "m3" },
-        "汽车泵砼浇筑高度50m内（结构）": { code: "1-7-002", unit: "m3" },
-        "人工上料（二次倒运）手推车运砼浇捣": { code: "1-7-008", unit: "m3" },
-        "道路砼（厚200mm）": { code: "1-7-010", unit: "m2" },
-        "混凝土井": { code: "1-7-020", unit: "m3" },
-        "设备基础灌浆（含模板）": { code: "1-7-021", unit: "m3" },
-        "砼面打磨": { code: "1-7-024", unit: "m2" },
-        "砼面凿毛": { code: "1-7-025", unit: "m2" },
-        "砂浆垫块制作": { code: "1-7-026", unit: "m2" },
-        "沟盖板预制": { code: "1-7-027", unit: "m3" },
-        "沟盖板安装": { code: "1-7-028", unit: "m3" },
-        "铸铁、玻璃钢沟盖板安装": { code: "1-7-029", unit: "块" },
-        "地坪混凝土浇筑（厚50mm）": { code: "", unit: "m2" },
-        "地坪混凝土浇筑（厚100mm）": { code: "", unit: "m2" },
-        "地坪混凝土浇筑（厚150mm）": { code: "", unit: "m2" },
-        "地坪混凝土浇筑（厚200mm）": { code: "", unit: "m2" },
-        "井安装": { code: "", unit: "m" },
-        "水沟安装": { code: "", unit: "m" }
+        "汽车泵砼浇筑（基础）": { code: "1-7-001", unit: "m3", en: "Concrete pouring via truck pump (foundation)" },
+        "汽车泵砼浇筑高度50m内（结构）": { code: "1-7-002", unit: "m3", en: "Concrete pouring via truck pump (structure ≤50m)" },
+        "人工上料手推车运砼浇捣": { code: "1-7-008", unit: "m3", en: "Manual feeding and handcart transport for concrete" },
+        "道路砼（厚200mm）": { code: "1-7-010", unit: "m2", en: "Road concrete (thickness 200mm)" },
+        "混凝土井": { code: "1-7-020", unit: "m3", en: "Concrete manhole / well" },
+        "设备基础灌浆（含模板）": { code: "1-7-021", unit: "m3", en: "Equipment base grouting (including formwork)" },
+        "砼面打磨": { code: "1-7-024", unit: "m2", en: "Concrete surface grinding" },
+        "砼面凿毛": { code: "1-7-025", unit: "m2", en: "Concrete surface roughening" },
+        "砂浆垫块制作": { code: "1-7-026", unit: "m2", en: "Manufacture of mortar spacer blocks" },
+        "沟盖板预制": { code: "1-7-027", unit: "m3", en: "Precast trench cover slabs" },
+        "沟盖板安装": { code: "1-7-028", unit: "m3", en: "Installation of trench cover slabs" },
+        "铸铁玻璃钢沟盖板安装": { code: "1-7-029", unit: "块", en: "Installation of cast iron / FRP trench cover slabs" },
+        "地坪混凝土浇筑（厚50mm）": { code: "", unit: "m2", en: "Concrete paving (thickness 50mm)" },
+        "地坪混凝土浇筑（厚100mm）": { code: "", unit: "m2", en: "Concrete paving (thickness 100mm)" },
+        "地坪混凝土浇筑（厚150mm）": { code: "", unit: "m2", en: "Concrete paving (thickness 150mm)" },
+        "地坪混凝土浇筑（厚200mm）": { code: "", unit: "m2", en: "Concrete paving (thickness 200mm)" },
+        "井安装": { code: "", unit: "m", en: "Manhole installation" },
+        "水沟安装": { code: "", unit: "m", en: "Trench / Ditch installation" }
     }
 };
 
@@ -654,6 +540,7 @@ const WORK_DICT = {
 //  常量
 // ============================================================
 const WORKER_TYPES = ['木工', '瓦工', '钢筋工', '架子工', '旗手', '小工', '起重工', '测量工', '焊工'];
+const WORKER_TYPES_EN = ['Carpenter', 'Mason', 'Rebar Man', 'Scaffolder', 'Flagman', 'Helper', 'Rigger', 'Surveyor', 'Welder'];
 const TEAMS = ['马玉奇(Ma Yuqi)', '王建(Wang Jian)', 'Kumar', '郭传海(Guo Chuanhai)', '曹桂龙(Cao Guilong)', '陈传军(Chen Chuanjun)', '王世杰(Wang Shijie)', 'Sheharyar', 'Anwar'];
 const AREAS = ['110', '210', '220', '240', '320', '330', '400', '800', 'precast yard 1', 'precast yard 2'];
 
@@ -671,13 +558,13 @@ let currentLang = 'zh';
 // ============================================================
 const I18N = {
     zh: {
-        appTitle: '🏗️ 施工日报填报系统',
-        loginTitle: '🏗️ 施工日报填报系统',
+        appTitle: '施工日报填报系统',
+        loginTitle: '施工日报填报系统',
         loginSub: 'Marsa LNG Project · Civil Department',
         loginUser: '用户名',
         loginPass: '密码',
-        loginBtn: '🔑 登录',
-        logout: '🚪 退出',
+        loginBtn: '登录',
+        logout: '退出',
         loginWelcome: '🎉 欢迎回来，',
         entryTitle: '📝 施工量录入',
         attTitle: '👷 出勤日报（班组长）',
@@ -690,32 +577,29 @@ const I18N = {
         qty: '📊 完成量',
         manpower: '👷 人数',
         manhours: '⏱️ 工时',
-        foreign: '🌍 外籍',
+        non_chinese: '🌍 外籍',
         remark: '📝 备注',
-        addPending: '➕ 添加到待提交列表',
-        noWork: '🚫 今日无作业',
-        submitAll: '🚀 提交所有记录',
-        clearPending: '🗑️ 清空列表',
+        add_btn: '➕ 添加到待提交列表',
+        no_work_btn: '🚫 今日无作业',
+        submit_btn: '🚀 提交所有记录',
+        clear_pending: '🗑️ 清空列表',
         refresh: '🔄 刷新',
-        exportCSV: '📥 导出CSV',
-        exportAll: '📥 导出全部',
+        export_title: '📥 导出CSV',
         saveAtt: '✅ 提交考勤',
         query: '🔍 查询',
-        addUser: '➕ 添加用户',
+        add_user: '➕ 添加用户',
         backup: '💾 备份数据',
         importBackup: '📂 恢复备份',
         clearZero: '🧹 清理零数据',
         dedup: '🔄 去重',
         reset: '💣 重置所有数据',
-        pendingTitle: '📋 待提交列表',
+        pending_title: '📋 待提交列表',
         attSummaryTitle: '📊 今日报工汇总',
-        areaStatusTitle: '📊 各区域填报状态',
-        dailyDataTitle: '📋 当日数据',
-        allDataTitle: '📋 全部数据',
-        userMgmtTitle: '👥 用户管理',
-        addUserTitle: '➕ 添加用户',
-        dangerTitle: '⚠️ 危险操作',
-        loginLogsTitle: '📋 登录记录',
+        h_status: '📊 各区域填报状态',
+        h_data: '📋 数据清单',
+        user_management: '👥 用户管理',
+        danger_zone: '⚠️ 危险操作',
+        login_logs: '📋 登录记录',
         dangerHint: '⚠️ 清理零数据将删除所有数量为0的记录，去重将删除重复记录，重置将删除所有数据。',
         workerType: '工种',
         expected: '应到',
@@ -754,20 +638,24 @@ const I18N = {
         roleAdmin: '管理员',
         roleViewer: '查看者',
         roleEntry: '录入员',
-        tabEntry: '录入',
-        tabAttendance: '出勤日报',
-        tabOverview: '数据总览',
-        tabVerify: '工时核对',
-        tabSettings: '设置'
+        work_desc: '🛠️ 工作内容',
+        sub_item: '分部分项',
+        work_content: '工作内容',
+        code: '编号',
+        unit: '单位',
+        pipe_length: '📏 地管长度 (m)',
+        username: '用户名',
+        password: '密码',
+        night_shift_hint: '🌙 夜班说明：工作时间 4:30pm - 4:30am，请选择上班当天的日期'
     },
     en: {
-        appTitle: '🏗️ Civil Work Daily Report',
-        loginTitle: '🏗️ Civil Work Daily Report',
+        appTitle: 'Civil Work Daily Report',
+        loginTitle: 'Civil Work Daily Report',
         loginSub: 'Marsa LNG Project · Civil Department',
         loginUser: 'Username',
         loginPass: 'Password',
-        loginBtn: '🔑 Login',
-        logout: '🚪 Logout',
+        loginBtn: 'Login',
+        logout: 'Logout',
         loginWelcome: '🎉 Welcome back, ',
         entryTitle: '📝 Daily Work Entry',
         attTitle: '👷 Team Attendance Report',
@@ -780,32 +668,29 @@ const I18N = {
         qty: '📊 Qty.',
         manpower: '👷 Manpower',
         manhours: '⏱️ Manhours',
-        foreign: '🌍 Non-Chinese',
+        non_chinese: '🌍 Non-Chinese',
         remark: '📝 Remark',
-        addPending: '➕ Add to Pending',
-        noWork: '🚫 No Work Today',
-        submitAll: '🚀 Submit All',
-        clearPending: '🗑️ Clear List',
+        add_btn: '➕ Add to Pending',
+        no_work_btn: '🚫 No Work Today',
+        submit_btn: '🚀 Submit All',
+        clear_pending: '🗑️ Clear List',
         refresh: '🔄 Refresh',
-        exportCSV: '📥 Export CSV',
-        exportAll: '📥 Export All',
+        export_title: '📥 Export CSV',
         saveAtt: '✅ Save Attendance',
         query: '🔍 Query',
-        addUser: '➕ Add User',
+        add_user: '➕ Add User',
         backup: '💾 Backup Data',
         importBackup: '📂 Restore Backup',
         clearZero: '🧹 Clear Zero Data',
         dedup: '🔄 Deduplicate',
         reset: '💣 Reset All Data',
-        pendingTitle: '📋 Pending Submissions',
+        pending_title: '📋 Pending Submissions',
         attSummaryTitle: '📊 Today\'s Summary',
-        areaStatusTitle: '📊 Area Submission Status',
-        dailyDataTitle: '📋 Daily Data',
-        allDataTitle: '📋 All Data',
-        userMgmtTitle: '👥 User Management',
-        addUserTitle: '➕ Add User',
-        dangerTitle: '⚠️ Danger Zone',
-        loginLogsTitle: '📋 Login Logs',
+        h_status: '📊 Area Submission Status',
+        h_data: '📋 Data List',
+        user_management: '👥 User Management',
+        danger_zone: '⚠️ Danger Zone',
+        login_logs: '📋 Login Logs',
         dangerHint: '⚠️ Clear zero data will delete all records with zero values. Deduplicate will remove duplicates. Reset will delete ALL data.',
         workerType: 'Worker Type',
         expected: 'Expected',
@@ -844,11 +729,15 @@ const I18N = {
         roleAdmin: 'Admin',
         roleViewer: 'Viewer',
         roleEntry: 'Entry',
-        tabEntry: 'Entry',
-        tabAttendance: 'Attendance',
-        tabOverview: 'Overview',
-        tabVerify: 'Verification',
-        tabSettings: 'Settings'
+        work_desc: '🛠️ Work Description',
+        sub_item: 'Sub-item',
+        work_content: 'Work Content',
+        code: 'Code',
+        unit: 'Unit',
+        pipe_length: '📏 UG Pipe (m)',
+        username: 'Username',
+        password: 'Password',
+        night_shift_hint: '🌙 Night Shift: 4:30pm - 4:30am, select the shift start date'
     }
 };
 
@@ -859,6 +748,8 @@ function t(key) {
 function setLang(lang) {
     currentLang = lang;
     updateUI();
+    // 刷新分类下拉
+    onCategoryChange();
 }
 
 function setLoginLang(lang) {
@@ -872,13 +763,65 @@ function updateLoginUI() {
     document.getElementById('loginUsername').placeholder = t('loginUser') + ' / Username';
     document.getElementById('loginPassword').placeholder = t('loginPass') + ' / Password';
     document.querySelector('.login-box .btn').textContent = t('loginBtn');
+    // 英文按钮变蓝
+    document.querySelectorAll('.login-lang button').forEach(b => {
+        b.classList.remove('active');
+        if ((currentLang === 'zh' && b.id === 'loginLangZh') || (currentLang === 'en' && b.id === 'loginLangEn')) {
+            b.classList.add('active');
+        }
+    });
 }
 
 function updateUI() {
-    document.getElementById('appTitle').innerHTML = t('appTitle') + ' <span class="cloud-badge">☁️ Neon</span>';
+    document.getElementById('appTitle').textContent = t('appTitle');
     document.querySelectorAll('[data-i18n]').forEach(el => {
         el.textContent = t(el.dataset.i18n);
     });
+    // 更新 Tab 按钮文字
+    const tabMap = {
+        '📝 录入': '📝 ' + (currentLang === 'zh' ? '录入' : 'Entry'),
+        '👷 出勤日报': '👷 ' + (currentLang === 'zh' ? '出勤日报' : 'Attendance'),
+        '📊 数据总览': '📊 ' + (currentLang === 'zh' ? '数据总览' : 'Overview'),
+        '⚙️ 设置': '⚙️ ' + (currentLang === 'zh' ? '设置' : 'Settings')
+    };
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        const text = btn.textContent.trim();
+        for (const [key, val] of Object.entries(tabMap)) {
+            if (text.includes(key.replace(/[📝👷📊⚙️]\s*/, '')) || text === key) {
+                btn.textContent = val;
+                break;
+            }
+        }
+    });
+    // 更新子Tab
+    const subTabMap = {
+        '👷 出勤日报': '👷 ' + (currentLang === 'zh' ? '出勤日报' : 'Attendance'),
+        '📝 施工员录入': '📝 ' + (currentLang === 'zh' ? '施工员录入' : 'Work Entry'),
+        '✅ 核对结果': '✅ ' + (currentLang === 'zh' ? '核对结果' : 'Verification')
+    };
+    document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+        const text = btn.textContent.trim();
+        for (const [key, val] of Object.entries(subTabMap)) {
+            if (text.includes(key.replace(/[👷📝✅]\s*/, '')) || text === key) {
+                btn.textContent = val;
+                break;
+            }
+        }
+    });
+    // 刷新语言按钮高亮
+    document.querySelectorAll('.lang-toggle .lang-btn').forEach(b => {
+        b.classList.remove('active');
+        if ((currentLang === 'zh' && b.textContent.trim() === '中文') || (currentLang === 'en' && b.textContent.trim() === 'EN')) {
+            b.classList.add('active');
+        }
+    });
+    renderPending();
+    loadAttendance();
+    loadAttendance2();
+    loadOverview();
+    loadVerification();
+    loadUserList();
+    loadLoginLogs();
 }
 
 // ============================================================
@@ -1016,9 +959,6 @@ function switchTab(tab) {
     if (tab === 'overview') {
         loadOverview();
     }
-    if (tab === 'verify') {
-        loadVerification2();
-    }
     if (tab === 'settings') {
         loadUserList();
         loadLoginLogs();
@@ -1052,44 +992,78 @@ function initApp() {
     document.getElementById('attDate2').value = today;
     document.getElementById('overviewDate').value = today;
     document.getElementById('verifyDate').value = today;
-    document.getElementById('verifyDate2').value = today;
 
     onCategoryChange();
-    loadPending();      // ✅ 加载待提交列表
+    loadPending();
     loadAttendance();
     loadAttendance2();
     loadOverview();
     loadUserList();
     loadVerification();
-    loadVerification2();
 }
 
 // ============================================================
 //  工作字典联动
 // ============================================================
 function onCategoryChange() {
-    const category = document.getElementById('entryCategory').value;
-    const subSelect = document.getElementById('entrySubItem');
-    subSelect.innerHTML = '';
-
-    const items = WORK_DICT[category] || {};
-    for (const name of Object.keys(items)) {
+    const categorySelect = document.getElementById('entryCategory');
+    const lang = currentLang;
+    
+    // 获取分类列表
+    const categories = Object.keys(WORK_DICT);
+    const catDisplay = lang === 'zh' ? categories : categories.map(c => {
+        // 简单英文映射
+        const map = {
+            '无收入项': 'Non-revenue Work',
+            '土石方工程': 'Earthwork',
+            '模板工程': 'Formwork',
+            '架子工程': 'Scaffolding',
+            '钢筋工程': 'Rebar / Reinforcement',
+            '砌筑工程': 'Masonry',
+            '混凝土工程': 'Concrete Works'
+        };
+        return map[c] || c;
+    });
+    
+    categorySelect.innerHTML = '';
+    categories.forEach((cat, index) => {
         const option = document.createElement('option');
-        option.value = name;
-        option.textContent = name;
-        subSelect.appendChild(option);
-    }
+        option.value = cat;
+        option.textContent = catDisplay[index];
+        categorySelect.appendChild(option);
+    });
     onSubItemChange();
 }
 
 function onSubItemChange() {
     const category = document.getElementById('entryCategory').value;
-    const subItem = document.getElementById('entrySubItem').value;
+    const subSelect = document.getElementById('entrySubItem');
+    const lang = currentLang;
+    
+    subSelect.innerHTML = '';
+    
     const items = WORK_DICT[category] || {};
-    const info = items[subItem] || { code: 'N/A', unit: 'N/A' };
-
-    document.getElementById('entryCode').value = info.code;
-    document.getElementById('entryUnit').value = info.unit;
+    const keys = Object.keys(items);
+    
+    keys.forEach(key => {
+        const option = document.createElement('option');
+        option.value = key;
+        const item = items[key];
+        if (lang === 'zh') {
+            option.textContent = key;
+        } else {
+            option.textContent = item.en || key;
+        }
+        subSelect.appendChild(option);
+    });
+    
+    // 更新编号和单位
+    const firstKey = keys[0];
+    if (firstKey) {
+        const info = items[firstKey];
+        document.getElementById('entryCode').value = info.code || 'N/A';
+        document.getElementById('entryUnit').value = info.unit || 'N/A';
+    }
 }
 
 // ============================================================
@@ -1100,9 +1074,9 @@ function addToPending() {
     const area = document.getElementById('entryArea').value;
     const team = document.getElementById('entryTeam').value;
     const tag = document.getElementById('entryTag').value || 'N/A';
-    const code = document.getElementById('entryCode').value;
     const category = document.getElementById('entryCategory').value;
     const desc = document.getElementById('entrySubItem').value;
+    const code = document.getElementById('entryCode').value;
     const unit = document.getElementById('entryUnit').value;
     const qty = parseFloat(document.getElementById('entryQty').value) || 0;
     const pipeLength = parseFloat(document.getElementById('entryPipe').value) || 0;
@@ -1112,11 +1086,10 @@ function addToPending() {
     const remark = document.getElementById('entryRemark').value || '';
 
     if (!date || !area || !team) {
-        showToast('❌ 请填写日期、区域和班组');
+        showToast(t('errorFillAll'));
         return;
     }
 
-    // 检查重复
     const duplicate = pendingItems.some(item => 
         (item.Date || item.date) === date && 
         (item.Area || item.area) === area && 
@@ -1129,7 +1102,6 @@ function addToPending() {
         return;
     }
 
-    // 添加记录（使用统一字段名）
     pendingItems.push({
         Date: date,
         Area: area,
@@ -1148,15 +1120,10 @@ function addToPending() {
         CreatedBy: currentUser || 'unknown'
     });
 
-    // ✅ 保存到 localStorage
     localStorage.setItem('pending_items', JSON.stringify(pendingItems));
-    
-    // ✅ 立即刷新
     renderPending();
-    
     showToast('✅ 已添加到待提交列表');
 
-    // 清空输入
     document.getElementById('entryTag').value = '';
     document.getElementById('entryQty').value = '0';
     document.getElementById('entryPipe').value = '0';
@@ -1165,6 +1132,7 @@ function addToPending() {
     document.getElementById('entryForeign').value = '0';
     document.getElementById('entryRemark').value = '';
 }
+
 function addNoWork() {
     const date = document.getElementById('entryDate').value;
     const area = document.getElementById('entryArea').value;
@@ -1193,47 +1161,27 @@ function addNoWork() {
         CreatedBy: currentUser || 'unknown'
     });
     renderPending();
-    savePending();
+    localStorage.setItem('pending_items', JSON.stringify(pendingItems));
     showToast('✅ 已标记 ' + area + ' 今日无作业');
 }
 
-// ============================================================
-//  🔥 renderPending - 强制刷新待提交列表
-// ============================================================
 function renderPending() {
-    console.log('🔄 渲染待提交列表');
-    
-    // ✅ 先确保从 localStorage 重新读取
-    const saved = localStorage.getItem('pending_items');
-    if (saved) {
-        try {
-            pendingItems = JSON.parse(saved);
-        } catch(e) {
-            pendingItems = [];
-        }
-    }
-    
     const container = document.getElementById('pendingItems');
     const countEl = document.getElementById('pendingCount');
-    
-    if (!container) {
-        console.error('❌ pendingItems 元素不存在');
-        return;
+
+    const saved = localStorage.getItem('pending_items');
+    if (saved) {
+        try { pendingItems = JSON.parse(saved); } catch(e) { pendingItems = []; }
     }
-    
-    // 更新数量
-    if (countEl) {
-        countEl.textContent = pendingItems.length;
-    }
-    
-    // 清空容器
+
     container.innerHTML = '';
-    
+    countEl.textContent = pendingItems.length;
+
     if (pendingItems.length === 0) {
-        container.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">暂无待提交记录</p>';
+        container.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">' + t('noPending') + '</p>';
         return;
     }
-    
+
     let html = '';
     pendingItems.forEach((item, index) => {
         const date = item.Date || item.date || '';
@@ -1243,8 +1191,8 @@ function renderPending() {
         const qty = item.Qty || item.qty || 0;
         const manpower = item.Manpower || item.manpower || 0;
         
-        html += `<div class="pending-item" style="display:flex;justify-content:space-between;align-items:center;padding:10px 15px;border-bottom:1px solid #f0f0f0;">
-            <div class="info" style="flex:1;">
+        html += `<div class="pending-item">
+            <div class="info">
                 <strong>${date}</strong> | ${area} | ${team} | ${desc}
                 <span style="color:#999;font-size:12px;margin-left:10px;">
                     ${qty > 0 ? '数量:' + qty : ''}
@@ -1252,15 +1200,13 @@ function renderPending() {
                 </span>
             </div>
             <div class="actions">
-                <button class="btn btn-danger btn-sm" onclick="removePending(${index})" style="padding:5px 12px;font-size:12px;background:#e53935;color:white;border:none;border-radius:4px;cursor:pointer;">删除</button>
+                <button class="btn btn-danger btn-sm" onclick="removePending(${index})">删除</button>
             </div>
         </div>`;
     });
     container.innerHTML = html;
-    
-    console.log('✅ 渲染完成，共', pendingItems.length, '条记录');
 }
-    
+
 function removePending(index) {
     pendingItems.splice(index, 1);
     localStorage.setItem('pending_items', JSON.stringify(pendingItems));
@@ -1272,7 +1218,7 @@ function clearPending() {
         showToast('⚠️ 列表已经是空的');
         return;
     }
-    if (!confirm('确定清空所有待提交吗？')) return;
+    if (!confirm(t('confirmClear'))) return;
     
     pendingItems = [];
     localStorage.removeItem('pending_items');
@@ -1283,31 +1229,22 @@ function clearPending() {
 function loadPending() {
     const saved = localStorage.getItem('pending_items');
     if (saved) {
-        try {
-            pendingItems = JSON.parse(saved);
-            console.log('✅ 从 localStorage 加载了', pendingItems.length, '条待提交记录');
-        } catch(e) {
-            console.error('解析失败:', e);
-            pendingItems = [];
-        }
-    } else {
-        pendingItems = [];
-        console.log('📭 localStorage 没有待提交数据');
-    }
+        try { pendingItems = JSON.parse(saved); } catch(e) { pendingItems = []; }
+    } else { pendingItems = []; }
     renderPending();
 }
+
 async function submitAll() {
     if (pendingItems.length === 0) {
-        showToast('❌ 没有待提交的记录');
+        showToast('❌ ' + t('noPending'));
         return;
     }
-    if (!confirm(`提交 ${pendingItems.length} 条记录？`)) return;
+    if (!confirm(t('confirmSubmit').replace('{count}', pendingItems.length))) return;
 
     let successCount = 0;
 
     for (const item of pendingItems) {
         try {
-            // 确保字段名一致
             const reportData = {
                 Date: item.Date || item.date,
                 Area: item.Area || item.area,
@@ -1325,7 +1262,6 @@ async function submitAll() {
                 Remark: item.Remark || item.remark || '',
                 CreatedBy: currentUser || 'unknown'
             };
-            
             await addReport(reportData);
             successCount++;
         } catch (e) {
@@ -1339,11 +1275,12 @@ async function submitAll() {
     loadOverview();
 
     if (successCount > 0) {
-        showToast(`🎉 成功提交 ${successCount} 条记录！`);
+        showToast(t('successSubmit').replace('{count}', successCount));
     } else {
         showToast('❌ 提交失败，请检查网络');
     }
 }
+
 // ============================================================
 //  出勤日报
 // ============================================================
@@ -1386,8 +1323,11 @@ function renderAttendance(data, tableId) {
 
     let totalExpected = 0, totalPresent = 0, totalForeign = 0;
 
-    WORKER_TYPES.forEach((type) => {
-        const row = map[type] || { Total: 0, Present: 0, Foreign: 0, Remark: '' };
+    const workerTypes = currentLang === 'zh' ? WORKER_TYPES : WORKER_TYPES_EN;
+
+    workerTypes.forEach((type, idx) => {
+        const zhType = WORKER_TYPES[idx] || type;
+        const row = map[zhType] || { Total: 0, Present: 0, Foreign: 0, Remark: '' };
         const total = row.Total || 0;
         const present = row.Present || 0;
         const absent = total - present;
@@ -1399,11 +1339,11 @@ function renderAttendance(data, tableId) {
 
         html += `<tr>
             <td><strong>${type}</strong></td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="total" value="${total}" min="0" onchange="updateAbsent(this)"></td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="present" value="${present}" min="0" onchange="updateAbsent(this)"></td>
+            <td><input type="number" class="att-input" data-type="${zhType}" data-field="total" value="${total}" min="0" onchange="updateAbsent(this)"></td>
+            <td><input type="number" class="att-input" data-type="${zhType}" data-field="present" value="${present}" min="0" onchange="updateAbsent(this)"></td>
             <td style="color:${absent > 0 ? '#c62828' : '#4caf50'};font-weight:bold;">${absent}</td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="foreign" value="${foreign}" min="0"></td>
-            <td><input type="text" class="att-input att-input-wide" data-type="${type}" data-field="remark" value="${row.Remark || ''}" placeholder="备注"></td>
+            <td><input type="number" class="att-input" data-type="${zhType}" data-field="foreign" value="${foreign}" min="0"></td>
+            <td><input type="text" class="att-input att-input-wide" data-type="${zhType}" data-field="remark" value="${row.Remark || ''}" placeholder="备注"></td>
         </tr>`;
     });
 
@@ -1451,7 +1391,8 @@ async function renderAttendanceSummary(date, containerId) {
             let details = records.map(d => {
                 const total = d.Total || 0;
                 const absent = (d.Total || 0) - (d.Present || 0);
-                return d.WorkerType + total + '人' + (absent > 0 ? '(缺勤' + absent + '人)' : '');
+                const wType = currentLang === 'zh' ? d.WorkerType : (WORKER_TYPES_EN[WORKER_TYPES.indexOf(d.WorkerType)] || d.WorkerType);
+                return wType + total + '人' + (absent > 0 ? '(缺勤' + absent + '人)' : '');
             }).join('、');
             html += `<tr><td>${team}</td><td>${details || '无数据'}</td></tr>`;
         });
@@ -1502,7 +1443,6 @@ async function saveAttendance() {
         loadAttendance();
         loadAttendance2();
         loadVerification();
-        loadVerification2();
     } catch (e) {
         showToast('❌ 保存失败: ' + e.message);
     }
@@ -1548,7 +1488,6 @@ async function saveAttendance2() {
         loadAttendance();
         loadAttendance2();
         loadVerification();
-        loadVerification2();
     } catch (e) {
         showToast('❌ 保存失败: ' + e.message);
     }
@@ -1610,11 +1549,11 @@ async function loadOverview() {
 }
 
 function exportData() {
-    showToast('📥 ' + t('exportCSV'));
+    showToast('📥 ' + t('export_title'));
 }
 
 function exportAllData() {
-    showToast('📥 ' + t('exportAll'));
+    showToast('📥 ' + t('export_title'));
 }
 
 // ============================================================
@@ -1631,18 +1570,16 @@ async function loadVerification() {
 
         const filteredTeams = teamFilter === 'all' ? TEAMS : [teamFilter];
 
-        let html = '<table><thead><tr><th>' + t('teamCol') + '</th><th>' + t('expected') + '</th><th>' + t('present') + '</th><th>工时人数</th><th>工时</th><th>' + t('matched') + '</th><th>' + t('diff') + '</th></tr></thead><tbody>';
-        let totalExpected = 0, totalPresent = 0, totalManpower = 0, totalManhours = 0, matchedCount = 0;
+        let html = '<table><thead><tr><th>' + t('teamCol') + '</th><th>出勤人数</th><th>工时人数</th><th>' + t('matched') + '</th><th>' + t('diff') + '</th></tr></thead><tbody>';
+        let totalExpected = 0, totalManpower = 0, matchedCount = 0;
         let teamsWithData = 0;
 
         filteredTeams.forEach(team => {
             const att = attendance.filter(a => a.Team === team);
             const totalAtt = att.reduce((s, a) => s + (a.Total || 0), 0);
-            const presentAtt = att.reduce((s, a) => s + (a.Present || 0), 0);
 
             const rep = reports.filter(r => r.Team === team);
             const totalMp = rep.reduce((s, r) => s + (r.Manpower || 0), 0);
-            const totalMh = rep.reduce((s, r) => s + (r.Manhours || 0), 0);
 
             const hasData = totalAtt > 0 || totalMp > 0;
             if (hasData) teamsWithData++;
@@ -1652,17 +1589,13 @@ async function loadVerification() {
             if (matched && totalAtt > 0) matchedCount++;
 
             totalExpected += totalAtt;
-            totalPresent += presentAtt;
             totalManpower += totalMp;
-            totalManhours += totalMh;
 
             const rowClass = hasData ? (matched ? 'row-matched' : 'row-unmatched') : '';
             html += `<tr class="${rowClass}">
                 <td>${team}</td>
                 <td>${totalAtt}</td>
-                <td>${presentAtt}</td>
                 <td>${totalMp}</td>
-                <td>${totalMh.toFixed(1)}</td>
                 <td>${hasData ? (matched ? '✅' : '❌') : '-'}</td>
                 <td style="color:${diff !== 0 && hasData ? '#c62828' : '#4caf50'}">${hasData ? diff : '-'}</td>
             </tr>`;
@@ -1672,81 +1605,14 @@ async function loadVerification() {
 
         const statsHtml = `
             <div class="stats">
-                <div class="stat-card"><div class="stat-number">${totalExpected}</div><div class="stat-label">总应到</div></div>
-                <div class="stat-card"><div class="stat-number">${totalPresent}</div><div class="stat-label">总实到</div></div>
+                <div class="stat-card"><div class="stat-number">${totalExpected}</div><div class="stat-label">总出勤人数</div></div>
                 <div class="stat-card"><div class="stat-number">${totalManpower}</div><div class="stat-label">总工时人数</div></div>
-                <div class="stat-card"><div class="stat-number">${totalManhours.toFixed(1)}</div><div class="stat-label">总工时</div></div>
                 <div class="stat-card"><div class="stat-number">${matchedCount}/${teamsWithData || 1}</div><div class="stat-label">匹配班组</div></div>
             </div>
         `;
         document.getElementById('verifyStats').innerHTML = statsHtml;
     } catch (e) {
         document.getElementById('verifyResult').innerHTML = '<p style="color:#999;padding:20px;">加载失败</p>';
-    }
-}
-
-async function loadVerification2() {
-    const date = document.getElementById('verifyDate2').value;
-    const teamFilter = document.getElementById('verifyTeam2').value;
-    if (!date) return;
-
-    try {
-        const attendance = await getAttendance(date);
-        const reports = await getReports(date);
-
-        const filteredTeams = teamFilter === 'all' ? TEAMS : [teamFilter];
-
-        let html = '<table><thead><tr><th>' + t('teamCol') + '</th><th>' + t('expected') + '</th><th>' + t('present') + '</th><th>工时人数</th><th>工时</th><th>' + t('matched') + '</th><th>' + t('diff') + '</th></tr></thead><tbody>';
-        let totalExpected = 0, totalPresent = 0, totalManpower = 0, totalManhours = 0, matchedCount = 0;
-        let teamsWithData = 0;
-
-        filteredTeams.forEach(team => {
-            const att = attendance.filter(a => a.Team === team);
-            const totalAtt = att.reduce((s, a) => s + (a.Total || 0), 0);
-            const presentAtt = att.reduce((s, a) => s + (a.Present || 0), 0);
-
-            const rep = reports.filter(r => r.Team === team);
-            const totalMp = rep.reduce((s, r) => s + (r.Manpower || 0), 0);
-            const totalMh = rep.reduce((s, r) => s + (r.Manhours || 0), 0);
-
-            const hasData = totalAtt > 0 || totalMp > 0;
-            if (hasData) teamsWithData++;
-
-            const matched = totalAtt === totalMp && totalAtt > 0;
-            const diff = totalAtt - totalMp;
-            if (matched && totalAtt > 0) matchedCount++;
-
-            totalExpected += totalAtt;
-            totalPresent += presentAtt;
-            totalManpower += totalMp;
-            totalManhours += totalMh;
-
-            const rowClass = hasData ? (matched ? 'row-matched' : 'row-unmatched') : '';
-            html += `<tr class="${rowClass}">
-                <td>${team}</td>
-                <td>${totalAtt}</td>
-                <td>${presentAtt}</td>
-                <td>${totalMp}</td>
-                <td>${totalMh.toFixed(1)}</td>
-                <td>${hasData ? (matched ? '✅' : '❌') : '-'}</td>
-                <td style="color:${diff !== 0 && hasData ? '#c62828' : '#4caf50'}">${hasData ? diff : '-'}</td>
-            </tr>`;
-        });
-        html += '</tbody></table>';
-        document.getElementById('verifyResult2').innerHTML = html;
-
-        const statsHtml = `
-            <div class="stats">
-                <div class="stat-card"><div class="stat-number">${totalExpected}</div><div class="stat-label">总应到</div></div>
-                <div class="stat-card"><div class="stat-number">${totalPresent}</div><div class="stat-label">总实到</div></div>
-                <div class="stat-card"><div class="stat-number">${totalManpower}</div><div class="stat-label">总工时人数</div></div>
-                <div class="stat-card"><div class="stat-number">${totalManhours.toFixed(1)}</div><div class="stat-label">总工时</div></div>
-                <div class="stat-card"><div class="stat-number">${matchedCount}/${teamsWithData || 1}</div><div class="stat-label">匹配班组</div></div>
-            </div>
-        `;
-        document.getElementById('verifyStats2').innerHTML = statsHtml;
-    } catch (e) {
-        document.getElementById('verifyResult2').innerHTML = '<p style="color:#999;padding:20px;">加载失败</p>';
     }
 }
 
@@ -1846,7 +1712,10 @@ function showToast(msg) {
 //  自动保存
 // ============================================================
 setInterval(() => {
-    savePending();
+    const saved = localStorage.getItem('pending_items');
+    if (saved) {
+        try { pendingItems = JSON.parse(saved); } catch(e) {}
+    }
 }, 30000);
 
 // ============================================================
@@ -1859,7 +1728,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('attDate2').value = today;
     document.getElementById('overviewDate').value = today;
     document.getElementById('verifyDate').value = today;
-    document.getElementById('verifyDate2').value = today;
 
     initApp();
 
@@ -1870,8 +1738,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('overviewDate').addEventListener('change', loadOverview);
     document.getElementById('verifyDate').addEventListener('change', loadVerification);
     document.getElementById('verifyTeam').addEventListener('change', loadVerification);
-    document.getElementById('verifyDate2').addEventListener('change', loadVerification2);
-    document.getElementById('verifyTeam2').addEventListener('change', loadVerification2);
 
     updateLoginUI();
 });
