@@ -11,6 +11,12 @@ export default async function handler(req, res) {
         return res.status(200).end();
     }
 
+    // ✅ 检查 DATABASE_URL 是否存在
+    if (!process.env.DATABASE_URL) {
+        console.error('DATABASE_URL 未设置');
+        return res.status(500).json({ error: 'Database URL not configured' });
+    }
+
     const sql = neon(process.env.DATABASE_URL);
 
     try {
