@@ -2,6 +2,7 @@
 const { neon } = require('@neondatabase/serverless');
 
 export default async function handler(req, res) {
+    // 设置 CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -36,12 +37,15 @@ export default async function handler(req, res) {
             }
             query += ' ORDER BY id';
 
+            console.log('查询区域出勤:', query, params); // 调试日志
             const result = await sql(query, params);
             return res.status(200).json(result);
         }
 
         if (req.method === 'POST') {
             const { date, team, worker_type, area, count, created_by } = req.body;
+            console.log('保存区域出勤:', { date, team, worker_type, area, count, created_by }); // 调试日志
+            
             const result = await sql`
                 INSERT INTO area_distribution 
                 (date, team, worker_type, area, count, created_by)
@@ -55,10 +59,6 @@ export default async function handler(req, res) {
             const { date, team } = req.query;
             if (date && team) {
                 await sql`DELETE FROM area_distribution WHERE date = ${date} AND team = ${team}`;
-            } else if (date) {
-                await sql`DELETE FROM area_distribution WHERE date = ${date}`;
-            } else if (team) {
-                await sql`DELETE FROM area_distribution WHERE team = ${team}`;
             } else {
                 return res.status(400).json({ error: 'Missing date or team parameter' });
             }
