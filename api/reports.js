@@ -1,5 +1,17 @@
 // api/reports.js
-import { neon } from '@vercel/postgres';
+import { Pool } from 'pg';
+
+let pool = null;
+
+function getPool() {
+    if (!pool) {
+        pool = new Pool({
+            connectionString: process.env.POSTGRES_URL,
+            ssl: { rejectUnauthorized: false }
+        });
+    }
+    return pool;
+}
 
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,9 +22,9 @@ export default async function handler(req, res) {
         return res.status(200).end();
     }
 
-    const sql = neon(process.env.POSTGRES_URL);
-
     try {
+        const pool = getPool();
+
         if (req.method === 'GET') {
             const { date } = req.query;
             let query = 'SELECT * FROM reports';
@@ -23,13 +35,13 @@ export default async function handler(req, res) {
             } else {
                 query += ' ORDER BY id DESC';
             }
-            const result = await sql(query, params);
-            return res.status(200).json(result);
+            const result = await pool.query(query, params);
+            return res.status(200).json(result.rows);
         }
 
         if (req.method === 'POST') {
             const body = req.body;
-            const result = await sql(
+            const result = await pool.query(
                 `INSERT INTO reports (date, area, team, tag, code, category, description, unit, qty, pipe_length, manpower, manhours, foreign_count, remark, created_by)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
                  RETURNING id`,
@@ -43,7 +55,7 @@ export default async function handler(req, res) {
                     body.CreatedBy || 'unknown'
                 ]
             );
-            return res.status(200).json({ success: true, id: result[0].id });
+            return res.status(200).json({ success: true, id: result.rows[0].id });
         }
 
         return res.status(405).json({ error: 'Method not allowed' });
