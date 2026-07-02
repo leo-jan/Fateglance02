@@ -229,7 +229,7 @@ async function submitReport() {
     try {
         await addReport({
             date, area, team, description: desc,
-            qty, manpower, manhours, foreign,
+            qty, manpower, manhours, foreign_count: foreign,
             created_by: currentUser,
             created_at: new Date().toISOString()
         });
