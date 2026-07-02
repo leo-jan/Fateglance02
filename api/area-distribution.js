@@ -37,15 +37,15 @@ export default async function handler(req, res) {
             }
             query += ' ORDER BY id';
 
-            console.log('查询区域出勤:', query, params); // 调试日志
+            console.log('查询区域出勤:', query, params);
             const result = await sql(query, params);
             return res.status(200).json(result);
         }
 
         if (req.method === 'POST') {
             const { date, team, worker_type, area, count, created_by } = req.body;
-            console.log('保存区域出勤:', { date, team, worker_type, area, count, created_by }); // 调试日志
-            
+            console.log('保存区域出勤:', { date, team, worker_type, area, count, created_by });
+
             const result = await sql`
                 INSERT INTO area_distribution 
                 (date, team, worker_type, area, count, created_by)
