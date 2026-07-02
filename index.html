@@ -1005,10 +1005,25 @@ function switchTab(tab) {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
     document.getElementById(`tab-${tab}`).classList.add('active');
-    if (tab === 'overview') loadOverview();
-    if (tab === 'attendance') loadAttendance2();
-    if (tab === 'verify') loadVerification2();
-    if (tab === 'settings') { loadUserList(); loadLoginLogs(); }
+
+    // ✅ 切换时自动刷新对应数据
+    if (tab === 'entry') {
+        renderPending();      // 刷新待提交列表
+        loadAttendance();     // 刷新考勤
+    }
+    if (tab === 'attendance') {
+        loadAttendance2();    // 刷新考勤
+    }
+    if (tab === 'overview') {
+        loadOverview();       // 刷新总览
+    }
+    if (tab === 'verify') {
+        loadVerification2();  // 刷新核对
+    }
+    if (tab === 'settings') {
+        loadUserList();
+        loadLoginLogs();
+    }
 }
 
 function switchSubTab(subtab) {
@@ -1016,6 +1031,17 @@ function switchSubTab(subtab) {
     document.querySelectorAll('.sub-tab-content').forEach(c => c.classList.add('hidden'));
     document.querySelector(`.sub-tab-btn[data-subtab="${subtab}"]`).classList.add('active');
     document.getElementById(`subtab-${subtab}`).classList.remove('hidden');
+
+    // ✅ 切换时自动刷新对应数据
+    if (subtab === 'attendance_sub') {
+        loadAttendance();
+    }
+    if (subtab === 'entry_sub') {
+        renderPending();
+    }
+    if (subtab === 'verify_sub') {
+        loadVerification();
+    }
 }
 
 // ============================================================
@@ -1095,27 +1121,12 @@ function addToPending() {
         return;
     }
 
-    const duplicate = pendingItems.some(item =>
-        item.Date === record.Date &&
-        item.Area === record.Area &&
-        item.Team === record.Team &&
-        item.Description === record.Description
-    );
-
-    if (duplicate) {
-        showToast('⚠️ 已存在相同记录');
-        return;
-    }
-
     pendingItems.push(record);
-
-    // ✅ 关键：立即刷新显示
-    renderPending();
     savePending();
-
+    renderPending();  // ✅ 刷新待提交列表
     showToast('✅ 已添加到待提交列表');
 
-    // 清空输入框
+    // 清空输入
     document.getElementById('entryTag').value = '';
     document.getElementById('entryQty').value = '0';
     document.getElementById('entryPipe').value = '0';
@@ -1192,13 +1203,16 @@ function removePending(index) {
 }
 
 function clearPending() {
-    if (pendingItems.length === 0) return;
-    if (confirm(t('confirmClear'))) {
-        pendingItems = [];
-        renderPending();
-        savePending();
-        showToast('🗑️ 已清空待提交列表');
+    if (pendingItems.length === 0) {
+        showToast('⚠️ 待提交列表已经是空的');
+        return;
     }
+    if (!confirm(t('confirmClear'))) return;
+
+    pendingItems = [];
+    localStorage.removeItem('pending_items');
+    renderPending();  // ✅ 刷新待提交列表
+    showToast('🗑️ 已清空待提交列表');
 }
 
 function savePending() {
@@ -1225,6 +1239,7 @@ async function submitAll() {
     if (!confirm(t('confirmSubmit').replace('{count}', pendingItems.length))) return;
 
     let successCount = 0;
+
     for (const item of pendingItems) {
         try {
             await addReport(item);
@@ -1234,17 +1249,17 @@ async function submitAll() {
         }
     }
 
+    pendingItems = [];
+    localStorage.removeItem('pending_items');
+    renderPending();   // ✅ 刷新待提交列表
+    loadOverview();    // ✅ 刷新数据总览
+
     if (successCount > 0) {
-        pendingItems = [];
-        renderPending();
-        savePending();
-        loadOverview();
         showToast(t('successSubmit').replace('{count}', successCount));
     } else {
         showToast('❌ 提交失败，请检查网络');
     }
 }
-
 // ============================================================
 //  出勤日报
 // ============================================================
@@ -1400,8 +1415,8 @@ async function saveAttendance() {
             await addAttendance(record);
         }
         showToast(t('successSaved'));
-        loadAttendance();
-        loadAttendance2();
+        loadAttendance();   // ✅ 刷新考勤表
+        loadAttendance2();  // ✅ 刷新另一个考勤表
     } catch (e) {
         showToast('❌ 保存失败: ' + e.message);
     }
@@ -1444,8 +1459,8 @@ async function saveAttendance2() {
             await addAttendance(record);
         }
         showToast(t('successSaved'));
-        loadAttendance();
-        loadAttendance2();
+        loadAttendance();   // ✅ 刷新考勤表
+        loadAttendance2();  // ✅ 刷新另一个考勤表
     } catch (e) {
         showToast('❌ 保存失败: ' + e.message);
     }
