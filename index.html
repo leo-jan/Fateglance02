@@ -1170,29 +1170,45 @@ function addNoWork() {
 // ============================================================
 function renderPending() {
     const container = document.getElementById('pendingItems');
+    
+    // 安全检查
+    if (!container) {
+        console.error('❌ pendingItems 元素不存在');
+        return;
+    }
+    
+    // 查找数量显示元素
     const countEl = document.getElementById('pendingCount');
-
-    // ✅ 强制清空
+    if (countEl) {
+        countEl.textContent = pendingItems.length;
+    }
+    
+    // 清空容器
     container.innerHTML = '';
-    countEl.textContent = pendingItems.length;
-
+    
     if (pendingItems.length === 0) {
         container.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">' + t('noPending') + '</p>';
         return;
     }
-
+    
     let html = '';
     pendingItems.forEach((item, index) => {
-        html += `<div class="pending-item">
-            <div class="info">
-                <strong>${item.Date}</strong> | ${item.Area} | ${item.Team} | ${item.Description}
+        // 兼容大小写字段名
+        const date = item.Date || item.date || '';
+        const area = item.Area || item.area || '';
+        const team = item.Team || item.team || '';
+        const desc = item.Description || item.description || '';
+        
+        html += `<div class="pending-item" style="display:flex;justify-content:space-between;align-items:center;padding:10px 15px;border-bottom:1px solid #f0f0f0;">
+            <div class="info" style="flex:1;">
+                <strong>${date}</strong> | ${area} | ${team} | ${desc}
                 <span style="color:#999;font-size:12px;margin-left:10px;">
-                    ${item.Qty > 0 ? '数量:' + item.Qty : ''}
-                    ${item.Manpower > 0 ? '人数:' + item.Manpower : ''}
+                    ${item.Qty || item.qty || 0 > 0 ? '数量:' + (item.Qty || item.qty || 0) : ''}
+                    ${item.Manpower || item.manpower || 0 > 0 ? '人数:' + (item.Manpower || item.manpower || 0) : ''}
                 </span>
             </div>
             <div class="actions">
-                <button class="btn btn-danger btn-sm" onclick="removePending(${index})">删除</button>
+                <button class="btn btn-danger btn-sm" onclick="removePending(${index})" style="padding:5px 12px;font-size:12px;background:#e53935;color:white;border:none;border-radius:4px;cursor:pointer;">删除</button>
             </div>
         </div>`;
     });
@@ -1218,20 +1234,20 @@ function clearPending() {
     showToast('🗑️ 已清空待提交列表');
 }
 
-function savePending() {
-    localStorage.setItem('pending_items', JSON.stringify(pendingItems));
-}
-
 function loadPending() {
     const saved = localStorage.getItem('pending_items');
     if (saved) {
         try {
             pendingItems = JSON.parse(saved);
-            renderPending();
+            console.log('✅ 加载了', pendingItems.length, '条待提交记录');
         } catch(e) {
+            console.error('解析失败:', e);
             pendingItems = [];
         }
+    } else {
+        pendingItems = [];
     }
+    renderPending();  // ✅ 加载完后立即渲染
 }
 
 async function submitAll() {
