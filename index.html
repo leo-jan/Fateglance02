@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>施工日报系统 V4.0</title>
+    <title>Civil Work Daily Report V4.0</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; padding: 20px; }
@@ -84,7 +84,6 @@
         .att-input { width: 60px; padding: 5px 8px; border: 1px solid #ddd; border-radius: 4px; text-align: center; }
         .att-input:focus { border-color: #4a90d9; outline: none; }
         .att-input-wide { width: 120px; }
-        .cloud-badge { display: inline-block; background: #e3f2fd; color: #1565c0; padding: 2px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; }
         .danger-zone { border: 2px solid #ffcdd2; border-radius: 8px; padding: 20px; margin-top: 15px; background: #fff5f5; }
         .danger-zone h3 { color: #c62828; }
         .section-divider { border: none; border-top: 2px solid #e8edf4; margin: 25px 0; }
@@ -106,7 +105,7 @@
 </head>
 <body>
 
-<!-- 登录界面 -->
+<!-- ===== 登录界面 ===== -->
 <div id="loginPage">
     <div class="login-box">
         <h2 id="loginTitle">施工日报填报系统</h2>
@@ -115,19 +114,18 @@
             <button id="loginLangZh" class="active" onclick="setLoginLang('zh')">中文</button>
             <button id="loginLangEn" onclick="setLoginLang('en')">English</button>
         </div>
-        <input type="text" id="loginUsername" placeholder="用户名 / Username">
-        <input type="password" id="loginPassword" placeholder="密码 / Password">
-        <button class="btn btn-primary" onclick="handleLogin()">🔑 登录 / Login</button>
+        <input type="text" id="loginUsername" placeholder="用户名">
+        <input type="password" id="loginPassword" placeholder="密码">
+        <button class="btn btn-primary" onclick="handleLogin()">登录</button>
         <div id="loginMessage" class="login-message"></div>
-        <!-- 已去掉云朵标识 -->
     </div>
 </div>
 
-<!-- 主界面 -->
+<!-- ===== 主界面 ===== -->
 <div id="mainApp" style="display:none;">
     <div class="container">
         <div class="header">
-            <h1 id="appTitle">施工日报填报系统</h1> <!-- 去掉了图标和云朵 -->
+            <h1 id="appTitle">施工日报填报系统</h1>
             <div class="header-right">
                 <div class="lang-toggle">
                     <button class="lang-btn active" onclick="setLang('zh')">中文</button>
@@ -136,40 +134,32 @@
                 <div class="user-info">
                     <span id="userDisplayName">👤 用户</span>
                     <span id="userRoleBadge" class="user-role-badge"></span>
-                    <button class="btn-logout" onclick="handleLogout()">🚪 退出</button>
+                    <button class="btn-logout" onclick="handleLogout()">退出</button>
                 </div>
             </div>
         </div>
 
-        <!-- Tab 导航 -->
+        <!-- Tab 导航栏 -->
         <div class="tabs" id="tabHeaders">
-            <button class="tab-btn active" onclick="switchTab('entry')" data-tab="entry" data-role="entry,admin">📝 录入</button>
-            <button class="tab-btn" onclick="switchTab('attendance')" data-tab="attendance" data-role="entry,admin">👷 出勤日报</button>
-            <button class="tab-btn" onclick="switchTab('overview')" data-tab="overview" data-role="viewer,admin">📊 数据总览</button>
-            <button class="tab-btn" onclick="switchTab('verify')" data-tab="verify" data-role="viewer,admin">✅ 核对结果</button>
-            <button class="tab-btn" onclick="switchTab('settings')" data-tab="settings" data-role="admin">⚙️ 设置</button>
+            <button class="tab-btn active" onclick="switchTab('entry')" data-tab="entry" data-role="entry,admin" data-i18n="tabEntry">📝 录入</button>
+            <button class="tab-btn" onclick="switchTab('overview')" data-tab="overview" data-role="viewer,admin" data-i18n="tabOverview">📊 数据总览</button>
+            <button class="tab-btn" onclick="switchTab('settings')" data-tab="settings" data-role="admin" data-i18n="tabSettings">⚙️ 设置</button>
         </div>
 
         <!-- ===== Tab: 录入 ===== -->
         <div id="tab-entry" class="tab-content active">
-            <h2 id="entryTitle">📝 施工量录入</h2>
             <div class="sub-tabs">
-                <button class="sub-tab-btn active" onclick="switchSubTab('attendance_sub')" data-subtab="attendance_sub">👷 出勤日报</button>
-                <button class="sub-tab-btn" onclick="switchSubTab('entry_sub')" data-subtab="entry_sub">📝 施工员录入</button>
-                <button class="sub-tab-btn hidden" onclick="switchSubTab('foreman_sub')" data-subtab="foreman_sub">⏱️ 班组长补充</button> <!-- 删除，隐藏 -->
-                <button class="sub-tab-btn" onclick="switchSubTab('verify_sub')" data-subtab="verify_sub">✅ 核对结果</button>
+                <button class="sub-tab-btn active" onclick="switchSubTab('attendance_sub')" data-subtab="attendance_sub" data-i18n="subAttendance">👷 出勤日报</button>
+                <button class="sub-tab-btn" onclick="switchSubTab('entry_sub')" data-subtab="entry_sub" data-i18n="subEntry">📝 施工员录入</button>
+                <button class="sub-tab-btn" onclick="switchSubTab('verify_sub')" data-subtab="verify_sub" data-i18n="subVerify">✅ 核对结果</button>
             </div>
 
-            <!-- 子Tab: 出勤日报 (班组出勤+区域出勤整合) -->
+            <!-- 子Tab: 出勤日报 -->
             <div id="subtab-attendance_sub" class="sub-tab-content">
                 <h3 data-i18n="attTitle">👷 出勤日报（班组长）</h3>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label data-i18n="date">📅 日期</label>
-                        <input type="date" id="attDate">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="team">👷 班组</label>
+                    <div class="form-group"><label data-i18n="date">📅 日期</label><input type="date" id="attDate"></div>
+                    <div class="form-group"><label data-i18n="team">👷 班组</label>
                         <select id="attTeam">
                             <option value="马玉奇(Ma Yuqi)">马玉奇</option>
                             <option value="王建(Wang Jian)">王建</option>
@@ -197,27 +187,18 @@
             <div id="subtab-entry_sub" class="sub-tab-content hidden">
                 <h3 data-i18n="entryTitle">📝 施工员录入</h3>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label data-i18n="date">📅 日期</label>
-                        <input type="date" id="entryDate">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="area">📍 区域</label>
+                    <div class="form-group"><label data-i18n="date">📅 日期</label><input type="date" id="entryDate"></div>
+                    <div class="form-group"><label data-i18n="area">📍 区域</label>
                         <select id="entryArea">
-                            <option value="110">110</option>
-                            <option value="210">210</option>
-                            <option value="220">220</option>
-                            <option value="240">240</option>
-                            <option value="320">320</option>
-                            <option value="330">330</option>
-                            <option value="400">400</option>
-                            <option value="800">800</option>
+                            <option value="110">110</option><option value="210">210</option>
+                            <option value="220">220</option><option value="240">240</option>
+                            <option value="320">320</option><option value="330">330</option>
+                            <option value="400">400</option><option value="800">800</option>
                             <option value="precast yard 1">precast yard 1</option>
                             <option value="precast yard 2">precast yard 2</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label data-i18n="team">👷 班组</label>
+                    <div class="form-group"><label data-i18n="team">👷 班组</label>
                         <select id="entryTeam">
                             <option value="马玉奇(Ma Yuqi)">马玉奇</option>
                             <option value="王建(Wang Jian)">王建</option>
@@ -230,95 +211,51 @@
                             <option value="Anwar">Anwar</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>🏷️ 位号</label>
-                        <input type="text" id="entryTag" placeholder="输入位号">
-                    </div>
+                    <div class="form-group"><label>🏷️ 位号</label><input type="text" id="entryTag" placeholder="输入位号"></div>
                 </div>
 
-                <div style="font-weight:600;font-size:15px;color:#1a237e;margin-top:15px;">🛠️ 工作内容</div>
+                <div style="font-weight:600;font-size:15px;color:#1a237e;margin-top:15px;" data-i18n="work_desc">🛠️ 工作内容</div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label data-i18n="category">分部分项</label>
-                        <select id="entryCategory" onchange="onCategoryChange()">
-                            <option value="无收入项">无收入项</option>
-                            <option value="土石方工程">土石方工程</option>
-                            <option value="模板工程">模板工程</option>
-                            <option value="架子工程">架子工程</option>
-                            <option value="钢筋工程">钢筋工程</option>
-                            <option value="砌筑工程">砌筑工程</option>
-                            <option value="混凝土工程">混凝土工程</option>
-                        </select>
+                    <div class="form-group"><label data-i18n="sub_item">分部分项</label>
+                        <select id="entryCategory" onchange="onCategoryChange()"></select>
                     </div>
-                    <div class="form-group">
-                        <label data-i18n="workItem">工作内容</label>
+                    <div class="form-group"><label data-i18n="work_content">工作内容</label>
                         <select id="entrySubItem" onchange="onSubItemChange()"></select>
                     </div>
-                    <div class="form-group">
-                        <label>编号</label>
-                        <input type="text" id="entryCode" disabled>
-                    </div>
-                    <div class="form-group">
-                        <label>单位</label>
-                        <input type="text" id="entryUnit" disabled>
-                    </div>
+                    <div class="form-group"><label data-i18n="code">编号</label><input type="text" id="entryCode" disabled></div>
+                    <div class="form-group"><label data-i18n="unit">单位</label><input type="text" id="entryUnit" disabled></div>
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group">
-                        <label data-i18n="qty">📊 完成量</label>
-                        <input type="number" id="entryQty" value="0" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label>📏 地管长度 (m)</label>
-                        <input type="number" id="entryPipe" value="0" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="manpower">👷 人数</label>
-                        <input type="number" id="entryManpower" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="manhours">⏱️ 工时</label>
-                        <input type="number" id="entryManhours" value="0" step="0.5">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="foreign">🌍 外籍</label>
-                        <input type="number" id="entryForeign" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="remark">📝 备注</label>
-                        <input type="text" id="entryRemark" placeholder="备注">
-                    </div>
+                    <div class="form-group"><label data-i18n="qty">📊 完成量</label><input type="number" id="entryQty" value="0" step="0.1"></div>
+                    <div class="form-group"><label data-i18n="pipe_length">📏 地管长度 (m)</label><input type="number" id="entryPipe" value="0" step="0.1"></div>
+                    <div class="form-group"><label data-i18n="manpower">👷 人数</label><input type="number" id="entryManpower" value="0"></div>
+                    <div class="form-group"><label data-i18n="manhours">⏱️ 工时</label><input type="number" id="entryManhours" value="0" step="0.5"></div>
+                    <div class="form-group"><label data-i18n="non_chinese">🌍 外籍</label><input type="number" id="entryForeign" value="0"></div>
+                    <div class="form-group"><label data-i18n="remark">📝 备注</label><input type="text" id="entryRemark" placeholder="备注"></div>
                 </div>
 
                 <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
-                    <button class="btn btn-primary" onclick="addToPending()" data-i18n="addPending">➕ 添加到待提交列表</button>
-                    <button class="btn btn-secondary" onclick="addNoWork()" data-i18n="noWork">🚫 今日无作业</button>
+                    <button class="btn btn-primary" onclick="addToPending()" data-i18n="add_btn">➕ 添加到待提交列表</button>
+                    <button class="btn btn-secondary" onclick="addNoWork()" data-i18n="no_work_btn">🚫 今日无作业</button>
                 </div>
 
                 <div id="pendingList" style="margin-top:30px;">
-                    <h3 data-i18n="pendingTitle">📋 待提交列表 (<span id="pendingCount">0</span> 项)</h3>
+                    <h3 data-i18n="pending_title">📋 待提交列表 (<span id="pendingCount">0</span> 项)</h3>
                     <div id="pendingItems"></div>
                     <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
-                        <button class="btn btn-success" onclick="submitAll()" data-i18n="submitAll">🚀 提交所有记录</button>
-                        <button class="btn btn-danger" onclick="clearPending()" data-i18n="clearPending">🗑️ 清空列表</button>
+                        <button class="btn btn-success" onclick="submitAll()" data-i18n="submit_btn">🚀 提交所有记录</button>
+                        <button class="btn btn-danger" onclick="clearPending()" data-i18n="clear_pending">🗑️ 清空列表</button>
                     </div>
                 </div>
             </div>
-
-            <!-- 子Tab: 班组长补充 (已删除) -->
-            <div id="subtab-foreman_sub" class="sub-tab-content hidden"></div>
 
             <!-- 子Tab: 核对结果 -->
             <div id="subtab-verify_sub" class="sub-tab-content hidden">
                 <h3 data-i18n="verifyTitle">✅ 工时与出勤核对</h3>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label data-i18n="date">📅 日期</label>
-                        <input type="date" id="verifyDate">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="team">👷 班组</label>
+                    <div class="form-group"><label data-i18n="date">📅 日期</label><input type="date" id="verifyDate"></div>
+                    <div class="form-group"><label data-i18n="team">👷 班组</label>
                         <select id="verifyTeam">
                             <option value="all">全部</option>
                             <option value="马玉奇(Ma Yuqi)">马玉奇</option>
@@ -341,115 +278,38 @@
             </div>
         </div>
 
-        <!-- ===== Tab: 出勤日报 ===== -->
-        <div id="tab-attendance" class="tab-content">
-            <h2 data-i18n="attTitle">👷 出勤日报（班组长）</h2>
-            <div class="form-row">
-                <div class="form-group">
-                    <label data-i18n="date">📅 日期</label>
-                    <input type="date" id="attDate2">
-                </div>
-                <div class="form-group">
-                    <label data-i18n="team">👷 班组</label>
-                    <select id="attTeam2">
-                        <option value="马玉奇(Ma Yuqi)">马玉奇</option>
-                        <option value="王建(Wang Jian)">王建</option>
-                        <option value="Kumar">Kumar</option>
-                        <option value="郭传海(Guo Chuanhai)">郭传海</option>
-                        <option value="曹桂龙(Cao Guilong)">曹桂龙</option>
-                        <option value="陈传军(Chen Chuanjun)">陈传军</option>
-                        <option value="王世杰(Wang Shijie)">王世杰</option>
-                        <option value="Sheharyar">Sheharyar</option>
-                        <option value="Anwar">Anwar</option>
-                    </select>
-                </div>
-                <div class="form-group" style="justify-content:flex-end;">
-                    <button class="btn btn-secondary" onclick="loadAttendance2()" data-i18n="refresh">🔄 刷新</button>
-                </div>
-            </div>
-            <div id="attendanceTable2"></div>
-            <button class="btn btn-primary" onclick="saveAttendance2()" style="margin-top:15px;" data-i18n="saveAtt">✅ 提交考勤</button>
-            <hr class="section-divider">
-            <h4 data-i18n="attSummaryTitle">📊 今日报工汇总</h4>
-            <div id="attendanceSummary2"></div>
-        </div>
-
         <!-- ===== Tab: 总览 ===== -->
         <div id="tab-overview" class="tab-content">
             <h2 data-i18n="overviewTitle">📊 数据总览</h2>
             <div class="form-row">
-                <div class="form-group">
-                    <label data-i18n="date">📅 选择日期</label>
-                    <input type="date" id="overviewDate">
-                </div>
+                <div class="form-group"><label data-i18n="date">📅 选择日期</label><input type="date" id="overviewDate"></div>
                 <div class="form-group" style="justify-content:flex-end; flex-direction:row; gap:10px; flex-wrap:wrap;">
                     <button class="btn btn-secondary" onclick="loadOverview()" data-i18n="refresh">🔄 刷新</button>
-                    <button class="btn btn-secondary" onclick="exportData()" data-i18n="exportCSV">📥 导出CSV</button>
-                    <button class="btn btn-secondary" onclick="exportAllData()" data-i18n="exportAll">📥 导出全部</button>
+                    <button class="btn btn-secondary" onclick="exportData()" data-i18n="export_title">📥 导出CSV</button>
+                    <button class="btn btn-secondary" onclick="exportAllData()" data-i18n="export_title">📥 导出全部</button>
                 </div>
             </div>
-            <h4 data-i18n="areaStatusTitle">📊 各区域填报状态</h4>
+            <h4 data-i18n="h_status">📊 各区域填报状态</h4>
             <div id="areaStatus" style="display:flex;flex-wrap:wrap;gap:10px;margin:10px 0;"></div>
-            <h4 data-i18n="dailyDataTitle">📋 当日数据</h4>
+            <h4 data-i18n="h_data">📋 当日数据</h4>
             <div id="overviewTable" class="table-container"></div>
             <hr class="section-divider">
-            <h4 data-i18n="allDataTitle">📋 全部数据</h4>
+            <h4 data-i18n="h_data">📋 全部数据</h4>
             <div id="allDataTable" class="table-container"></div>
-        </div>
-
-        <!-- ===== Tab: 核对结果 (删除工时核对，保留核对结果) ===== -->
-        <div id="tab-verify" class="tab-content">
-            <h2 data-i18n="verifyTitle">✅ 工时与出勤核对</h2>
-            <div class="form-row">
-                <div class="form-group">
-                    <label data-i18n="date">📅 日期</label>
-                    <input type="date" id="verifyDate2">
-                </div>
-                <div class="form-group">
-                    <label data-i18n="team">👷 班组</label>
-                    <select id="verifyTeam2">
-                        <option value="all">全部</option>
-                        <option value="马玉奇(Ma Yuqi)">马玉奇</option>
-                        <option value="王建(Wang Jian)">王建</option>
-                        <option value="Kumar">Kumar</option>
-                        <option value="郭传海(Guo Chuanhai)">郭传海</option>
-                        <option value="曹桂龙(Cao Guilong)">曹桂龙</option>
-                        <option value="陈传军(Chen Chuanjun)">陈传军</option>
-                        <option value="王世杰(Wang Shijie)">王世杰</option>
-                        <option value="Sheharyar">Sheharyar</option>
-                        <option value="Anwar">Anwar</option>
-                    </select>
-                </div>
-                <div class="form-group" style="justify-content:flex-end;">
-                    <button class="btn btn-secondary" onclick="loadVerification2()" data-i18n="query">🔍 查询</button>
-                </div>
-            </div>
-            <div id="verifyResult2" style="margin-top:15px;"></div>
-            <div id="verifyStats2" style="margin-top:15px;"></div>
         </div>
 
         <!-- ===== Tab: 设置 ===== -->
         <div id="tab-settings" class="tab-content">
             <h2 data-i18n="settingsTitle">⚙️ 设置</h2>
-            <h3 data-i18n="userMgmtTitle">👥 用户管理</h3>
+            <h3 data-i18n="user_management">👥 用户管理</h3>
             <div id="userList"></div>
             <hr class="section-divider">
-            <h3 data-i18n="addUserTitle">➕ 添加用户</h3>
+            <h3 data-i18n="add_user">➕ 添加用户</h3>
             <div class="form-row">
-                <div class="form-group">
-                    <label data-i18n="loginUser">用户名</label>
-                    <input type="text" id="newUsername" placeholder="用户名">
-                </div>
-                <div class="form-group">
-                    <label data-i18n="loginPass">密码</label>
-                    <input type="text" id="newPassword" placeholder="密码">
-                </div>
-                <div class="form-group">
-                    <label>显示名称</label>
-                    <input type="text" id="newDisplayName" placeholder="显示名称">
-                </div>
-                <div class="form-group">
-                    <label>角色</label>
+                <div class="form-group"><label data-i18n="username">用户名</label><input type="text" id="newUsername" placeholder="用户名"></div>
+                <div class="form-group"><label data-i18n="password">密码</label><input type="text" id="newPassword" placeholder="密码"></div>
+                <div class="form-group"><label>显示名称</label><input type="text" id="newDisplayName" placeholder="显示名称"></div>
+                <div class="form-group"><label>角色</label>
                     <select id="newRole">
                         <option value="admin">admin</option>
                         <option value="viewer">viewer</option>
@@ -457,9 +317,9 @@
                     </select>
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="addUser()" data-i18n="addUser">➕ 添加用户</button>
+            <button class="btn btn-primary" onclick="addUser()" data-i18n="add_user">➕ 添加用户</button>
             <hr class="section-divider">
-            <h3 data-i18n="dangerTitle">⚠️ 危险操作</h3>
+            <h3 data-i18n="danger_zone">⚠️ 危险操作</h3>
             <div class="danger-zone">
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                     <button class="btn btn-secondary" onclick="exportBackup()" data-i18n="backup">💾 备份数据</button>
@@ -471,7 +331,7 @@
                 <p style="margin-top:10px;font-size:13px;color:#666;" data-i18n="dangerHint">⚠️ 清理零数据将删除所有数量为0的记录，去重将删除重复记录，重置将删除所有数据。</p>
             </div>
             <hr class="section-divider">
-            <h3 data-i18n="loginLogsTitle">📋 登录记录</h3>
+            <h3 data-i18n="login_logs">📋 登录记录</h3>
             <div id="loginLogs"></div>
         </div>
     </div>
@@ -641,6 +501,7 @@ const WORK_DICT = {
 //  常量
 // ============================================================
 const WORKER_TYPES = ['木工', '瓦工', '钢筋工', '架子工', '旗手', '小工', '起重工', '测量工', '焊工'];
+const WORKER_TYPES_EN = ['Carpenter', 'Mason', 'Rebar Man', 'Scaffolder', 'Flagman', 'Helper', 'Rigger', 'Surveyor', 'Welder'];
 const TEAMS = ['马玉奇(Ma Yuqi)', '王建(Wang Jian)', 'Kumar', '郭传海(Guo Chuanhai)', '曹桂龙(Cao Guilong)', '陈传军(Chen Chuanjun)', '王世杰(Wang Shijie)', 'Sheharyar', 'Anwar'];
 const AREAS = ['110', '210', '220', '240', '320', '330', '400', '800', 'precast yard 1', 'precast yard 2'];
 
@@ -654,7 +515,7 @@ let isAdmin = false;
 let currentLang = 'zh';
 
 // ============================================================
-//  国际化 (完善英文翻译)
+//  国际化 - 完整对照 Python I18n
 // ============================================================
 const I18N = {
     zh: {
@@ -663,8 +524,8 @@ const I18N = {
         loginSub: 'Marsa LNG Project · Civil Department',
         loginUser: '用户名',
         loginPass: '密码',
-        loginBtn: '🔑 登录',
-        logout: '🚪 退出',
+        loginBtn: '登录',
+        logout: '退出',
         loginWelcome: '🎉 欢迎回来，',
         entryTitle: '📝 施工量录入',
         attTitle: '👷 出勤日报（班组长）',
@@ -677,32 +538,29 @@ const I18N = {
         qty: '📊 完成量',
         manpower: '👷 人数',
         manhours: '⏱️ 工时',
-        foreign: '🌍 外籍',
+        non_chinese: '🌍 外籍',
         remark: '📝 备注',
-        addPending: '➕ 添加到待提交列表',
-        noWork: '🚫 今日无作业',
-        submitAll: '🚀 提交所有记录',
-        clearPending: '🗑️ 清空列表',
+        add_btn: '➕ 添加到待提交列表',
+        no_work_btn: '🚫 今日无作业',
+        submit_btn: '🚀 提交所有记录',
+        clear_pending: '🗑️ 清空列表',
         refresh: '🔄 刷新',
-        exportCSV: '📥 导出CSV',
-        exportAll: '📥 导出全部',
+        export_title: '📥 导出CSV',
         saveAtt: '✅ 提交考勤',
         query: '🔍 查询',
-        addUser: '➕ 添加用户',
+        add_user: '➕ 添加用户',
         backup: '💾 备份数据',
         importBackup: '📂 恢复备份',
         clearZero: '🧹 清理零数据',
         dedup: '🔄 去重',
         reset: '💣 重置所有数据',
-        pendingTitle: '📋 待提交列表',
+        pending_title: '📋 待提交列表',
         attSummaryTitle: '📊 今日报工汇总',
-        areaStatusTitle: '📊 各区域填报状态',
-        dailyDataTitle: '📋 当日数据',
-        allDataTitle: '📋 全部数据',
-        userMgmtTitle: '👥 用户管理',
-        addUserTitle: '➕ 添加用户',
-        dangerTitle: '⚠️ 危险操作',
-        loginLogsTitle: '📋 登录记录',
+        h_status: '📊 各区域填报状态',
+        h_data: '📋 数据清单',
+        user_management: '👥 用户管理',
+        danger_zone: '⚠️ 危险操作',
+        login_logs: '📋 登录记录',
         dangerHint: '⚠️ 清理零数据将删除所有数量为0的记录，去重将删除重复记录，重置将删除所有数据。',
         workerType: '工种',
         expected: '应到',
@@ -741,13 +599,21 @@ const I18N = {
         roleAdmin: '管理员',
         roleViewer: '查看者',
         roleEntry: '录入员',
+        work_desc: '🛠️ 工作内容',
+        sub_item: '分部分项',
+        work_content: '工作内容',
+        code: '编号',
+        unit: '单位',
+        pipe_length: '📏 地管长度 (m)',
+        username: '用户名',
+        password: '密码',
+        night_shift_hint: '🌙 夜班说明：工作时间 4:30pm - 4:30am，请选择上班当天的日期',
         tabEntry: '录入',
-        tabAttendance: '出勤日报',
         tabOverview: '数据总览',
-        tabVerify: '核对结果',
         tabSettings: '设置',
-        category: '分部分项',
-        workItem: '工作内容'
+        subAttendance: '出勤日报',
+        subEntry: '施工员录入',
+        subVerify: '核对结果'
     },
     en: {
         appTitle: 'Civil Work Daily Report',
@@ -755,8 +621,8 @@ const I18N = {
         loginSub: 'Marsa LNG Project · Civil Department',
         loginUser: 'Username',
         loginPass: 'Password',
-        loginBtn: '🔑 Login',
-        logout: '🚪 Logout',
+        loginBtn: 'Login',
+        logout: 'Logout',
         loginWelcome: '🎉 Welcome back, ',
         entryTitle: '📝 Daily Work Entry',
         attTitle: '👷 Team Attendance Report',
@@ -769,32 +635,29 @@ const I18N = {
         qty: '📊 Qty.',
         manpower: '👷 Manpower',
         manhours: '⏱️ Manhours',
-        foreign: '🌍 Foreign',
+        non_chinese: '🌍 Non-Chinese',
         remark: '📝 Remark',
-        addPending: '➕ Add to Pending',
-        noWork: '🚫 No Work Today',
-        submitAll: '🚀 Submit All',
-        clearPending: '🗑️ Clear List',
+        add_btn: '➕ Add to Pending',
+        no_work_btn: '🚫 No Work Today',
+        submit_btn: '🚀 Submit All',
+        clear_pending: '🗑️ Clear List',
         refresh: '🔄 Refresh',
-        exportCSV: '📥 Export CSV',
-        exportAll: '📥 Export All',
+        export_title: '📥 Export CSV',
         saveAtt: '✅ Save Attendance',
         query: '🔍 Query',
-        addUser: '➕ Add User',
+        add_user: '➕ Add User',
         backup: '💾 Backup Data',
         importBackup: '📂 Restore Backup',
         clearZero: '🧹 Clear Zero Data',
         dedup: '🔄 Deduplicate',
         reset: '💣 Reset All Data',
-        pendingTitle: '📋 Pending Submissions',
+        pending_title: '📋 Pending Submissions',
         attSummaryTitle: '📊 Today\'s Summary',
-        areaStatusTitle: '📊 Area Submission Status',
-        dailyDataTitle: '📋 Daily Data',
-        allDataTitle: '📋 All Data',
-        userMgmtTitle: '👥 User Management',
-        addUserTitle: '➕ Add User',
-        dangerTitle: '⚠️ Danger Zone',
-        loginLogsTitle: '📋 Login Logs',
+        h_status: '📊 Area Submission Status',
+        h_data: '📋 Data List',
+        user_management: '👥 User Management',
+        danger_zone: '⚠️ Danger Zone',
+        login_logs: '📋 Login Logs',
         dangerHint: '⚠️ Clear zero data will delete all records with zero values. Deduplicate will remove duplicates. Reset will delete ALL data.',
         workerType: 'Worker Type',
         expected: 'Expected',
@@ -833,13 +696,21 @@ const I18N = {
         roleAdmin: 'Admin',
         roleViewer: 'Viewer',
         roleEntry: 'Entry',
+        work_desc: '🛠️ Work Description',
+        sub_item: 'Sub-item',
+        work_content: 'Work Content',
+        code: 'Code',
+        unit: 'Unit',
+        pipe_length: '📏 UG Pipe (m)',
+        username: 'Username',
+        password: 'Password',
+        night_shift_hint: '🌙 Night Shift: 4:30pm - 4:30am, select the shift start date',
         tabEntry: 'Entry',
-        tabAttendance: 'Attendance',
         tabOverview: 'Overview',
-        tabVerify: 'Verification',
         tabSettings: 'Settings',
-        category: 'Work Category',
-        workItem: 'Work Item'
+        subAttendance: 'Attendance',
+        subEntry: 'Work Entry',
+        subVerify: 'Verification'
     }
 };
 
@@ -850,6 +721,8 @@ function t(key) {
 function setLang(lang) {
     currentLang = lang;
     updateUI();
+    // 刷新分类下拉
+    setTimeout(function() { onCategoryChange(); }, 50);
 }
 
 function setLoginLang(lang) {
@@ -863,19 +736,43 @@ function updateLoginUI() {
     document.getElementById('loginUsername').placeholder = t('loginUser') + ' / Username';
     document.getElementById('loginPassword').placeholder = t('loginPass') + ' / Password';
     document.querySelector('.login-box .btn').textContent = t('loginBtn');
+    document.querySelectorAll('.login-lang button').forEach(b => {
+        b.classList.remove('active');
+        if ((currentLang === 'zh' && b.id === 'loginLangZh') || (currentLang === 'en' && b.id === 'loginLangEn')) {
+            b.classList.add('active');
+        }
+    });
 }
 
 function updateUI() {
     document.getElementById('appTitle').textContent = t('appTitle');
+    // 更新所有带 data-i18n 的元素
     document.querySelectorAll('[data-i18n]').forEach(el => {
         el.textContent = t(el.dataset.i18n);
     });
-    // 更新tab文字
+    // 更新 Tab 按钮文字
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        const key = btn.dataset.tab;
-        const map = { entry: 'tabEntry', attendance: 'tabAttendance', overview: 'tabOverview', verify: 'tabVerify', settings: 'tabSettings' };
-        if (map[key]) btn.textContent = t(map[key]);
+        const key = btn.dataset.i18n;
+        if (key) btn.textContent = t(key);
     });
+    // 更新子Tab
+    document.querySelectorAll('.sub-tab-btn').forEach(btn => {
+        const key = btn.dataset.i18n;
+        if (key) btn.textContent = t(key);
+    });
+    // 刷新语言按钮高亮
+    document.querySelectorAll('.lang-toggle .lang-btn').forEach(b => {
+        b.classList.remove('active');
+        if ((currentLang === 'zh' && b.textContent.trim() === '中文') || (currentLang === 'en' && b.textContent.trim() === 'EN')) {
+            b.classList.add('active');
+        }
+    });
+    renderPending();
+    loadAttendance();
+    loadOverview();
+    loadVerification();
+    loadUserList();
+    loadLoginLogs();
 }
 
 // ============================================================
@@ -927,7 +824,7 @@ async function addAttendance(record) {
 }
 
 // ============================================================
-//  登录 (去除默认值)
+//  登录
 // ============================================================
 function handleLogin() {
     const username = document.getElementById('loginUsername').value.trim();
@@ -935,20 +832,20 @@ function handleLogin() {
     const msg = document.getElementById('loginMessage');
 
     if (!username || !password) {
-        msg.textContent = '❌ 请输入用户名和密码 / Please enter username and password';
+        msg.textContent = '❌ 请输入用户名和密码';
         msg.style.color = 'red';
         return;
     }
 
     const user = USERS[username];
     if (!user) {
-        msg.textContent = '❌ 用户不存在 / User not found';
+        msg.textContent = '❌ 用户不存在';
         msg.style.color = 'red';
         return;
     }
 
     if (user.password !== password) {
-        msg.textContent = '❌ 密码错误 / Wrong password';
+        msg.textContent = '❌ 密码错误';
         msg.style.color = 'red';
         return;
     }
@@ -1007,14 +904,8 @@ function switchTab(tab) {
         renderPending();
         loadAttendance();
     }
-    if (tab === 'attendance') {
-        loadAttendance2();
-    }
     if (tab === 'overview') {
         loadOverview();
-    }
-    if (tab === 'verify') {
-        loadVerification2();
     }
     if (tab === 'settings') {
         loadUserList();
@@ -1028,9 +919,15 @@ function switchSubTab(subtab) {
     document.querySelector(`.sub-tab-btn[data-subtab="${subtab}"]`).classList.add('active');
     document.getElementById(`subtab-${subtab}`).classList.remove('hidden');
 
-    if (subtab === 'attendance_sub') loadAttendance();
-    if (subtab === 'entry_sub') renderPending();
-    if (subtab === 'verify_sub') loadVerification();
+    if (subtab === 'attendance_sub') {
+        loadAttendance();
+    }
+    if (subtab === 'entry_sub') {
+        renderPending();
+    }
+    if (subtab === 'verify_sub') {
+        loadVerification();
+    }
 }
 
 // ============================================================
@@ -1040,45 +937,83 @@ function initApp() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('entryDate').value = today;
     document.getElementById('attDate').value = today;
-    document.getElementById('attDate2').value = today;
     document.getElementById('overviewDate').value = today;
     document.getElementById('verifyDate').value = today;
-    document.getElementById('verifyDate2').value = today;
 
-    onCategoryChange();
+    setTimeout(function() { onCategoryChange(); }, 100);
     loadPending();
     loadAttendance();
-    loadAttendance2();
     loadOverview();
     loadUserList();
     loadVerification();
-    loadVerification2();
 }
 
 // ============================================================
 //  工作字典联动
 // ============================================================
 function onCategoryChange() {
-    const category = document.getElementById('entryCategory').value;
-    const subSelect = document.getElementById('entrySubItem');
-    subSelect.innerHTML = '';
-    const items = WORK_DICT[category] || {};
-    for (const name of Object.keys(items)) {
+    const categorySelect = document.getElementById('entryCategory');
+    const lang = currentLang || 'zh';
+    if (!categorySelect) return;
+    const categories = Object.keys(WORK_DICT);
+    if (categories.length === 0) return;
+    const catMap = {
+        '无收入项': 'Non-revenue Work',
+        '土石方工程': 'Earthwork',
+        '模板工程': 'Formwork',
+        '架子工程': 'Scaffolding',
+        '钢筋工程': 'Rebar / Reinforcement',
+        '砌筑工程': 'Masonry',
+        '混凝土工程': 'Concrete Works'
+    };
+    const currentValue = categorySelect.value;
+    categorySelect.innerHTML = '';
+    categories.forEach((cat) => {
         const option = document.createElement('option');
-        option.value = name;
-        option.textContent = name;
-        subSelect.appendChild(option);
+        option.value = cat;
+        option.textContent = lang === 'zh' ? cat : (catMap[cat] || cat);
+        categorySelect.appendChild(option);
+    });
+    if (currentValue && categories.includes(currentValue)) {
+        categorySelect.value = currentValue;
     }
     onSubItemChange();
 }
 
 function onSubItemChange() {
     const category = document.getElementById('entryCategory').value;
-    const subItem = document.getElementById('entrySubItem').value;
+    const subSelect = document.getElementById('entrySubItem');
+    const lang = currentLang || 'zh';
+    if (!subSelect) return;
+    subSelect.innerHTML = '';
     const items = WORK_DICT[category] || {};
-    const info = items[subItem] || { code: 'N/A', unit: 'N/A' };
-    document.getElementById('entryCode').value = info.code;
-    document.getElementById('entryUnit').value = info.unit;
+    const keys = Object.keys(items);
+    if (keys.length === 0) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = lang === 'zh' ? '无工作内容' : 'No work items';
+        subSelect.appendChild(option);
+        document.getElementById('entryCode').value = 'N/A';
+        document.getElementById('entryUnit').value = 'N/A';
+        return;
+    }
+    keys.forEach(key => {
+        const option = document.createElement('option');
+        option.value = key;
+        if (lang === 'zh') {
+            option.textContent = key;
+        } else {
+            const item = items[key];
+            option.textContent = item.en || key;
+        }
+        subSelect.appendChild(option);
+    });
+    const firstKey = keys[0];
+    if (firstKey) {
+        const info = items[firstKey];
+        document.getElementById('entryCode').value = info.code || 'N/A';
+        document.getElementById('entryUnit').value = info.unit || 'N/A';
+    }
 }
 
 // ============================================================
@@ -1089,9 +1024,9 @@ function addToPending() {
     const area = document.getElementById('entryArea').value;
     const team = document.getElementById('entryTeam').value;
     const tag = document.getElementById('entryTag').value || 'N/A';
-    const code = document.getElementById('entryCode').value;
     const category = document.getElementById('entryCategory').value;
     const desc = document.getElementById('entrySubItem').value;
+    const code = document.getElementById('entryCode').value;
     const unit = document.getElementById('entryUnit').value;
     const qty = parseFloat(document.getElementById('entryQty').value) || 0;
     const pipeLength = parseFloat(document.getElementById('entryPipe').value) || 0;
@@ -1101,9 +1036,14 @@ function addToPending() {
     const remark = document.getElementById('entryRemark').value || '';
 
     if (!date || !area || !team) {
-        showToast('❌ 请填写日期、区域和班组');
+        showToast(t('errorFillAll'));
         return;
     }
+
+    const saved = localStorage.getItem('pending_items');
+    if (saved) {
+        try { pendingItems = JSON.parse(saved); } catch(e) { pendingItems = []; }
+    } else { pendingItems = []; }
 
     const duplicate = pendingItems.some(item => 
         (item.Date || item.date) === date && 
@@ -1153,17 +1093,18 @@ function addNoWork() {
         CreatedBy: currentUser || 'unknown'
     });
     renderPending();
-    savePending();
+    localStorage.setItem('pending_items', JSON.stringify(pendingItems));
     showToast('✅ 已标记 ' + area + ' 今日无作业');
 }
 
 function renderPending() {
-    const container = document.getElementById('pendingItems');
-    const countEl = document.getElementById('pendingCount');
     const saved = localStorage.getItem('pending_items');
     if (saved) {
         try { pendingItems = JSON.parse(saved); } catch(e) { pendingItems = []; }
-    }
+    } else { pendingItems = []; }
+    const container = document.getElementById('pendingItems');
+    const countEl = document.getElementById('pendingCount');
+    if (!container) return;
     if (countEl) countEl.textContent = pendingItems.length;
     container.innerHTML = '';
     if (pendingItems.length === 0) {
@@ -1179,7 +1120,7 @@ function renderPending() {
         const manpower = item.Manpower || item.manpower || 0;
         container.innerHTML += `<div class="pending-item">
             <div class="info"><strong>${date}</strong> | ${area} | ${team} | ${desc}
-                <span style="color:#999;font-size:12px;margin-left:10px;">${qty > 0 ? '数量:'+qty : ''}${manpower > 0 ? ' 人数:'+manpower : ''}</span>
+                <span style="color:#999;font-size:12px;margin-left:10px;">${qty > 0 ? '数量:'+qty : ''}${manpower > 0 ? '人数:'+manpower : ''}</span>
             </div>
             <div class="actions"><button class="btn btn-danger btn-sm" onclick="removePending(${index})">删除</button></div>
         </div>`;
@@ -1207,10 +1148,6 @@ function loadPending() {
         try { pendingItems = JSON.parse(saved); } catch(e) { pendingItems = []; }
     } else { pendingItems = []; }
     renderPending();
-}
-
-function savePending() {
-    localStorage.setItem('pending_items', JSON.stringify(pendingItems));
 }
 
 async function submitAll() {
@@ -1247,7 +1184,7 @@ async function submitAll() {
 }
 
 // ============================================================
-//  出勤日报 (保留原逻辑，但展示更简洁)
+//  出勤日报
 // ============================================================
 async function loadAttendance() {
     const date = document.getElementById('attDate').value;
@@ -1262,36 +1199,25 @@ async function loadAttendance() {
     }
 }
 
-async function loadAttendance2() {
-    const date = document.getElementById('attDate2').value;
-    const team = document.getElementById('attTeam2').value;
-    if (!date) return;
-    try {
-        const data = await getAttendance(date, team);
-        renderAttendance(data, 'attendanceTable2');
-        renderAttendanceSummary(date, 'attendanceSummary2');
-    } catch(e) {
-        renderAttendance([], 'attendanceTable2');
-    }
-}
-
 function renderAttendance(data, tableId) {
     const container = document.getElementById(tableId);
     const map = {};
     data.forEach(d => map[d.WorkerType] = d);
     let html = '<table><thead><tr><th>' + t('workerType') + '</th><th>' + t('expected') + '</th><th>' + t('present') + '</th><th>' + t('absent') + '</th><th>' + t('foreignLabel') + '</th><th>' + t('remarkLabel') + '</th></tr></thead><tbody>';
     let totalExpected = 0, totalPresent = 0, totalForeign = 0;
-    WORKER_TYPES.forEach(type => {
-        const row = map[type] || { Total: 0, Present: 0, Foreign: 0, Remark: '' };
+    const workerTypes = currentLang === 'zh' ? WORKER_TYPES : WORKER_TYPES_EN;
+    workerTypes.forEach((type, idx) => {
+        const zhType = WORKER_TYPES[idx] || type;
+        const row = map[zhType] || { Total: 0, Present: 0, Foreign: 0, Remark: '' };
         const total = row.Total || 0, present = row.Present || 0, foreign = row.Foreign || 0;
         totalExpected += total; totalPresent += present; totalForeign += foreign;
         const absent = total - present;
         html += `<tr><td><strong>${type}</strong></td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="total" value="${total}" min="0" onchange="updateAbsent(this)"></td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="present" value="${present}" min="0" onchange="updateAbsent(this)"></td>
+            <td><input type="number" class="att-input" data-type="${zhType}" data-field="total" value="${total}" min="0" onchange="updateAbsent(this)"></td>
+            <td><input type="number" class="att-input" data-type="${zhType}" data-field="present" value="${present}" min="0" onchange="updateAbsent(this)"></td>
             <td style="color:${absent > 0 ? '#c62828' : '#4caf50'};font-weight:bold;">${absent}</td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="foreign" value="${foreign}" min="0"></td>
-            <td><input type="text" class="att-input att-input-wide" data-type="${type}" data-field="remark" value="${row.Remark || ''}" placeholder="备注"></td>
+            <td><input type="number" class="att-input" data-type="${zhType}" data-field="foreign" value="${foreign}" min="0"></td>
+            <td><input type="text" class="att-input att-input-wide" data-type="${zhType}" data-field="remark" value="${row.Remark || ''}" placeholder="备注"></td>
         </tr>`;
     });
     html += `<tr style="font-weight:bold;background:#f5f5f5;"><td>合计</td><td>${totalExpected}</td><td>${totalPresent}</td>
@@ -1319,7 +1245,10 @@ async function renderAttendanceSummary(date, containerId) {
         const teams = [...new Set(data.map(d => d.Team))];
         teams.forEach(team => {
             const records = data.filter(d => d.Team === team);
-            let details = records.map(d => d.WorkerType + d.Total + '人' + ((d.Total - d.Present) > 0 ? '(缺勤' + (d.Total - d.Present) + '人)' : '')).join('、');
+            let details = records.map(d => {
+                const wType = currentLang === 'zh' ? d.WorkerType : (WORKER_TYPES_EN[WORKER_TYPES.indexOf(d.WorkerType)] || d.WorkerType);
+                return wType + d.Total + '人' + ((d.Total - d.Present) > 0 ? '(缺勤' + (d.Total - d.Present) + '人)' : '');
+            }).join('、');
             html += `<tr><td>${team}</td><td>${details || '无数据'}</td></tr>`;
         });
         html += '</tbody></table>';
@@ -1346,30 +1275,8 @@ async function saveAttendance() {
     try {
         for (const record of records) await addAttendance(record);
         showToast(t('successSaved'));
-        loadAttendance(); loadAttendance2(); loadVerification(); loadVerification2();
-    } catch(e) { showToast('❌ 保存失败: ' + e.message); }
-}
-
-async function saveAttendance2() {
-    const date = document.getElementById('attDate2').value;
-    const team = document.getElementById('attTeam2').value;
-    if (!date || !team) { showToast('❌ 请选择日期和班组'); return; }
-    const records = [];
-    document.querySelectorAll('#attendanceTable2 .att-input[data-field="total"]').forEach(inp => {
-        const type = inp.dataset.type;
-        const total = parseInt(inp.value) || 0;
-        const present = parseInt(document.querySelector(`#attendanceTable2 .att-input[data-type="${type}"][data-field="present"]`)?.value) || 0;
-        const foreign = parseInt(document.querySelector(`#attendanceTable2 .att-input[data-type="${type}"][data-field="foreign"]`)?.value) || 0;
-        const remark = document.querySelector(`#attendanceTable2 .att-input[data-type="${type}"][data-field="remark"]`)?.value || '';
-        if (total > 0 || present > 0) {
-            records.push({ Date: date, Team: team, WorkerType: type, Total: total, Present: present, Absent: total - present, Foreign: foreign, Remark: remark, ReportedBy: currentUser || 'unknown' });
-        }
-    });
-    if (records.length === 0) { showToast('❌ 请至少填报一个工种'); return; }
-    try {
-        for (const record of records) await addAttendance(record);
-        showToast(t('successSaved'));
-        loadAttendance(); loadAttendance2(); loadVerification(); loadVerification2();
+        loadAttendance();
+        loadVerification();
     } catch(e) { showToast('❌ 保存失败: ' + e.message); }
 }
 
@@ -1419,11 +1326,11 @@ async function loadOverview() {
     } catch(e) { document.getElementById('overviewTable').innerHTML = '<p style="color:#999;padding:20px;">加载失败</p>'; }
 }
 
-function exportData() { showToast('📥 ' + t('exportCSV')); }
-function exportAllData() { showToast('📥 ' + t('exportAll')); }
+function exportData() { showToast('📥 ' + t('export_title')); }
+function exportAllData() { showToast('📥 ' + t('export_title')); }
 
 // ============================================================
-//  核对结果 (删除工时核对，只保留核对)
+//  核对结果
 // ============================================================
 async function loadVerification() {
     const date = document.getElementById('verifyDate').value;
@@ -1433,74 +1340,33 @@ async function loadVerification() {
         const attendance = await getAttendance(date);
         const reports = await getReports(date);
         const filteredTeams = teamFilter === 'all' ? TEAMS : [teamFilter];
-        let html = '<table><thead><tr><th>' + t('teamCol') + '</th><th>' + t('expected') + '</th><th>' + t('present') + '</th><th>工时人数</th><th>工时</th><th>' + t('matched') + '</th><th>' + t('diff') + '</th></tr></thead><tbody>';
-        let totalExpected = 0, totalPresent = 0, totalManpower = 0, totalManhours = 0, matchedCount = 0, teamsWithData = 0;
+        let html = '<table><thead><tr><th>' + t('teamCol') + '</th><th>出勤人数</th><th>工时人数</th><th>' + t('matched') + '</th><th>' + t('diff') + '</th></tr></thead><tbody>';
+        let totalExpected = 0, totalManpower = 0, matchedCount = 0, teamsWithData = 0;
         filteredTeams.forEach(team => {
             const att = attendance.filter(a => a.Team === team);
             const totalAtt = att.reduce((s, a) => s + (a.Total || 0), 0);
-            const presentAtt = att.reduce((s, a) => s + (a.Present || 0), 0);
             const rep = reports.filter(r => r.Team === team);
             const totalMp = rep.reduce((s, r) => s + (r.Manpower || 0), 0);
-            const totalMh = rep.reduce((s, r) => s + (r.Manhours || 0), 0);
             const hasData = totalAtt > 0 || totalMp > 0;
             if (hasData) teamsWithData++;
             const matched = totalAtt === totalMp && totalAtt > 0;
             const diff = totalAtt - totalMp;
             if (matched && totalAtt > 0) matchedCount++;
-            totalExpected += totalAtt; totalPresent += presentAtt; totalManpower += totalMp; totalManhours += totalMh;
+            totalExpected += totalAtt; totalManpower += totalMp;
             html += `<tr class="${hasData ? (matched ? 'row-matched' : 'row-unmatched') : ''}">
-                <td>${team}</td><td>${totalAtt}</td><td>${presentAtt}</td><td>${totalMp}</td><td>${totalMh.toFixed(1)}</td>
+                <td>${team}</td><td>${totalAtt}</td><td>${totalMp}</td>
                 <td>${hasData ? (matched ? '✅' : '❌') : '-'}</td>
                 <td style="color:${diff !== 0 && hasData ? '#c62828' : '#4caf50'}">${hasData ? diff : '-'}</td>
             </tr>`;
         });
         html += '</tbody></table>';
         document.getElementById('verifyResult').innerHTML = html;
-        document.getElementById('verifyStats').innerHTML = `<div class="stats"><div class="stat-card"><div class="stat-number">${totalExpected}</div><div class="stat-label">总应到</div></div>
-            <div class="stat-card"><div class="stat-number">${totalPresent}</div><div class="stat-label">总实到</div></div>
+        document.getElementById('verifyStats').innerHTML = `<div class="stats">
+            <div class="stat-card"><div class="stat-number">${totalExpected}</div><div class="stat-label">总出勤人数</div></div>
             <div class="stat-card"><div class="stat-number">${totalManpower}</div><div class="stat-label">总工时人数</div></div>
-            <div class="stat-card"><div class="stat-number">${totalManhours.toFixed(1)}</div><div class="stat-label">总工时</div></div>
-            <div class="stat-card"><div class="stat-number">${matchedCount}/${teamsWithData || 1}</div><div class="stat-label">匹配班组</div></div></div>`;
+            <div class="stat-card"><div class="stat-number">${matchedCount}/${teamsWithData || 1}</div><div class="stat-label">匹配班组</div></div>
+        </div>`;
     } catch(e) { document.getElementById('verifyResult').innerHTML = '<p style="color:#999;padding:20px;">加载失败</p>'; }
-}
-
-async function loadVerification2() {
-    const date = document.getElementById('verifyDate2').value;
-    const teamFilter = document.getElementById('verifyTeam2').value;
-    if (!date) return;
-    try {
-        const attendance = await getAttendance(date);
-        const reports = await getReports(date);
-        const filteredTeams = teamFilter === 'all' ? TEAMS : [teamFilter];
-        let html = '<table><thead><tr><th>' + t('teamCol') + '</th><th>' + t('expected') + '</th><th>' + t('present') + '</th><th>工时人数</th><th>工时</th><th>' + t('matched') + '</th><th>' + t('diff') + '</th></tr></thead><tbody>';
-        let totalExpected = 0, totalPresent = 0, totalManpower = 0, totalManhours = 0, matchedCount = 0, teamsWithData = 0;
-        filteredTeams.forEach(team => {
-            const att = attendance.filter(a => a.Team === team);
-            const totalAtt = att.reduce((s, a) => s + (a.Total || 0), 0);
-            const presentAtt = att.reduce((s, a) => s + (a.Present || 0), 0);
-            const rep = reports.filter(r => r.Team === team);
-            const totalMp = rep.reduce((s, r) => s + (r.Manpower || 0), 0);
-            const totalMh = rep.reduce((s, r) => s + (r.Manhours || 0), 0);
-            const hasData = totalAtt > 0 || totalMp > 0;
-            if (hasData) teamsWithData++;
-            const matched = totalAtt === totalMp && totalAtt > 0;
-            const diff = totalAtt - totalMp;
-            if (matched && totalAtt > 0) matchedCount++;
-            totalExpected += totalAtt; totalPresent += presentAtt; totalManpower += totalMp; totalManhours += totalMh;
-            html += `<tr class="${hasData ? (matched ? 'row-matched' : 'row-unmatched') : ''}">
-                <td>${team}</td><td>${totalAtt}</td><td>${presentAtt}</td><td>${totalMp}</td><td>${totalMh.toFixed(1)}</td>
-                <td>${hasData ? (matched ? '✅' : '❌') : '-'}</td>
-                <td style="color:${diff !== 0 && hasData ? '#c62828' : '#4caf50'}">${hasData ? diff : '-'}</td>
-            </tr>`;
-        });
-        html += '</tbody></table>';
-        document.getElementById('verifyResult2').innerHTML = html;
-        document.getElementById('verifyStats2').innerHTML = `<div class="stats"><div class="stat-card"><div class="stat-number">${totalExpected}</div><div class="stat-label">总应到</div></div>
-            <div class="stat-card"><div class="stat-number">${totalPresent}</div><div class="stat-label">总实到</div></div>
-            <div class="stat-card"><div class="stat-number">${totalManpower}</div><div class="stat-label">总工时人数</div></div>
-            <div class="stat-card"><div class="stat-number">${totalManhours.toFixed(1)}</div><div class="stat-label">总工时</div></div>
-            <div class="stat-card"><div class="stat-number">${matchedCount}/${teamsWithData || 1}</div><div class="stat-label">匹配班组</div></div></div>`;
-    } catch(e) { document.getElementById('verifyResult2').innerHTML = '<p style="color:#999;padding:20px;">加载失败</p>'; }
 }
 
 // ============================================================
@@ -1534,7 +1400,7 @@ function exportBackup() { showToast('💾 ' + t('backup')); }
 function importBackup() { showToast('📂 ' + t('importBackup')); }
 async function clearZeroData() { if (!confirm(t('confirmClearZero'))) return; showToast('🧹 ' + t('clearZero')); loadOverview(); }
 async function deduplicateData() { if (!confirm(t('confirmDedup'))) return; showToast('🔄 ' + t('dedup')); loadOverview(); }
-async function resetAllData() { if (!confirm(t('confirmReset'))) return; if (!confirm(t('confirmReset2'))) return; showToast('💣 ' + t('reset')); loadOverview(); loadAttendance(); loadAttendance2(); }
+async function resetAllData() { if (!confirm(t('confirmReset'))) return; if (!confirm(t('confirmReset2'))) return; showToast('💣 ' + t('reset')); loadOverview(); loadAttendance(); }
 
 function loadLoginLogs() { document.getElementById('loginLogs').innerHTML = '<p style="color:#999;padding:10px;">暂无登录记录</p>'; }
 
@@ -1546,26 +1412,23 @@ function showToast(msg) {
     setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.5s'; setTimeout(() => toast.remove(), 500); }, 3000);
 }
 
-setInterval(savePending, 30000);
+setInterval(function() {
+    const saved = localStorage.getItem('pending_items');
+    if (saved) { try { pendingItems = JSON.parse(saved); } catch(e) {} }
+}, 30000);
 
 document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('entryDate').value = today;
     document.getElementById('attDate').value = today;
-    document.getElementById('attDate2').value = today;
     document.getElementById('overviewDate').value = today;
     document.getElementById('verifyDate').value = today;
-    document.getElementById('verifyDate2').value = today;
     initApp();
     document.getElementById('attDate').addEventListener('change', loadAttendance);
     document.getElementById('attTeam').addEventListener('change', loadAttendance);
-    document.getElementById('attDate2').addEventListener('change', loadAttendance2);
-    document.getElementById('attTeam2').addEventListener('change', loadAttendance2);
     document.getElementById('overviewDate').addEventListener('change', loadOverview);
     document.getElementById('verifyDate').addEventListener('change', loadVerification);
     document.getElementById('verifyTeam').addEventListener('change', loadVerification);
-    document.getElementById('verifyDate2').addEventListener('change', loadVerification2);
-    document.getElementById('verifyTeam2').addEventListener('change', loadVerification2);
     updateLoginUI();
 });
 </script>
