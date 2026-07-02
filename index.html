@@ -149,18 +149,23 @@
         <!-- ===== Tab: 录入 ===== -->
         <div id="tab-entry" class="tab-content active">
             <div class="sub-tabs">
-                <button class="sub-tab-btn active" onclick="switchSubTab('attendance_sub')" data-subtab="attendance_sub" data-i18n="subAttendance">👷 出勤日报</button>
-                <button class="sub-tab-btn" onclick="switchSubTab('entry_sub')" data-subtab="entry_sub" data-i18n="subEntry">📝 施工员录入</button>
-                <button class="sub-tab-btn" onclick="switchSubTab('verify_sub')" data-subtab="verify_sub" data-i18n="subVerify">✅ 核对结果</button>
+                <button class="sub-tab-btn active" onclick="switchSubTab('attendance_team')" data-subtab="attendance_team">👷 班组出勤</button>
+                <button class="sub-tab-btn" onclick="switchSubTab('attendance_area')" data-subtab="attendance_area">📍 区域出勤</button>
+                <button class="sub-tab-btn" onclick="switchSubTab('entry_sub')" data-subtab="entry_sub">📝 施工员录入</button>
+                <button class="sub-tab-btn" onclick="switchSubTab('verify_sub')" data-subtab="verify_sub">✅ 核对结果</button>
             </div>
 
-            <!-- 子Tab: 出勤日报 -->
-            <div id="subtab-attendance_sub" class="sub-tab-content">
-                <h3 data-i18n="attTitle">👷 出勤日报（班组长）</h3>
+            <!-- ===== 子Tab: 班组出勤 ===== -->
+            <div id="subtab-attendance_team" class="sub-tab-content">
+                <h3>👷 班组出勤</h3>
                 <div class="form-row">
-                    <div class="form-group"><label data-i18n="date">📅 日期</label><input type="date" id="attDate"></div>
-                    <div class="form-group"><label data-i18n="team">👷 班组</label>
-                        <select id="attTeam">
+                    <div class="form-group">
+                        <label>📅 日期</label>
+                        <input type="date" id="attTeamDate">
+                    </div>
+                    <div class="form-group">
+                        <label>👷 班组</label>
+                        <select id="attTeamSelect">
                             <option value="马玉奇(Ma Yuqi)">马玉奇</option>
                             <option value="王建(Wang Jian)">王建</option>
                             <option value="Kumar">Kumar</option>
@@ -173,32 +178,70 @@
                         </select>
                     </div>
                     <div class="form-group" style="justify-content:flex-end;">
-                        <button class="btn btn-secondary" onclick="loadAttendance()" data-i18n="refresh">🔄 刷新</button>
+                        <button class="btn btn-secondary" onclick="loadTeamAttendance()">🔄 刷新</button>
                     </div>
                 </div>
-                <div id="attendanceTable"></div>
-                <button class="btn btn-primary" onclick="saveAttendance()" style="margin-top:15px;" data-i18n="saveAtt">✅ 提交考勤</button>
-                <hr class="section-divider">
-                <h4 data-i18n="attSummaryTitle">📊 今日报工汇总</h4>
-                <div id="attendanceSummary"></div>
+                <div id="teamAttendanceTable"></div>
+                <button class="btn btn-primary" onclick="saveTeamAttendance()" style="margin-top:15px;">✅ 提交班组出勤</button>
             </div>
 
-            <!-- 子Tab: 施工员录入 -->
-            <div id="subtab-entry_sub" class="sub-tab-content hidden">
-                <h3 data-i18n="entryTitle">📝 施工员录入</h3>
+            <!-- ===== 子Tab: 区域出勤 ===== -->
+            <div id="subtab-attendance_area" class="sub-tab-content hidden">
+                <h3>📍 区域出勤</h3>
                 <div class="form-row">
-                    <div class="form-group"><label data-i18n="date">📅 日期</label><input type="date" id="entryDate"></div>
-                    <div class="form-group"><label data-i18n="area">📍 区域</label>
-                        <select id="entryArea">
-                            <option value="110">110</option><option value="210">210</option>
-                            <option value="220">220</option><option value="240">240</option>
-                            <option value="320">320</option><option value="330">330</option>
-                            <option value="400">400</option><option value="800">800</option>
+                    <div class="form-group">
+                        <label>📅 日期</label>
+                        <input type="date" id="attAreaDate">
+                    </div>
+                    <div class="form-group">
+                        <label>📍 区域</label>
+                        <select id="attAreaSelect">
+                            <option value="110">110</option>
+                            <option value="210">210</option>
+                            <option value="220">220</option>
+                            <option value="240">240</option>
+                            <option value="320">320</option>
+                            <option value="330">330</option>
+                            <option value="400">400</option>
+                            <option value="800">800</option>
                             <option value="precast yard 1">precast yard 1</option>
                             <option value="precast yard 2">precast yard 2</option>
                         </select>
                     </div>
-                    <div class="form-group"><label data-i18n="team">👷 班组</label>
+                    <div class="form-group" style="justify-content:flex-end;">
+                        <button class="btn btn-secondary" onclick="loadAreaAttendance()">🔄 刷新</button>
+                    </div>
+                </div>
+                <div id="areaAttendanceTable"></div>
+                <button class="btn btn-primary" onclick="saveAreaAttendance()" style="margin-top:15px;">✅ 提交区域出勤</button>
+            </div>
+
+            <!-- ===== 子Tab: 施工员录入 ===== -->
+            <div id="subtab-entry_sub" class="sub-tab-content hidden">
+                <!-- 保持原来的施工员录入内容不变 -->
+                <h3 data-i18n="entryTitle">📝 施工员录入</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label data-i18n="date">📅 日期</label>
+                        <input type="date" id="entryDate">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="area">📍 区域</label>
+                        <select id="entryArea">
+                            <option value="110">110</option>
+                            <option value="210">210</option>
+                            <option value="220">220</option>
+                            <option value="240">240</option>
+                            <option value="320">320</option>
+                            <option value="330">330</option>
+                            <option value="400">400</option>
+                            <option value="800">800</option>
+                            <option value="precast yard 1">precast yard 1</option>
+                            <option value="precast yard 2">precast yard 2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="team">👷 班组</label>
                         <select id="entryTeam">
                             <option value="马玉奇(Ma Yuqi)">马玉奇</option>
                             <option value="王建(Wang Jian)">王建</option>
@@ -211,28 +254,57 @@
                             <option value="Anwar">Anwar</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>🏷️ 位号</label><input type="text" id="entryTag" placeholder="输入位号"></div>
+                    <div class="form-group">
+                        <label>🏷️ 位号</label>
+                        <input type="text" id="entryTag" placeholder="输入位号">
+                    </div>
                 </div>
 
                 <div style="font-weight:600;font-size:15px;color:#1a237e;margin-top:15px;" data-i18n="work_desc">🛠️ 工作内容</div>
                 <div class="form-row">
-                    <div class="form-group"><label data-i18n="sub_item">分部分项</label>
+                    <div class="form-group">
+                        <label data-i18n="sub_item">分部分项</label>
                         <select id="entryCategory" onchange="onCategoryChange()"></select>
                     </div>
-                    <div class="form-group"><label data-i18n="work_content">工作内容</label>
+                    <div class="form-group">
+                        <label data-i18n="work_content">工作内容</label>
                         <select id="entrySubItem" onchange="onSubItemChange()"></select>
                     </div>
-                    <div class="form-group"><label data-i18n="code">编号</label><input type="text" id="entryCode" disabled></div>
-                    <div class="form-group"><label data-i18n="unit">单位</label><input type="text" id="entryUnit" disabled></div>
+                    <div class="form-group">
+                        <label data-i18n="code">编号</label>
+                        <input type="text" id="entryCode" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="unit">单位</label>
+                        <input type="text" id="entryUnit" disabled>
+                    </div>
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group"><label data-i18n="qty">📊 完成量</label><input type="number" id="entryQty" value="0" step="0.1"></div>
-                    <div class="form-group"><label data-i18n="pipe_length">📏 地管长度 (m)</label><input type="number" id="entryPipe" value="0" step="0.1"></div>
-                    <div class="form-group"><label data-i18n="manpower">👷 人数</label><input type="number" id="entryManpower" value="0"></div>
-                    <div class="form-group"><label data-i18n="manhours">⏱️ 工时</label><input type="number" id="entryManhours" value="0" step="0.5"></div>
-                    <div class="form-group"><label data-i18n="non_chinese">🌍 外籍</label><input type="number" id="entryForeign" value="0"></div>
-                    <div class="form-group"><label data-i18n="remark">📝 备注</label><input type="text" id="entryRemark" placeholder="备注"></div>
+                    <div class="form-group">
+                        <label data-i18n="qty">📊 完成量</label>
+                        <input type="number" id="entryQty" value="0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="pipe_length">📏 地管长度 (m)</label>
+                        <input type="number" id="entryPipe" value="0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="manpower">👷 人数</label>
+                        <input type="number" id="entryManpower" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="manhours">⏱️ 工时</label>
+                        <input type="number" id="entryManhours" value="0" step="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="non_chinese">🌍 外籍</label>
+                        <input type="number" id="entryForeign" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="remark">📝 备注</label>
+                        <input type="text" id="entryRemark" placeholder="备注">
+                    </div>
                 </div>
 
                 <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
@@ -250,12 +322,16 @@
                 </div>
             </div>
 
-            <!-- 子Tab: 核对结果 -->
+            <!-- ===== 子Tab: 核对结果 ===== -->
             <div id="subtab-verify_sub" class="sub-tab-content hidden">
                 <h3 data-i18n="verifyTitle">✅ 工时与出勤核对</h3>
                 <div class="form-row">
-                    <div class="form-group"><label data-i18n="date">📅 日期</label><input type="date" id="verifyDate"></div>
-                    <div class="form-group"><label data-i18n="team">👷 班组</label>
+                    <div class="form-group">
+                        <label data-i18n="date">📅 日期</label>
+                        <input type="date" id="verifyDate">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="team">👷 班组</label>
                         <select id="verifyTeam">
                             <option value="all">全部</option>
                             <option value="马玉奇(Ma Yuqi)">马玉奇</option>
@@ -276,7 +352,6 @@
                 <div id="verifyResult" style="margin-top:15px;"></div>
                 <div id="verifyStats" style="margin-top:15px;"></div>
             </div>
-        </div>
 
         <!-- ===== Tab: 总览 ===== -->
         <div id="tab-overview" class="tab-content">
@@ -296,6 +371,7 @@
             <hr class="section-divider">
             <h4 data-i18n="h_data">📋 全部数据</h4>
             <div id="allDataTable" class="table-container"></div>
+            <div id="attendanceSummaryOverview" style="margin-top:20px;"></div>
         </div>
 
         <!-- ===== Tab: 设置 ===== -->
@@ -504,6 +580,177 @@ const WORKER_TYPES = ['木工', '瓦工', '钢筋工', '架子工', '旗手', '�
 const WORKER_TYPES_EN = ['Carpenter', 'Mason', 'Rebar Man', 'Scaffolder', 'Flagman', 'Helper', 'Rigger', 'Surveyor', 'Welder'];
 const TEAMS = ['马玉奇(Ma Yuqi)', '王建(Wang Jian)', 'Kumar', '郭传海(Guo Chuanhai)', '曹桂龙(Cao Guilong)', '陈传军(Chen Chuanjun)', '王世杰(Wang Shijie)', 'Sheharyar', 'Anwar'];
 const AREAS = ['110', '210', '220', '240', '320', '330', '400', '800', 'precast yard 1', 'precast yard 2'];
+// ============================================================
+//  出勤日报 - 班组出勤 + 区域出勤
+// ============================================================
+
+// ----- 班组出勤 -----
+const WORKER_TYPES_ATT = ['木工', '瓦工', '钢筋工', '架子工', '旗手', '小工', '起重工', '测量工', '焊工'];
+
+async function loadTeamAttendance() {
+    const date = document.getElementById('attTeamDate').value;
+    const team = document.getElementById('attTeamSelect').value;
+    if (!date) return;
+    try {
+        const data = await getAttendance(date, team);
+        renderTeamAttendance(data, 'teamAttendanceTable');
+    } catch(e) {
+        renderTeamAttendance([], 'teamAttendanceTable');
+    }
+}
+
+function renderTeamAttendance(data, tableId) {
+    const container = document.getElementById(tableId);
+    const map = {};
+    data.forEach(d => map[d.WorkerType] = d);
+
+    let html = `<table><thead><tr>
+        <th>工种</th>
+        <th>应到外籍</th><th>实到外籍</th>
+        <th>应到中国</th><th>实到中国</th>
+        <th>合计应到</th><th>合计实到</th>
+        <th>缺勤</th>
+        <th>备注</th>
+    </tr></thead><tbody>`;
+
+    let totalForeignExpected = 0, totalForeignPresent = 0;
+    let totalChineseExpected = 0, totalChinesePresent = 0;
+    let totalAllExpected = 0, totalAllPresent = 0;
+
+    WORKER_TYPES_ATT.forEach(type => {
+        const row = map[type] || { Total: 0, Present: 0, Foreign: 0, Chinese: 0, ChinesePresent: 0, Remark: '' };
+        const foreignExpected = row.ForeignExpected || row.Foreign || 0;
+        const foreignPresent = row.ForeignPresent || row.Foreign || 0;
+        const chineseExpected = row.ChineseExpected || row.Chinese || 0;
+        const chinesePresent = row.ChinesePresent || row.Chinese || 0;
+        const totalExpected = foreignExpected + chineseExpected;
+        const totalPresent = foreignPresent + chinesePresent;
+        const absent = totalExpected - totalPresent;
+
+        totalForeignExpected += foreignExpected;
+        totalForeignPresent += foreignPresent;
+        totalChineseExpected += chineseExpected;
+        totalChinesePresent += chinesePresent;
+        totalAllExpected += totalExpected;
+        totalAllPresent += totalPresent;
+
+        html += `<tr>
+            <td><strong>${type}</strong></td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="foreignExpected" value="${foreignExpected}" min="0" style="width:50px;"></td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="foreignPresent" value="${foreignPresent}" min="0" style="width:50px;"></td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="chineseExpected" value="${chineseExpected}" min="0" style="width:50px;"></td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="chinesePresent" value="${chinesePresent}" min="0" style="width:50px;"></td>
+            <td style="font-weight:bold;color:#1565c0;">${totalExpected}</td>
+            <td style="font-weight:bold;color:#1565c0;">${totalPresent}</td>
+            <td style="color:${absent > 0 ? '#c62828' : '#4caf50'};font-weight:bold;">${absent}</td>
+            <td><input type="text" class="att-input att-input-wide" data-type="${type}" data-field="remark" value="${row.Remark || ''}" placeholder="备注" style="width:120px;"></td>
+        </tr>`;
+    });
+
+    const totalAbsent = totalAllExpected - totalAllPresent;
+    html += `<tr style="font-weight:bold;background:#f5f5f5;">
+        <td>合计</td>
+        <td>${totalForeignExpected}</td><td>${totalForeignPresent}</td>
+        <td>${totalChineseExpected}</td><td>${totalChinesePresent}</td>
+        <td style="color:#1565c0;">${totalAllExpected}</td>
+        <td style="color:#1565c0;">${totalAllPresent}</td>
+        <td style="color:${totalAbsent > 0 ? '#c62828' : '#4caf50'}">${totalAbsent}</td>
+        <td></td>
+    </tr>`;
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+async function saveTeamAttendance() {
+    const date = document.getElementById('attTeamDate').value;
+    const team = document.getElementById('attTeamSelect').value;
+    if (!date || !team) { showToast('❌ 请选择日期和班组'); return; }
+
+    const records = [];
+    document.querySelectorAll('#teamAttendanceTable .att-input[data-field="foreignExpected"]').forEach(inp => {
+        const type = inp.dataset.type;
+        const foreignExpected = parseInt(inp.value) || 0;
+        const foreignPresent = parseInt(document.querySelector(`#teamAttendanceTable .att-input[data-type="${type}"][data-field="foreignPresent"]`)?.value) || 0;
+        const chineseExpected = parseInt(document.querySelector(`#teamAttendanceTable .att-input[data-type="${type}"][data-field="chineseExpected"]`)?.value) || 0;
+        const chinesePresent = parseInt(document.querySelector(`#teamAttendanceTable .att-input[data-type="${type}"][data-field="chinesePresent"]`)?.value) || 0;
+        const remark = document.querySelector(`#teamAttendanceTable .att-input[data-type="${type}"][data-field="remark"]`)?.value || '';
+        const total = foreignExpected + chineseExpected;
+        const present = foreignPresent + chinesePresent;
+        if (total > 0 || present > 0) {
+            records.push({
+                Date: date,
+                Team: team,
+                WorkerType: type,
+                Total: total,
+                Present: present,
+                Absent: total - present,
+                ForeignExpected: foreignExpected,
+                ForeignPresent: foreignPresent,
+                ChineseExpected: chineseExpected,
+                ChinesePresent: chinesePresent,
+                Foreign: foreignExpected,
+                Chinese: chineseExpected,
+                Remark: remark,
+                ReportedBy: currentUser || 'unknown'
+            });
+        }
+    });
+
+    if (records.length === 0) { showToast('❌ 请至少填报一个工种'); return; }
+
+    try {
+        for (const record of records) await addAttendance(record);
+        showToast('✅ 班组出勤提交成功！');
+        loadTeamAttendance();
+        loadAreaAttendance();
+        loadVerification();
+    } catch(e) { showToast('❌ 保存失败: ' + e.message); }
+}
+
+// ----- 区域出勤 -----
+async function loadAreaAttendance() {
+    const date = document.getElementById('attAreaDate').value;
+    const area = document.getElementById('attAreaSelect').value;
+    if (!date) return;
+    try {
+        const data = await getAttendanceByArea(date, area);
+        renderAreaAttendance(data, 'areaAttendanceTable');
+    } catch(e) {
+        renderAreaAttendance([], 'areaAttendanceTable');
+    }
+}
+
+async function getAttendanceByArea(date, area) {
+    const reports = await getReports(date);
+    const filtered = reports.filter(r => r.Area === area);
+    const result = {};
+    filtered.forEach(r => {
+        const key = r.Team + '|' + (r.Category || '未分类');
+        if (!result[key]) result[key] = { Team: r.Team, Category: r.Category || '未分类', Manpower: 0 };
+        result[key].Manpower += r.Manpower || 0;
+    });
+    return Object.values(result);
+}
+
+function renderAreaAttendance(data, tableId) {
+    const container = document.getElementById(tableId);
+    if (!data || data.length === 0) {
+        container.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">该区域暂无出勤数据</p>';
+        return;
+    }
+    let html = `<table><thead><tr><th>班组</th><th>工种</th><th>人数</th></tr></thead><tbody>`;
+    data.forEach(d => {
+        html += `<tr><td>${d.Team}</td><td>${d.Category}</td><td>${d.Manpower}</td></tr>`;
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+async function saveAreaAttendance() {
+    showToast('📊 区域出勤数据来自施工员录入，请到"施工员录入"提交');
+    loadAreaAttendance();
+}
 
 // ============================================================
 //  全局变量
@@ -919,8 +1166,11 @@ function switchSubTab(subtab) {
     document.querySelector(`.sub-tab-btn[data-subtab="${subtab}"]`).classList.add('active');
     document.getElementById(`subtab-${subtab}`).classList.remove('hidden');
 
-    if (subtab === 'attendance_sub') {
-        loadAttendance();
+    if (subtab === 'attendance_team') {
+        loadTeamAttendance();
+    }
+    if (subtab === 'attendance_area') {
+        loadAreaAttendance();
     }
     if (subtab === 'entry_sub') {
         renderPending();
@@ -929,7 +1179,6 @@ function switchSubTab(subtab) {
         loadVerification();
     }
 }
-
 // ============================================================
 //  初始化
 // ============================================================
@@ -1186,16 +1435,35 @@ async function submitAll() {
 // ============================================================
 //  出勤日报
 // ============================================================
-async function loadAttendance() {
-    const date = document.getElementById('attDate').value;
-    const team = document.getElementById('attTeam').value;
-    if (!date) return;
+async function loadAttendanceSummary(date) {
+    const container = document.getElementById('attendanceSummaryOverview');
+    if (!container) return;
     try {
-        const data = await getAttendance(date, team);
-        renderAttendance(data, 'attendanceTable');
-        renderAttendanceSummary(date, 'attendanceSummary');
+        const data = await getAttendance(date);
+        if (data.length === 0) {
+            container.innerHTML = '<p style="color:#999;padding:10px;">该日期暂无出勤数据</p>';
+            return;
+        }
+        const summary = {};
+        data.forEach(d => {
+            const type = d.WorkerType || '未知';
+            if (!summary[type]) summary[type] = { Total: 0, Present: 0, Absent: 0 };
+            summary[type].Total += d.Total || 0;
+            summary[type].Present += d.Present || 0;
+            summary[type].Absent += d.Absent || 0;
+        });
+        let html = `<h4>📊 出勤日报汇总 (${date})</h4><table><thead><tr><th>工种</th><th>应到</th><th>实到</th><th>缺勤</th></tr></thead><tbody>`;
+        let totalT = 0, totalP = 0, totalA = 0;
+        Object.keys(summary).forEach(type => {
+            const s = summary[type];
+            totalT += s.Total; totalP += s.Present; totalA += s.Absent;
+            html += `<tr><td>${type}</td><td>${s.Total}</td><td>${s.Present}</td><td style="color:${s.Absent > 0 ? '#c62828' : '#4caf50'}">${s.Absent}</td></tr>`;
+        });
+        html += `<tr style="font-weight:bold;background:#f5f5f5;"><td>合计</td><td>${totalT}</td><td>${totalP}</td><td style="color:${totalA > 0 ? '#c62828' : '#4caf50'}">${totalA}</td></tr>`;
+        html += '</tbody></table>';
+        container.innerHTML = html;
     } catch(e) {
-        renderAttendance([], 'attendanceTable');
+        container.innerHTML = '<p style="color:#999;padding:10px;">加载失败</p>';
     }
 }
 
@@ -1325,7 +1593,9 @@ async function loadOverview() {
         } catch(e) { allTable.innerHTML = '<p style="color:#999;padding:10px;">加载失败</p>'; }
     } catch(e) { document.getElementById('overviewTable').innerHTML = '<p style="color:#999;padding:20px;">加载失败</p>'; }
 }
-
+    // 加载出勤日报汇总
+    loadAttendanceSummary(date);
+    
 function exportData() { showToast('📥 ' + t('export_title')); }
 function exportAllData() { showToast('📥 ' + t('export_title')); }
 
