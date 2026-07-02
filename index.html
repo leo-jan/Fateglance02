@@ -1095,11 +1095,27 @@ function addToPending() {
         return;
     }
 
+    const duplicate = pendingItems.some(item =>
+        item.Date === record.Date &&
+        item.Area === record.Area &&
+        item.Team === record.Team &&
+        item.Description === record.Description
+    );
+
+    if (duplicate) {
+        showToast('⚠️ 已存在相同记录');
+        return;
+    }
+
     pendingItems.push(record);
+
+    // ✅ 关键：立即刷新显示
     renderPending();
     savePending();
+
     showToast('✅ 已添加到待提交列表');
 
+    // 清空输入框
     document.getElementById('entryTag').value = '';
     document.getElementById('entryQty').value = '0';
     document.getElementById('entryPipe').value = '0';
