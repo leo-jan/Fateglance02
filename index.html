@@ -723,25 +723,38 @@ async function loadAreaAttendance() {
         return;
     }
     try {
-        // 从班组出勤获取该班组的实到人数
-        const attendance = await getAttendance(date, team);
-        renderAreaAttendance(attendance, 'areaAttendanceTable', team);
+        // 先刷新班组出勤数据（确保实到人数是最新的）
+        await loadTeamAttendance();
+        // 渲染区域出勤
+        renderAreaAttendance([], 'areaAttendanceTable', team);
     } catch(e) {
         renderAreaAttendance([], 'areaAttendanceTable', team);
     }
 }
-
 function renderAreaAttendance(data, tableId, team) {
     const container = document.getElementById(tableId);
-    const map = {};
-    data.forEach(d => map[d.WorkerType] = d);
+    
+    // 从 teamAttendanceTable 读取各工种的实到人数
+    const teamAttendanceMap = {};
+    WORKER_TYPES_ATT.forEach(type => {
+        // 读取中国实到
+        const chinesePresent = parseInt(document.querySelector(`#teamAttendanceTable .att-input[data-type="${type}"][data-field="chinesePresent"]`)?.value) || 0;
+        // 读取外籍实到
+        const foreignPresent = parseInt(document.querySelector(`#teamAttendanceTable .att-input[data-type="${type}"][data-field="foreignPresent"]`)?.value) || 0;
+        teamAttendanceMap[type] = chinesePresent + foreignPresent;
+    });
 
-    // 从 localStorage 读取已保存的区域分配数据
     const savedKey = `area_distribution_${document.getElementById('attAreaDate').value}_${team}`;
-    const savedData = JSON.parse(localStorage.getItem(savedKey) || '{}');
+    let savedData = {};
+    try {
+        savedData = JSON.parse(localStorage.getItem(savedKey) || '{}');
+    } catch(e) {
+        savedData = {};
+    }
 
     let html = `<div style="margin-bottom:10px;font-size:13px;color:#666;">
         <strong>👷 ${team}</strong> 各工种实到人数分配
+        <span style="margin-left:15px;color:#4caf50;">✅ 实到人数从班组出勤自动读取</span>
     </div>`;
     html += `<table><thead><tr>
         <th style="min-width:60px;">序号</th>
@@ -764,15 +777,14 @@ function renderAreaAttendance(data, tableId, team) {
     let grandTotal = 0;
     let grandDistributed = 0;
     let rowIndex = 0;
+    let hasData = false;
 
     WORKER_TYPES_ATT.forEach(type => {
-        const row = map[type] || { Total: 0, Present: 0, Foreign: 0, Chinese: 0, ChinesePresent: 0, Remark: '' };
-        // 实到人数 = 中国实到 + 外籍实到
-        const present = (row.ChinesePresent || row.Chinese || 0) + (row.ForeignPresent || row.Foreign || 0);
-        const total = row.Total || 0;
+        const present = teamAttendanceMap[type] || 0;
         
         // 如果实到为0，跳过
-        if (present === 0 && total === 0) return;
+        if (present === 0) return;
+        hasData = true;
 
         rowIndex++;
         const rowKey = `${type}`;
@@ -810,6 +822,12 @@ function renderAreaAttendance(data, tableId, team) {
         </tr>`;
     });
 
+    if (!hasData) {
+        html += `<tr><td colspan="15" style="text-align:center;padding:20px;color:#999;">
+            📭 该班组暂无出勤数据，请先在"班组出勤"中填报
+        </td></tr>`;
+    }
+
     // 合计行
     const totalDiff = grandTotal - grandDistributed;
     html += `<tr style="font-weight:bold;background:#f5f5f5;">
@@ -823,7 +841,6 @@ function renderAreaAttendance(data, tableId, team) {
 
     html += '</tbody></table>';
     
-    // 添加说明
     html += `<div style="margin-top:10px;font-size:12px;color:#999;">
         💡 提示：分配人数总和应等于"实到"人数。差额为0时表示分配完成。
     </div>`;
@@ -833,7 +850,6 @@ function renderAreaAttendance(data, tableId, team) {
     // 更新各区域合计
     updateAreaTotals();
 }
-
 // 更新区域合计
 function updateAreaTotals() {
     AREA_LIST.forEach(area => {
