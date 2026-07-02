@@ -1,3 +1,4 @@
+// api/attendance.js
 import { neon } from '@vercel/postgres';
 
 export default async function handler(req, res) {
@@ -30,7 +31,7 @@ export default async function handler(req, res) {
             }
             
             const result = await neon(query, params);
-            // ✅ 转成前端期望的格式
+            // 转换成前端期望的字段名
             const rows = result.rows.map(r => ({
                 Date: r.date,
                 Team: r.team,
@@ -48,6 +49,7 @@ export default async function handler(req, res) {
         if (req.method === 'POST') {
             const body = req.body;
             
+            // 先删除旧的（覆盖更新）
             await neon(
                 'DELETE FROM attendance WHERE date = $1 AND team = $2 AND worker_type = $3',
                 [body.Date, body.Team, body.WorkerType]
