@@ -1,7 +1,7 @@
 {
-  "name": "daily-report",
-  "version": "3.0.0",
+  "name": "your-project",
+  "version": "1.0.0",
   "dependencies": {
-    "pg": "^8.11.3"
+    "@neondatabase/serverless": "^0.9.0"
   }
 }
