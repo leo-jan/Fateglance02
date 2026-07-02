@@ -1,8 +1,19 @@
 // api/attendance.js
-import { neon } from '@vercel/postgres';
+import { Pool } from 'pg';
+
+let pool = null;
+
+function getPool() {
+    if (!pool) {
+        pool = new Pool({
+            connectionString: process.env.POSTGRES_URL,
+            ssl: { rejectUnauthorized: false }
+        });
+    }
+    return pool;
+}
 
 export default async function handler(req, res) {
-    // CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -11,14 +22,11 @@ export default async function handler(req, res) {
         return res.status(200).end();
     }
 
-    // 获取数据库连接
-    const sql = neon(process.env.POSTGRES_URL);
-
     try {
-        // ===== GET =====
+        const pool = getPool();
+
         if (req.method === 'GET') {
             const { date, team } = req.query;
-            
             let query = 'SELECT * FROM attendance';
             const params = [];
             
@@ -32,29 +40,25 @@ export default async function handler(req, res) {
                 query += ' ORDER BY id DESC';
             }
             
-            const result = await sql(query, params);
-            
-            // 直接返回数据库字段（前端已经适配）
-            return res.status(200).json(result);
+            const result = await pool.query(query, params);
+            return res.status(200).json(result.rows);
         }
 
-        // ===== POST =====
         if (req.method === 'POST') {
             const body = req.body;
             
-            // 必填字段验证
             if (!body.Date || !body.Team || !body.WorkerType) {
                 return res.status(400).json({ error: '缺少必填字段' });
             }
             
             // 删除旧记录
-            await sql(
+            await pool.query(
                 'DELETE FROM attendance WHERE date = $1 AND team = $2 AND worker_type = $3',
                 [body.Date, body.Team, body.WorkerType]
             );
             
             // 插入新记录
-            const result = await sql(
+            const result = await pool.query(
                 `INSERT INTO attendance (
                     date, team, worker_type, 
                     total, present, absent, 
@@ -81,19 +85,12 @@ export default async function handler(req, res) {
                 ]
             );
             
-            return res.status(200).json({ 
-                success: true, 
-                id: result[0].id 
-            });
+            return res.status(200).json({ success: true, id: result.rows[0].id });
         }
 
         return res.status(405).json({ error: 'Method not allowed' });
-
     } catch (err) {
         console.error('❌ API 错误:', err);
-        return res.status(500).json({ 
-            error: err.message,
-            stack: err.stack 
-        });
+        return res.status(500).json({ error: err.message });
     }
 }
