@@ -194,18 +194,17 @@
                         <input type="date" id="attAreaDate">
                     </div>
                     <div class="form-group">
-                        <label>📍 区域</label>
-                        <select id="attAreaSelect">
-                            <option value="110">110</option>
-                            <option value="210">210</option>
-                            <option value="220">220</option>
-                            <option value="240">240</option>
-                            <option value="320">320</option>
-                            <option value="330">330</option>
-                            <option value="400">400</option>
-                            <option value="800">800</option>
-                            <option value="precast yard 1">precast yard 1</option>
-                            <option value="precast yard 2">precast yard 2</option>
+                        <label>👷 选择班组</label>
+                        <select id="attAreaTeamSelect">
+                            <option value="马玉奇(Ma Yuqi)">马玉奇</option>
+                            <option value="王建(Wang Jian)">王建</option>
+                            <option value="Kumar">Kumar</option>
+                            <option value="郭传海(Guo Chuanhai)">郭传海</option>
+                            <option value="曹桂龙(Cao Guilong)">曹桂龙</option>
+                            <option value="陈传军(Chen Chuanjun)">陈传军</option>
+                            <option value="王世杰(Wang Shijie)">王世杰</option>
+                            <option value="Sheharyar">Sheharyar</option>
+                            <option value="Anwar">Anwar</option>
                         </select>
                     </div>
                     <div class="form-group" style="justify-content:flex-end;">
@@ -213,7 +212,7 @@
                     </div>
                 </div>
                 <div id="areaAttendanceTable"></div>
-                <button class="btn btn-primary" onclick="saveAreaAttendance()" style="margin-top:15px;">✅ 提交区域出勤</button>
+                <button class="btn btn-primary" onclick="saveAreaAttendance()" style="margin-top:15px;">✅ 提交区域出勤分配</button>
             </div>
 
             <!-- ===== 子Tab: 施工员录入 ===== -->
@@ -713,46 +712,213 @@ async function saveTeamAttendance() {
 }
 
 // ----- 区域出勤 -----
+// ----- 区域出勤（从班组出勤获取数据，分配到各区域）-----
+const AREA_LIST = ['110', '210', '220', '240', '320', '330', '400', '800', 'PC1', 'PC2'];
+
 async function loadAreaAttendance() {
     const date = document.getElementById('attAreaDate').value;
-    const area = document.getElementById('attAreaSelect').value;
-    if (!date) return;
-    try {
-        const data = await getAttendanceByArea(date, area);
-        renderAreaAttendance(data, 'areaAttendanceTable');
-    } catch(e) {
-        renderAreaAttendance([], 'areaAttendanceTable');
-    }
-}
-
-async function getAttendanceByArea(date, area) {
-    const reports = await getReports(date);
-    const filtered = reports.filter(r => r.Area === area);
-    const result = {};
-    filtered.forEach(r => {
-        const key = r.Team + '|' + (r.Category || '未分类');
-        if (!result[key]) result[key] = { Team: r.Team, Category: r.Category || '未分类', Manpower: 0 };
-        result[key].Manpower += r.Manpower || 0;
-    });
-    return Object.values(result);
-}
-
-function renderAreaAttendance(data, tableId) {
-    const container = document.getElementById(tableId);
-    if (!data || data.length === 0) {
-        container.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">该区域暂无出勤数据</p>';
+    const team = document.getElementById('attAreaTeamSelect').value;
+    if (!date || !team) {
+        showToast('请选择日期和班组');
         return;
     }
-    let html = `<table><thead><tr><th>班组</th><th>工种</th><th>人数</th></tr></thead><tbody>`;
-    data.forEach(d => {
-        html += `<tr><td>${d.Team}</td><td>${d.Category}</td><td>${d.Manpower}</td></tr>`;
-    });
-    html += '</tbody></table>';
-    container.innerHTML = html;
+    try {
+        // 从班组出勤获取该班组的实到人数
+        const attendance = await getAttendance(date, team);
+        renderAreaAttendance(attendance, 'areaAttendanceTable', team);
+    } catch(e) {
+        renderAreaAttendance([], 'areaAttendanceTable', team);
+    }
 }
 
+function renderAreaAttendance(data, tableId, team) {
+    const container = document.getElementById(tableId);
+    const map = {};
+    data.forEach(d => map[d.WorkerType] = d);
+
+    // 从 localStorage 读取已保存的区域分配数据
+    const savedKey = `area_distribution_${document.getElementById('attAreaDate').value}_${team}`;
+    const savedData = JSON.parse(localStorage.getItem(savedKey) || '{}');
+
+    let html = `<div style="margin-bottom:10px;font-size:13px;color:#666;">
+        <strong>👷 ${team}</strong> 各工种实到人数分配
+    </div>`;
+    html += `<table><thead><tr>
+        <th style="min-width:60px;">序号</th>
+        <th style="min-width:80px;">工种</th>
+        <th style="min-width:60px;">实到</th>
+        <th style="min-width:60px;">110</th>
+        <th style="min-width:60px;">210</th>
+        <th style="min-width:60px;">220</th>
+        <th style="min-width:60px;">240</th>
+        <th style="min-width:60px;">320</th>
+        <th style="min-width:60px;">330</th>
+        <th style="min-width:60px;">400</th>
+        <th style="min-width:60px;">800</th>
+        <th style="min-width:60px;">PC1</th>
+        <th style="min-width:60px;">PC2</th>
+        <th style="min-width:60px;">合计</th>
+        <th style="min-width:60px;">差值</th>
+    </tr></thead><tbody>`;
+
+    let grandTotal = 0;
+    let grandDistributed = 0;
+    let rowIndex = 0;
+
+    WORKER_TYPES_ATT.forEach(type => {
+        const row = map[type] || { Total: 0, Present: 0, Foreign: 0, Chinese: 0, ChinesePresent: 0, Remark: '' };
+        // 实到人数 = 中国实到 + 外籍实到
+        const present = (row.ChinesePresent || row.Chinese || 0) + (row.ForeignPresent || row.Foreign || 0);
+        const total = row.Total || 0;
+        
+        // 如果实到为0，跳过
+        if (present === 0 && total === 0) return;
+
+        rowIndex++;
+        const rowKey = `${type}`;
+        const savedRow = savedData[rowKey] || {};
+        
+        // 计算各区域分配值
+        let rowTotal = 0;
+        let areaValues = {};
+        AREA_LIST.forEach(area => {
+            const val = parseInt(savedRow[area]) || 0;
+            areaValues[area] = val;
+            rowTotal += val;
+        });
+        
+        const diff = present - rowTotal;
+
+        grandTotal += present;
+        grandDistributed += rowTotal;
+
+        html += `<tr>
+            <td>${rowIndex}</td>
+            <td><strong>${type}</strong></td>
+            <td style="font-weight:bold;color:#1565c0;">${present}</td>`;
+        
+        AREA_LIST.forEach(area => {
+            html += `<td><input type="number" class="att-input area-input" 
+                data-type="${type}" data-area="${area}" 
+                value="${areaValues[area] || 0}" 
+                min="0" style="width:50px;" 
+                onchange="updateAreaTotal(this)"></td>`;
+        });
+        
+        html += `<td style="font-weight:bold;color:#1565c0;" class="row-total-${type}">${rowTotal}</td>
+            <td style="color:${diff !== 0 ? '#c62828' : '#4caf50'};font-weight:bold;" class="row-diff-${type}">${diff}</td>
+        </tr>`;
+    });
+
+    // 合计行
+    const totalDiff = grandTotal - grandDistributed;
+    html += `<tr style="font-weight:bold;background:#f5f5f5;">
+        <td colspan="3">合计</td>`;
+    AREA_LIST.forEach(area => {
+        html += `<td id="area-total-${area}">0</td>`;
+    });
+    html += `<td style="color:#1565c0;" id="grand-distributed">${grandDistributed}</td>
+        <td style="color:${totalDiff !== 0 ? '#c62828' : '#4caf50'}" id="grand-diff">${totalDiff}</td>
+    </tr>`;
+
+    html += '</tbody></table>';
+    
+    // 添加说明
+    html += `<div style="margin-top:10px;font-size:12px;color:#999;">
+        💡 提示：分配人数总和应等于"实到"人数。差额为0时表示分配完成。
+    </div>`;
+    
+    container.innerHTML = html;
+
+    // 更新各区域合计
+    updateAreaTotals();
+}
+
+// 更新区域合计
+function updateAreaTotals() {
+    AREA_LIST.forEach(area => {
+        const inputs = document.querySelectorAll(`.area-input[data-area="${area}"]`);
+        let total = 0;
+        inputs.forEach(inp => { total += parseInt(inp.value) || 0; });
+        const el = document.getElementById(`area-total-${area}`);
+        if (el) el.textContent = total;
+    });
+}
+
+// 单行变化时更新
+function updateAreaTotal(el) {
+    const type = el.dataset.type;
+    const inputs = document.querySelectorAll(`.area-input[data-type="${type}"]`);
+    let rowTotal = 0;
+    inputs.forEach(inp => { rowTotal += parseInt(inp.value) || 0; });
+    
+    const totalEl = document.querySelector(`.row-total-${type}`);
+    const diffEl = document.querySelector(`.row-diff-${type}`);
+    const present = parseInt(document.querySelector(`#teamAttendanceTable .att-input[data-type="${type}"][data-field="chinesePresent"]`)?.value) || 0;
+    const foreignPresent = parseInt(document.querySelector(`#teamAttendanceTable .att-input[data-type="${type}"][data-field="foreignPresent"]`)?.value) || 0;
+    const totalPresent = present + foreignPresent;
+    
+    if (totalEl) totalEl.textContent = rowTotal;
+    if (diffEl) {
+        const diff = totalPresent - rowTotal;
+        diffEl.textContent = diff;
+        diffEl.style.color = diff !== 0 ? '#c62828' : '#4caf50';
+    }
+    
+    // 更新各区域合计
+    updateAreaTotals();
+    
+    // 更新总计
+    updateGrandTotals();
+}
+
+// 更新总计
+function updateGrandTotals() {
+    let grandDistributed = 0;
+    AREA_LIST.forEach(area => {
+        const inputs = document.querySelectorAll(`.area-input[data-area="${area}"]`);
+        let total = 0;
+        inputs.forEach(inp => { total += parseInt(inp.value) || 0; });
+        grandDistributed += total;
+    });
+    
+    // 计算总实到
+    let grandTotal = 0;
+    WORKER_TYPES_ATT.forEach(type => {
+        const present = parseInt(document.querySelector(`#teamAttendanceTable .att-input[data-type="${type}"][data-field="chinesePresent"]`)?.value) || 0;
+        const foreignPresent = parseInt(document.querySelector(`#teamAttendanceTable .att-input[data-type="${type}"][data-field="foreignPresent"]`)?.value) || 0;
+        grandTotal += (present + foreignPresent);
+    });
+    
+    const grandDistributedEl = document.getElementById('grand-distributed');
+    const grandDiffEl = document.getElementById('grand-diff');
+    if (grandDistributedEl) grandDistributedEl.textContent = grandDistributed;
+    if (grandDiffEl) {
+        const diff = grandTotal - grandDistributed;
+        grandDiffEl.textContent = diff;
+        grandDiffEl.style.color = diff !== 0 ? '#c62828' : '#4caf50';
+    }
+}
+
+// 保存区域分配
 async function saveAreaAttendance() {
-    showToast('📊 区域出勤数据来自施工员录入，请到"施工员录入"提交');
+    const date = document.getElementById('attAreaDate').value;
+    const team = document.getElementById('attAreaTeamSelect').value;
+    if (!date || !team) { showToast('❌ 请选择日期和班组'); return; }
+
+    const savedKey = `area_distribution_${date}_${team}`;
+    const distribution = {};
+    
+    document.querySelectorAll('.area-input').forEach(inp => {
+        const type = inp.dataset.type;
+        const area = inp.dataset.area;
+        const val = parseInt(inp.value) || 0;
+        if (!distribution[type]) distribution[type] = {};
+        distribution[type][area] = val;
+    });
+
+    localStorage.setItem(savedKey, JSON.stringify(distribution));
+    showToast('✅ 区域分配已保存！');
     loadAreaAttendance();
 }
 
