@@ -119,7 +119,7 @@
         <input type="password" id="loginPassword" placeholder="密码" value="142857jj">
         <button class="btn btn-primary" onclick="handleLogin()">🔑 登录</button>
         <div id="loginMessage" class="login-message"></div>
-        <p style="text-align:center;font-size:11px;color:#b0bec5;margin-top:16px;">☁️ Vercel KV 云端版</p>
+        <p style="text-align:center;font-size:11px;color:#b0bec5;margin-top:16px;">☁️ Neon 云端版</p>
     </div>
 </div>
 
@@ -127,7 +127,7 @@
 <div id="mainApp" style="display:none;">
     <div class="container">
         <div class="header">
-            <h1 id="appTitle">🏗️ 施工日报填报系统 <span class="cloud-badge">☁️ Vercel KV</span></h1>
+            <h1 id="appTitle">🏗️ 施工日报填报系统 <span class="cloud-badge">☁️ Neon</span></h1>
             <div class="header-right">
                 <div class="lang-toggle">
                     <button class="lang-btn active" onclick="setLang('zh')">中文</button>
@@ -492,7 +492,7 @@
 
 <script>
 // ============================================================
-//  API 配置（Vercel KV）
+//  API 配置（Neon）
 // ============================================================
 const API_URL = '/api/reports';
 const ATTENDANCE_API = '/api/attendance';
@@ -524,7 +524,7 @@ const USERS = {
 };
 
 // ============================================================
-//  工作字典（完整版 106 条）
+//  工作字典
 // ============================================================
 const WORK_DICT = {
     "无收入项": {
@@ -875,7 +875,7 @@ function updateLoginUI() {
 }
 
 function updateUI() {
-    document.getElementById('appTitle').innerHTML = t('appTitle') + ' <span class="cloud-badge">☁️ Vercel KV</span>';
+    document.getElementById('appTitle').innerHTML = t('appTitle') + ' <span class="cloud-badge">☁️ Neon</span>';
     document.querySelectorAll('[data-i18n]').forEach(el => {
         el.textContent = t(el.dataset.i18n);
     });
@@ -1006,7 +1006,6 @@ function switchTab(tab) {
     document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
     document.getElementById(`tab-${tab}`).classList.add('active');
 
-    // ✅ 切换时自动刷新对应数据
     if (tab === 'entry') {
         renderPending();
         loadAttendance();
@@ -1125,7 +1124,6 @@ function addToPending() {
     renderPending();
     showToast('✅ 已添加到待提交列表');
 
-    // 清空输入
     document.getElementById('entryTag').value = '';
     document.getElementById('entryQty').value = '0';
     document.getElementById('entryPipe').value = '0';
@@ -1167,10 +1165,14 @@ function addNoWork() {
     showToast('✅ 已标记 ' + area + ' 今日无作业');
 }
 
+// ============================================================
+//  🔥 renderPending - 强制刷新待提交列表
+// ============================================================
 function renderPending() {
     const container = document.getElementById('pendingItems');
     const countEl = document.getElementById('pendingCount');
 
+    // ✅ 强制清空
     container.innerHTML = '';
     countEl.textContent = pendingItems.length;
 
