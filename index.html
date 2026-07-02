@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>施工日报系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f0f4f8; padding: 20px; }
@@ -16,7 +17,7 @@
         label { display: block; font-weight: 600; margin-bottom: 4px; color: #333; font-size: 14px; }
         input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .btn { padding: 12px 24px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; }
+        .btn { padding: 12px 24px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.2s; }
         .btn-success { background: #4caf50; color: white; width: 100%; }
         .btn-success:disabled { background: #a5d6a7; cursor: not-allowed; }
         .btn-primary { background: #4a90d9; color: white; }
@@ -36,13 +37,16 @@
         .stat-label { font-size: 13px; color: #666; }
         .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 2px solid #e8edf4; }
         .user-info { font-weight: 600; color: #1a237e; }
-        .toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; background: #323232; color: white; border-radius: 8px; z-index: 9999; animation: fadeIn 0.3s; }
-        .toast.error { background: #c62828; }
+        .toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; border-radius: 8px; z-index: 9999; animation: fadeIn 0.3s; }
+        .toast.success { background: #2e7d32; color: white; }
+        .toast.error { background: #c62828; color: white; }
+        .toast.info { background: #323232; color: white; }
         .area-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; background: #e3f2fd; color: #1565c0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
         .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 8px; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .online-count { font-size: 12px; color: #666; margin-left: 10px; }
     </style>
 </head>
 <body>
@@ -130,17 +134,20 @@
 // ============================================================
 //  Supabase 配置
 // ============================================================
-const SUPABASE_URL = 'https://swjddrwgkhwrsrbfxavz.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3amRkcndna2h3cnNyYmZ4YXZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMDU5ODYsImV4cCI6MjA5ODU4MTk4Nn0.edvme3sRhGEuus_d6jOAwG5jUvmG6ai43pUE3CpbFTw';
+const supabaseUrl = 'https://swjddrwgkhwrsrbfxavz.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3amRkcndna2h3cnNyYmZ4YXZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMDU5ODYsImV4cCI6MjA5ODU4MTk4Nn0.edvme3sRhGEuus_d6jOAwG5jUvmG6ai43pUE3CpbFTw';
+
+// 初始化 Supabase 客户端
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 // ============================================================
-//  工具：显示提示
+//  工具函数
 // ============================================================
-function showToast(msg, isError = false) {
+function showToast(msg, type = 'info') {
     const old = document.querySelector('.toast');
     if (old) old.remove();
     const toast = document.createElement('div');
-    toast.className = 'toast' + (isError ? ' error' : '');
+    toast.className = 'toast ' + type;
     toast.textContent = msg;
     document.body.appendChild(toast);
     setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 500); }, 4000);
@@ -153,66 +160,6 @@ function setStatus(msg, type = '') {
 }
 
 // ============================================================
-//  Supabase 操作（带重试）
-// ============================================================
-async function supabaseFetch(path, options = {}, retries = 2) {
-    const url = `${SUPABASE_URL}/rest/v1/${path}`;
-    const headers = {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json'
-    };
-    
-    for (let i = 0; i <= retries; i++) {
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15秒超时
-            
-            const response = await fetch(url, { 
-                ...options, 
-                headers,
-                signal: controller.signal 
-            });
-            clearTimeout(timeoutId);
-            
-            if (!response.ok) {
-                const text = await response.text();
-                throw new Error(`HTTP ${response.status}: ${text}`);
-            }
-            
-            // 检查响应是否为空
-            const text = await response.text();
-            if (!text || text.trim() === '') {
-                return [];
-            }
-            
-            return JSON.parse(text);
-        } catch (err) {
-            if (i === retries) {
-                throw err;
-            }
-            // 等待后重试
-            await new Promise(r => setTimeout(r, 1000 * (i + 1)));
-        }
-    }
-}
-
-async function getReports(date) {
-    let url = 'reports?select=*&order=id.desc';
-    if (date) {
-        url += `&date=eq.${date}`;
-    }
-    return supabaseFetch(url);
-}
-
-async function addReport(data) {
-    return supabaseFetch('reports', {
-        method: 'POST',
-        body: JSON.stringify(data)
-    });
-}
-
-// ============================================================
 //  用户
 // ============================================================
 const USERS = {
@@ -222,6 +169,7 @@ const USERS = {
 };
 
 let currentUser = null;
+let isSubmitting = false;
 
 // ============================================================
 //  登录
@@ -261,10 +209,8 @@ function logout() {
 }
 
 // ============================================================
-//  提交（带防重复点击）
+//  提交日报
 // ============================================================
-let isSubmitting = false;
-
 async function submitReport() {
     if (isSubmitting) return;
     
@@ -277,13 +223,12 @@ async function submitReport() {
     const manhours = parseFloat(document.getElementById('reportManhours').value) || 0;
     const foreign = parseInt(document.getElementById('reportForeign').value) || 0;
     
-    if (!date) { showToast('请选择日期', true); return; }
+    if (!date) { showToast('请选择日期', 'error'); return; }
     if (qty === 0 && manpower === 0 && manhours === 0) {
-        showToast('请至少填写完成量、人数或工时', true);
+        showToast('请至少填写完成量、人数或工时', 'error');
         return;
     }
     
-    // 禁用按钮
     isSubmitting = true;
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
@@ -291,25 +236,34 @@ async function submitReport() {
     setStatus('⏳ 正在提交...', 'loading');
     
     try {
-        await addReport({
-            date, area, team, description: desc,
-            qty, manpower, manhours, foreign_count: foreign,
-            created_by: currentUser,
-            created_at: new Date().toISOString()
-        });
+        const { data, error } = await supabase
+            .from('reports')
+            .insert([{
+                date: date,
+                area: area,
+                team: team,
+                description: desc,
+                qty: qty,
+                manpower: manpower,
+                manhours: manhours,
+                foreign_count: foreign,
+                created_by: currentUser,
+                created_at: new Date().toISOString()
+            }]);
         
-        showToast('✅ 提交成功！');
-        setStatus('✅ 提交成功', '');
+        if (error) throw error;
         
-        // 清空
+        showToast('✅ 提交成功！', 'success');
+        setStatus('✅ 提交成功');
+        
         document.getElementById('reportDesc').value = '';
         document.getElementById('reportQty').value = '0';
         document.getElementById('reportManpower').value = '0';
         document.getElementById('reportManhours').value = '0';
         document.getElementById('reportForeign').value = '0';
         loadReports();
-    } catch(err) {
-        showToast('❌ 提交失败: ' + err.message, true);
+    } catch (err) {
+        showToast('❌ 提交失败: ' + err.message, 'error');
         setStatus('❌ 提交失败', 'error');
         console.error(err);
     }
@@ -320,7 +274,7 @@ async function submitReport() {
 }
 
 // ============================================================
-//  查看
+//  查看日报
 // ============================================================
 async function loadReports() {
     const date = document.getElementById('viewDate').value;
@@ -331,10 +285,17 @@ async function loadReports() {
     table.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">⏳ 加载中...</p>';
     
     try {
-        const data = await getReports(date);
+        const { data, error } = await supabase
+            .from('reports')
+            .select('*')
+            .eq('date', date)
+            .order('id', { ascending: false });
+        
+        if (error) throw error;
+        
         if (!data || data.length === 0) {
             table.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">📭 暂无数据</p>';
-            setStatus('📭 暂无数据', '');
+            setStatus('📭 暂无数据');
             return;
         }
         
@@ -377,7 +338,7 @@ async function loadReports() {
         html += '</tbody></table>';
         table.innerHTML = html;
         setStatus(`✅ 找到 ${data.length} 条记录`);
-    } catch(err) {
+    } catch (err) {
         table.innerHTML = '<p style="color:#e53935;padding:20px;text-align:center;">❌ 加载失败: ' + err.message + '</p>';
         setStatus('❌ 加载失败', 'error');
         console.error(err);
@@ -385,33 +346,38 @@ async function loadReports() {
 }
 
 // ============================================================
-//  汇总
+//  汇总统计
 // ============================================================
 async function loadStats() {
     const start = document.getElementById('statsStart').value;
     const end = document.getElementById('statsEnd').value;
-    if (!start || !end) { showToast('请选择日期范围', true); return; }
+    if (!start || !end) { showToast('请选择日期范围', 'error'); return; }
     
     setStatus('⏳ 生成汇总...', 'loading');
     const container = document.getElementById('statsContent');
     container.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">⏳ 生成中...</p>';
     
     try {
-        const all = await getReports();
-        const filtered = all.filter(r => r.date >= start && r.date <= end);
+        const { data, error } = await supabase
+            .from('reports')
+            .select('*')
+            .gte('date', start)
+            .lte('date', end);
         
-        if (filtered.length === 0) {
+        if (error) throw error;
+        
+        if (!data || data.length === 0) {
             container.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">📭 暂无数据</p>';
-            setStatus('📭 暂无数据', '');
+            setStatus('📭 暂无数据');
             return;
         }
         
-        const totalQty = filtered.reduce((s, r) => s + (r.qty || 0), 0);
-        const totalManpower = filtered.reduce((s, r) => s + (r.manpower || 0), 0);
-        const totalManhours = filtered.reduce((s, r) => s + (r.manhours || 0), 0);
+        const totalQty = data.reduce((s, r) => s + (r.qty || 0), 0);
+        const totalManpower = data.reduce((s, r) => s + (r.manpower || 0), 0);
+        const totalManhours = data.reduce((s, r) => s + (r.manhours || 0), 0);
         
         const areaStats = {};
-        filtered.forEach(r => {
+        data.forEach(r => {
             if (!areaStats[r.area]) areaStats[r.area] = { qty: 0, manpower: 0, manhours: 0, count: 0 };
             areaStats[r.area].qty += r.qty || 0;
             areaStats[r.area].manpower += r.manpower || 0;
@@ -421,7 +387,7 @@ async function loadStats() {
         
         let html = `
             <div class="stats-grid">
-                <div class="stat-card"><div class="stat-number">${filtered.length}</div><div class="stat-label">📋 总记录</div></div>
+                <div class="stat-card"><div class="stat-number">${data.length}</div><div class="stat-label">📋 总记录</div></div>
                 <div class="stat-card"><div class="stat-number">${totalQty}</div><div class="stat-label">📊 总完成量</div></div>
                 <div class="stat-card"><div class="stat-number">${totalManpower}</div><div class="stat-label">👷 总人数</div></div>
                 <div class="stat-card"><div class="stat-number">${totalManhours.toFixed(1)}</div><div class="stat-label">⏱️ 总工时</div></div>
@@ -435,8 +401,8 @@ async function loadStats() {
         });
         html += '</tbody></table>';
         container.innerHTML = html;
-        setStatus(`✅ 汇总完成，${filtered.length} 条记录`);
-    } catch(err) {
+        setStatus(`✅ 汇总完成，${data.length} 条记录`);
+    } catch (err) {
         container.innerHTML = '<p style="color:#e53935;padding:20px;text-align:center;">❌ 汇总失败: ' + err.message + '</p>';
         setStatus('❌ 汇总失败', 'error');
         console.error(err);
