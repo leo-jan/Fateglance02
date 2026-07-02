@@ -220,107 +220,117 @@
                 <!-- 保持原来的施工员录入内容不变 -->
                 <h3 data-i18n="entryTitle">📝 施工员录入</h3>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label data-i18n="date">📅 日期</label>
-                        <input type="date" id="entryDate">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="area">📍 区域</label>
-                        <select id="entryArea">
-                            <option value="110">110</option>
-                            <option value="210">210</option>
-                            <option value="220">220</option>
-                            <option value="240">240</option>
-                            <option value="320">320</option>
-                            <option value="330">330</option>
-                            <option value="400">400</option>
-                            <option value="800">800</option>
-                            <option value="precast yard 1">precast yard 1</option>
-                            <option value="precast yard 2">precast yard 2</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="team">👷 班组</label>
-                        <select id="entryTeam">
-                            <option value="马玉奇(Ma Yuqi)">马玉奇</option>
-                            <option value="王建(Wang Jian)">王建</option>
-                            <option value="Kumar">Kumar</option>
-                            <option value="郭传海(Guo Chuanhai)">郭传海</option>
-                            <option value="曹桂龙(Cao Guilong)">曹桂龙</option>
-                            <option value="陈传军(Chen Chuanjun)">陈传军</option>
-                            <option value="王世杰(Wang Shijie)">王世杰</option>
-                            <option value="Sheharyar">Sheharyar</option>
-                            <option value="Anwar">Anwar</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>🏷️ 位号</label>
-                        <input type="text" id="entryTag" placeholder="输入位号">
-                    </div>
+                  <div class="form-group">
+                    <label data-i18n="date">📅 日期</label>
+                    <input type="date" id="entryDate">
+                  </div>
+                  <div class="form-group">
+                    <label data-i18n="area">📍 区域</label>
+                    <select id="entryArea">
+                      <option value="110">110</option>
+                      <option value="210">210</option>
+                      <option value="220">220</option>
+                      <option value="240">240</option>
+                      <option value="320">320</option>
+                      <option value="330">330</option>
+                      <option value="400">400</option>
+                      <option value="800">800</option>
+                      <option value="precast yard 1">precast yard 1</option>
+                      <option value="precast yard 2">precast yard 2</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label data-i18n="team">👷 班组</label>
+                    <select id="entryTeam">
+                      <option value="马玉奇(Ma Yuqi)">马玉奇</option>
+                      <option value="王建(Wang Jian)">王建</option>
+                      <option value="Kumar">Kumar</option>
+                      <option value="郭传海(Guo Chuanhai)">郭传海</option>
+                      <option value="曹桂龙(Cao Guilong)">曹桂龙</option>
+                      <option value="陈传军(Chen Chuanjun)">陈传军</option>
+                      <option value="王世杰(Wang Shijie)">王世杰</option>
+                      <option value="Sheharyar">Sheharyar</option>
+                      <option value="Anwar">Anwar</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>🏷️ 位号</label>
+                    <input type="text" id="entryTag" placeholder="输入位号">
+                  </div>
                 </div>
 
                 <div style="font-weight:600;font-size:15px;color:#1a237e;margin-top:15px;" data-i18n="work_desc">🛠️ 工作内容</div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label data-i18n="sub_item">分部分项</label>
-                        <select id="entryCategory" onchange="onCategoryChange()"></select>
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="work_content">工作内容</label>
-                        <select id="entrySubItem" onchange="onSubItemChange()"></select>
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="code">编号</label>
-                        <input type="text" id="entryCode" disabled>
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="unit">单位</label>
-                        <input type="text" id="entryUnit" disabled>
-                    </div>
+                  <div class="form-group">
+                    <label data-i18n="sub_item">分部分项</label>
+                    <select id="entryCategory" onchange="onCategoryChange()"></select>
+                  </div>
+                  <div class="form-group">
+                    <label data-i18n="work_content">工作内容</label>
+                    <select id="entrySubItem" onchange="onSubItemChange()"></select>
+                  </div>
+                  <div class="form-group">
+                    <label data-i18n="code">编号</label>
+                    <input type="text" id="entryCode" disabled>
+                  </div>
+                  <div class="form-group">
+                    <label data-i18n="unit">单位</label>
+                    <input type="text" id="entryUnit" disabled>
+                  </div>
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group">
-                        <label data-i18n="qty">📊 完成量</label>
-                        <input type="number" id="entryQty" value="0" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="pipe_length">📏 地管长度 (m)</label>
-                        <input type="number" id="entryPipe" value="0" step="0.1">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="manpower">👷 人数</label>
-                        <input type="number" id="entryManpower" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="manhours">⏱️ 工时</label>
-                        <input type="number" id="entryManhours" value="0" step="0.5">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="non_chinese">🌍 外籍</label>
-                        <input type="number" id="entryForeign" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="remark">📝 备注</label>
-                        <input type="text" id="entryRemark" placeholder="备注">
-                    </div>
+                  <div class="form-group">
+                    <label data-i18n="qty">📊 完成量</label>
+                    <input type="number" id="entryQty" value="0" step="0.1">
+                  </div>
+                  <div class="form-group">
+                    <label data-i18n="pipe_length">📏 地管长度 (m)</label>
+                    <input type="number" id="entryPipe" value="0" step="0.1">
+                  </div>
+                  <div class="form-group">
+                    <label data-i18n="manpower">👷 人数</label>
+                    <input type="number" id="entryManpower" value="0">
+                  </div>
+                  <div class="form-group">
+                    <label data-i18n="manhours">⏱️ 工时</label>
+                    <input type="number" id="entryManhours" value="0" step="0.5">
+                  </div>
+                  <div class="form-group">
+                    <label data-i18n="non_chinese">🌍 外籍</label>
+                    <input type="number" id="entryForeign" value="0">
+                  </div>
+                  <div class="form-group">
+                    <label data-i18n="remark">📝 备注</label>
+                    <input type="text" id="entryRemark" placeholder="备注">
+                  </div>
                 </div>
 
                 <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
-                    <button class="btn btn-primary" onclick="addToPending()" data-i18n="add_btn">➕ 添加到待提交列表</button>
-                    <button class="btn btn-secondary" onclick="addNoWork()" data-i18n="no_work_btn">🚫 今日无作业</button>
+                  <button class="btn btn-primary" onclick="addToPending()" data-i18n="add_btn">➕ 添加到待提交列表</button>
+                  <button class="btn btn-secondary" onclick="addNoWork()" data-i18n="no_work_btn">🚫 今日无作业</button>
                 </div>
 
                 <div id="pendingList" style="margin-top:30px;">
-                    <h3 data-i18n="pending_title">📋 待提交列表 (<span id="pendingCount">0</span> 项)</h3>
-                    <div id="pendingItems"></div>
-                    <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
-                        <button class="btn btn-success" onclick="submitAll()" data-i18n="submit_btn">🚀 提交所有记录</button>
-                        <button class="btn btn-danger" onclick="clearPending()" data-i18n="clear_pending">🗑️ 清空列表</button>
-                    </div>
+                  <h3 data-i18n="pending_title">📋 待提交列表 (<span id="pendingCount">0</span> 项)</h3>
+                  <div id="pendingItems"></div>
+                  <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+                    <button class="btn btn-success" onclick="submitAll()" data-i18n="submit_btn">🚀 提交所有记录</button>
+                    <button class="btn btn-danger" onclick="clearPending()" data-i18n="clear_pending">🗑️ 清空列表</button>
+                  </div>
+                </div>
+
+                <!-- ===== 今日已提交数据 ===== -->
+                <hr class="section-divider">
+                <div id="todaySubmittedData" style="margin-top:20px;">
+                  <h3>📋 今日已提交数据</h3>
+                  <div style="display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
+                    <button class="btn btn-secondary" onclick="loadTodaySubmitted()">🔄 刷新</button>
+                    <span style="font-size:13px;color:#666;line-height:36px;">📅 日期：<span id="todaySubmittedDate"></span></span>
+                  </div>
+                  <div id="todaySubmittedTable" class="table-container"></div>
                 </div>
             </div>
-
             <!-- ===== 子Tab: 核对结果 ===== -->
             <div id="subtab-verify_sub" class="sub-tab-content hidden">
                 <h3 data-i18n="verifyTitle">✅ 工时与出勤核对</h3>
@@ -1359,45 +1369,49 @@ function switchTab(tab) {
 }
 
 function switchSubTab(subtab) {
-    document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.sub-tab-content').forEach(c => c.classList.add('hidden'));
-    document.querySelector(`.sub-tab-btn[data-subtab="${subtab}"]`).classList.add('active');
-    document.getElementById(`subtab-${subtab}`).classList.remove('hidden');
+  document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.sub-tab-content').forEach(c => c.classList.add('hidden'));
+  document.querySelector(`.sub-tab-btn[data-subtab="${subtab}"]`).classList.add('active');
+  document.getElementById(`subtab-${subtab}`).classList.remove('hidden');
 
-    if (subtab === 'attendance_team') {
-        loadTeamAttendance();
-    }
-    if (subtab === 'attendance_area') {
-        loadAreaAttendance();
-    }
-    if (subtab === 'entry_sub') {
-        renderPending();
-    }
-    if (subtab === 'verify_sub') {
-        loadVerification();
-    }
+  if (subtab === 'attendance_team') {
+    loadTeamAttendance();
+  }
+  if (subtab === 'attendance_area') {
+    loadAreaAttendance();
+  }
+  if (subtab === 'entry_sub') {
+    renderPending();
+    loadTodaySubmitted();  // ✅ 加载今日已提交数据
+  }
+  if (subtab === 'verify_sub') {
+    loadVerification();
+  }
 }
-
 // ============================================================
 //  初始化
 // ============================================================
 function initApp() {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('entryDate').value = today;
-    document.getElementById('attTeamDate').value = today;
-    document.getElementById('attAreaDate').value = today;
-    document.getElementById('overviewDate').value = today;
-    document.getElementById('verifyDate').value = today;
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('entryDate').value = today;
+  document.getElementById('attTeamDate').value = today;
+  document.getElementById('attAreaDate').value = today;
+  document.getElementById('overviewDate').value = today;
+  document.getElementById('verifyDate').value = today;
 
-    setTimeout(function() { onCategoryChange(); }, 100);
-    loadPending();
-    loadTeamAttendance();
-    loadAreaAttendance();
-    loadOverview();
-    loadUserList();
-    loadVerification();
+  setTimeout(function() { onCategoryChange(); }, 100);
+  loadPending();
+  loadTeamAttendance();
+  loadAreaAttendance();
+  loadOverview();
+  loadUserList();
+  loadVerification();
+
+  // ✅ 加载今日已提交数据
+  setTimeout(function() {
+    loadTodaySubmitted();
+  }, 500);
 }
-
 // ============================================================
 //  工作字典联动
 // ============================================================
@@ -1601,36 +1615,117 @@ function loadPending() {
 }
 
 async function submitAll() {
-    if (pendingItems.length === 0) { showToast('❌ 没有待提交的记录'); return; }
-    if (!confirm(t('confirmSubmit').replace('{count}', pendingItems.length))) return;
-    let successCount = 0;
-    for (const item of pendingItems) {
-        try {
-            await addReport({
-                Date: item.Date || item.date,
-                Area: item.Area || item.area,
-                Team: item.Team || item.team,
-                Tag: item.Tag || item.tag || 'N/A',
-                Code: item.Code || item.code || '',
-                Category: item.Category || item.category || '',
-                Description: item.Description || item.description || '',
-                Unit: item.Unit || item.unit || '',
-                Qty: item.Qty || item.qty || 0,
-                PipeLength: item.PipeLength || item.pipeLength || 0,
-                Manpower: item.Manpower || item.manpower || 0,
-                Manhours: item.Manhours || item.manhours || 0,
-                Foreign: item.Foreign || item.foreign || 0,
-                Remark: item.Remark || item.remark || '',
-                CreatedBy: currentUser || 'unknown'
-            });
-            successCount++;
-        } catch(e) { console.error(e); }
+  if (pendingItems.length === 0) { showToast('❌ 没有待提交的记录'); return; }
+  if (!confirm(t('confirmSubmit').replace('{count}', pendingItems.length))) return;
+  let successCount = 0;
+  for (const item of pendingItems) {
+    try {
+      await addReport({
+        Date: item.Date || item.date,
+        Area: item.Area || item.area,
+        Team: item.Team || item.team,
+        Tag: item.Tag || item.tag || 'N/A',
+        Code: item.Code || item.code || '',
+        Category: item.Category || item.category || '',
+        Description: item.Description || item.description || '',
+        Unit: item.Unit || item.unit || '',
+        Qty: item.Qty || item.qty || 0,
+        PipeLength: item.PipeLength || item.pipeLength || 0,
+        Manpower: item.Manpower || item.manpower || 0,
+        Manhours: item.Manhours || item.manhours || 0,
+        Foreign: item.Foreign || item.foreign || 0,
+        Remark: item.Remark || item.remark || '',
+        CreatedBy: currentUser || 'unknown'
+      });
+      successCount++;
+    } catch(e) { console.error(e); }
+  }
+  pendingItems = [];
+  localStorage.removeItem('pending_items');
+  renderPending();
+  loadOverview();
+  loadTodaySubmitted();  // ✅ 刷新今日已提交数据
+  showToast(t('successSubmit').replace('{count}', successCount));
+}
+
+// ============================================================
+//  今日已提交数据
+// ============================================================
+async function loadTodaySubmitted() {
+  const date = document.getElementById('entryDate').value;
+
+  if (!date) {
+    showToast('⚠️ 请先选择日期');
+    return;
+  }
+
+  document.getElementById('todaySubmittedDate').textContent = date;
+
+  try {
+    const data = await getReports(date);
+    const container = document.getElementById('todaySubmittedTable');
+
+    if (data.length === 0) {
+      container.innerHTML = 
+        '<div style="padding:30px;text-align:center;color:#999;background:#f9f9f9;border-radius:8px;">' +
+          '📭 今日暂无已提交的数据' +
+        '</div>';
+      return;
     }
-    pendingItems = [];
-    localStorage.removeItem('pending_items');
-    renderPending();
-    loadOverview();
-    showToast(t('successSubmit').replace('{count}', successCount));
+
+    let html = '';
+    html += '<p style="color:#666;margin-bottom:10px;">✅ 共 ' + data.length + ' 条已提交记录</p>';
+    html += '<table>';
+    html += '<thead><tr>';
+    html += '<th style="min-width:60px;">序号</th>';
+    html += '<th style="min-width:80px;">区域</th>';
+    html += '<th style="min-width:100px;">班组</th>';
+    html += '<th style="min-width:120px;">工作描述</th>';
+    html += '<th style="min-width:50px;">完成量</th>';
+    html += '<th style="min-width:50px;">人数</th>';
+    html += '<th style="min-width:60px;">工时</th>';
+    html += '<th style="min-width:60px;">外籍</th>';
+    html += '<th style="min-width:100px;">录入人</th>';
+    html += '<th style="min-width:60px;">备注</th>';
+    html += '</tr></thead>';
+    html += '<tbody>';
+
+    let index = 1;
+    data.forEach(function(item) {
+      var creator = item.created_by || '未知';
+      var displayName = USERS[creator]?.display_name || creator;
+
+      html += '<tr>';
+      html += '<td>' + (index++) + '</td>';
+      html += '<td>' + (item.area || '') + '</td>';
+      html += '<td>' + (item.team || '') + '</td>';
+      html += '<td>' + ((item.description || '').substring(0, 25) + ((item.description || '').length > 25 ? '...' : '')) + '</td>';
+      html += '<td>' + (item.qty || 0) + '</td>';
+      html += '<td>' + (item.manpower || 0) + '</td>';
+      html += '<td>' + (item.manhours || 0) + '</td>';
+      html += '<td>' + (item.non_chinese || 0) + '</td>';
+      html += '<td><span style="background:#e3f2fd;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:500;color:#1565c0;">' + displayName + '</span></td>';
+      html += '<td>' + (item.remark || '') + '</td>';
+      html += '</tr>';
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+
+  } catch (error) {
+    console.error('加载今日已提交数据失败:', error);
+    document.getElementById('todaySubmittedTable').innerHTML =
+      '<div style="padding:20px;text-align:center;color:#c62828;">' +
+        '❌ 加载失败，请重试' +
+      '</div>';
+  }
+}
+
+function refreshTodaySubmitted() {
+  var entrySub = document.getElementById('subtab-entry_sub');
+  if (!entrySub.classList.contains('hidden')) {
+    loadTodaySubmitted();
+  }
 }
 
 // ============================================================
@@ -1818,21 +1913,29 @@ setInterval(function() {
 }, 30000);
 
 document.addEventListener('DOMContentLoaded', function() {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('entryDate').value = today;
-    document.getElementById('attTeamDate').value = today;
-    document.getElementById('attAreaDate').value = today;
-    document.getElementById('overviewDate').value = today;
-    document.getElementById('verifyDate').value = today;
-    initApp();
-    document.getElementById('attTeamDate').addEventListener('change', loadTeamAttendance);
-    document.getElementById('attTeamSelect').addEventListener('change', loadTeamAttendance);
-    document.getElementById('attAreaDate').addEventListener('change', loadAreaAttendance);
-    document.getElementById('attAreaSelect').addEventListener('change', loadAreaAttendance);
-    document.getElementById('overviewDate').addEventListener('change', loadOverview);
-    document.getElementById('verifyDate').addEventListener('change', loadVerification);
-    document.getElementById('verifyTeam').addEventListener('change', loadVerification);
-    updateLoginUI();
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('entryDate').value = today;
+  document.getElementById('attTeamDate').value = today;
+  document.getElementById('attAreaDate').value = today;
+  document.getElementById('overviewDate').value = today;
+  document.getElementById('verifyDate').value = today;
+  initApp();
+  document.getElementById('attTeamDate').addEventListener('change', loadTeamAttendance);
+  document.getElementById('attTeamSelect').addEventListener('change', loadTeamAttendance);
+  document.getElementById('attAreaDate').addEventListener('change', loadAreaAttendance);
+  document.getElementById('attAreaSelect').addEventListener('change', loadAreaAttendance);
+  document.getElementById('overviewDate').addEventListener('change', loadOverview);
+  document.getElementById('verifyDate').addEventListener('change', loadVerification);
+  document.getElementById('verifyTeam').addEventListener('change', loadVerification);
+
+  // ✅ 监听日期变化，刷新今日已提交数据
+  document.getElementById('entryDate').addEventListener('change', function() {
+    if (!document.getElementById('subtab-entry_sub').classList.contains('hidden')) {
+      loadTodaySubmitted();
+    }
+  });
+
+  updateLoginUI();
 });
 </script>
 </body>
