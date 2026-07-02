@@ -1055,7 +1055,7 @@ function initApp() {
     document.getElementById('verifyDate2').value = today;
 
     onCategoryChange();
-    loadPending();
+    loadPending();      // ✅ 加载待提交列表
     loadAttendance();
     loadAttendance2();
     loadOverview();
@@ -1096,34 +1096,67 @@ function onSubItemChange() {
 //  待提交管理
 // ============================================================
 function addToPending() {
-    const record = {
-        Date: document.getElementById('entryDate').value,
-        Area: document.getElementById('entryArea').value,
-        Team: document.getElementById('entryTeam').value,
-        Tag: document.getElementById('entryTag').value || 'N/A',
-        Code: document.getElementById('entryCode').value,
-        Category: document.getElementById('entryCategory').value,
-        Description: document.getElementById('entrySubItem').value,
-        Unit: document.getElementById('entryUnit').value,
-        Qty: parseFloat(document.getElementById('entryQty').value) || 0,
-        PipeLength: parseFloat(document.getElementById('entryPipe').value) || 0,
-        Manpower: parseInt(document.getElementById('entryManpower').value) || 0,
-        Manhours: parseFloat(document.getElementById('entryManhours').value) || 0,
-        Foreign: parseInt(document.getElementById('entryForeign').value) || 0,
-        Remark: document.getElementById('entryRemark').value || '',
-        CreatedBy: currentUser || 'unknown'
-    };
+    const date = document.getElementById('entryDate').value;
+    const area = document.getElementById('entryArea').value;
+    const team = document.getElementById('entryTeam').value;
+    const tag = document.getElementById('entryTag').value || 'N/A';
+    const code = document.getElementById('entryCode').value;
+    const category = document.getElementById('entryCategory').value;
+    const desc = document.getElementById('entrySubItem').value;
+    const unit = document.getElementById('entryUnit').value;
+    const qty = parseFloat(document.getElementById('entryQty').value) || 0;
+    const pipeLength = parseFloat(document.getElementById('entryPipe').value) || 0;
+    const manpower = parseInt(document.getElementById('entryManpower').value) || 0;
+    const manhours = parseFloat(document.getElementById('entryManhours').value) || 0;
+    const foreign = parseInt(document.getElementById('entryForeign').value) || 0;
+    const remark = document.getElementById('entryRemark').value || '';
 
-    if (!record.Date || !record.Area || !record.Team) {
-        showToast(t('errorFillAll'));
+    if (!date || !area || !team) {
+        showToast('❌ 请填写日期、区域和班组');
         return;
     }
 
-    pendingItems.push(record);
-    savePending();
+    // 检查重复
+    const duplicate = pendingItems.some(item => 
+        (item.Date || item.date) === date && 
+        (item.Area || item.area) === area && 
+        (item.Team || item.team) === team && 
+        (item.Description || item.description) === desc
+    );
+    
+    if (duplicate) {
+        showToast('⚠️ 已存在相同记录');
+        return;
+    }
+
+    // 添加记录（使用统一字段名）
+    pendingItems.push({
+        Date: date,
+        Area: area,
+        Team: team,
+        Tag: tag,
+        Code: code,
+        Category: category,
+        Description: desc,
+        Unit: unit,
+        Qty: qty,
+        PipeLength: pipeLength,
+        Manpower: manpower,
+        Manhours: manhours,
+        Foreign: foreign,
+        Remark: remark,
+        CreatedBy: currentUser || 'unknown'
+    });
+
+    // ✅ 保存到 localStorage
+    localStorage.setItem('pending_items', JSON.stringify(pendingItems));
+    
+    // ✅ 立即刷新
     renderPending();
+    
     showToast('✅ 已添加到待提交列表');
 
+    // 清空输入
     document.getElementById('entryTag').value = '';
     document.getElementById('entryQty').value = '0';
     document.getElementById('entryPipe').value = '0';
@@ -1132,7 +1165,6 @@ function addToPending() {
     document.getElementById('entryForeign').value = '0';
     document.getElementById('entryRemark').value = '';
 }
-
 function addNoWork() {
     const date = document.getElementById('entryDate').value;
     const area = document.getElementById('entryArea').value;
@@ -1169,16 +1201,27 @@ function addNoWork() {
 //  🔥 renderPending - 强制刷新待提交列表
 // ============================================================
 function renderPending() {
-    const container = document.getElementById('pendingItems');
+    console.log('🔄 渲染待提交列表');
     
-    // 安全检查
+    // ✅ 先确保从 localStorage 重新读取
+    const saved = localStorage.getItem('pending_items');
+    if (saved) {
+        try {
+            pendingItems = JSON.parse(saved);
+        } catch(e) {
+            pendingItems = [];
+        }
+    }
+    
+    const container = document.getElementById('pendingItems');
+    const countEl = document.getElementById('pendingCount');
+    
     if (!container) {
         console.error('❌ pendingItems 元素不存在');
         return;
     }
     
-    // 查找数量显示元素
-    const countEl = document.getElementById('pendingCount');
+    // 更新数量
     if (countEl) {
         countEl.textContent = pendingItems.length;
     }
@@ -1187,24 +1230,25 @@ function renderPending() {
     container.innerHTML = '';
     
     if (pendingItems.length === 0) {
-        container.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">' + t('noPending') + '</p>';
+        container.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">暂无待提交记录</p>';
         return;
     }
     
     let html = '';
     pendingItems.forEach((item, index) => {
-        // 兼容大小写字段名
         const date = item.Date || item.date || '';
         const area = item.Area || item.area || '';
         const team = item.Team || item.team || '';
         const desc = item.Description || item.description || '';
+        const qty = item.Qty || item.qty || 0;
+        const manpower = item.Manpower || item.manpower || 0;
         
         html += `<div class="pending-item" style="display:flex;justify-content:space-between;align-items:center;padding:10px 15px;border-bottom:1px solid #f0f0f0;">
             <div class="info" style="flex:1;">
                 <strong>${date}</strong> | ${area} | ${team} | ${desc}
                 <span style="color:#999;font-size:12px;margin-left:10px;">
-                    ${item.Qty || item.qty || 0 > 0 ? '数量:' + (item.Qty || item.qty || 0) : ''}
-                    ${item.Manpower || item.manpower || 0 > 0 ? '人数:' + (item.Manpower || item.manpower || 0) : ''}
+                    ${qty > 0 ? '数量:' + qty : ''}
+                    ${manpower > 0 ? '人数:' + manpower : ''}
                 </span>
             </div>
             <div class="actions">
@@ -1213,21 +1257,23 @@ function renderPending() {
         </div>`;
     });
     container.innerHTML = html;
+    
+    console.log('✅ 渲染完成，共', pendingItems.length, '条记录');
 }
-
+    
 function removePending(index) {
     pendingItems.splice(index, 1);
-    savePending();
+    localStorage.setItem('pending_items', JSON.stringify(pendingItems));
     renderPending();
 }
 
 function clearPending() {
     if (pendingItems.length === 0) {
-        showToast('⚠️ 待提交列表已经是空的');
+        showToast('⚠️ 列表已经是空的');
         return;
     }
-    if (!confirm(t('confirmClear'))) return;
-
+    if (!confirm('确定清空所有待提交吗？')) return;
+    
     pendingItems = [];
     localStorage.removeItem('pending_items');
     renderPending();
@@ -1239,29 +1285,48 @@ function loadPending() {
     if (saved) {
         try {
             pendingItems = JSON.parse(saved);
-            console.log('✅ 加载了', pendingItems.length, '条待提交记录');
+            console.log('✅ 从 localStorage 加载了', pendingItems.length, '条待提交记录');
         } catch(e) {
             console.error('解析失败:', e);
             pendingItems = [];
         }
     } else {
         pendingItems = [];
+        console.log('📭 localStorage 没有待提交数据');
     }
-    renderPending();  // ✅ 加载完后立即渲染
+    renderPending();
 }
-
 async function submitAll() {
     if (pendingItems.length === 0) {
-        showToast('❌ ' + t('noPending'));
+        showToast('❌ 没有待提交的记录');
         return;
     }
-    if (!confirm(t('confirmSubmit').replace('{count}', pendingItems.length))) return;
+    if (!confirm(`提交 ${pendingItems.length} 条记录？`)) return;
 
     let successCount = 0;
 
     for (const item of pendingItems) {
         try {
-            await addReport(item);
+            // 确保字段名一致
+            const reportData = {
+                Date: item.Date || item.date,
+                Area: item.Area || item.area,
+                Team: item.Team || item.team,
+                Tag: item.Tag || item.tag || 'N/A',
+                Code: item.Code || item.code || '',
+                Category: item.Category || item.category || '',
+                Description: item.Description || item.description || '',
+                Unit: item.Unit || item.unit || '',
+                Qty: item.Qty || item.qty || 0,
+                PipeLength: item.PipeLength || item.pipeLength || 0,
+                Manpower: item.Manpower || item.manpower || 0,
+                Manhours: item.Manhours || item.manhours || 0,
+                Foreign: item.Foreign || item.foreign || 0,
+                Remark: item.Remark || item.remark || '',
+                CreatedBy: currentUser || 'unknown'
+            };
+            
+            await addReport(reportData);
             successCount++;
         } catch (e) {
             console.error('提交失败:', e);
@@ -1274,12 +1339,11 @@ async function submitAll() {
     loadOverview();
 
     if (successCount > 0) {
-        showToast(t('successSubmit').replace('{count}', successCount));
+        showToast(`🎉 成功提交 ${successCount} 条记录！`);
     } else {
         showToast('❌ 提交失败，请检查网络');
     }
 }
-
 // ============================================================
 //  出勤日报
 // ============================================================
