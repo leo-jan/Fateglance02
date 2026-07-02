@@ -11,16 +11,15 @@ export default async function handler(req, res) {
     }
 
     try {
-        // ✅ 使用 @vercel/postgres 的推荐方式
-        const sql = neon(process.env.DATABASE_URL);
+        // ✅ 使用 POSTGRES_URL（Vercel Storage 注入的变量名）
+        const sql = neon(process.env.POSTGRES_URL);
 
-        // GET：查询
         if (req.method === 'GET') {
             const { date, team } = req.query;
             
             let query = 'SELECT * FROM attendance';
-            let params = [];
-            let conditions = [];
+            const params = [];
+            const conditions = [];
             
             if (date) {
                 conditions.push(`date = $${params.length + 1}`);
@@ -42,9 +41,9 @@ export default async function handler(req, res) {
                 Date: r.date,
                 Team: r.team,
                 WorkerType: r.worker_type,
-                Total: r.total,
-                Present: r.present,
-                Absent: r.absent,
+                Total: r.total || 0,
+                Present: r.present || 0,
+                Absent: r.absent || 0,
                 Foreign: r.foreign_count || 0,
                 Chinese: r.chinese || 0,
                 ChinesePresent: r.chinese_present || 0,
@@ -58,7 +57,6 @@ export default async function handler(req, res) {
             return res.status(200).json(rows);
         }
 
-        // POST：保存
         if (req.method === 'POST') {
             const body = req.body;
             
@@ -68,13 +66,11 @@ export default async function handler(req, res) {
                 });
             }
             
-            // 删除旧记录
             await sql(
                 'DELETE FROM attendance WHERE date = $1 AND team = $2 AND worker_type = $3',
                 [body.Date, body.Team, body.WorkerType]
             );
             
-            // 插入新记录
             const result = await sql(
                 `INSERT INTO attendance (
                     date, team, worker_type, 
@@ -111,10 +107,10 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
 
     } catch (err) {
-        console.error('❌ API Error:', err);
+        console.error('❌ API 错误:', err);
         return res.status(500).json({ 
             error: err.message,
-            stack: err.stack
+            stack: err.stack 
         });
     }
 }
