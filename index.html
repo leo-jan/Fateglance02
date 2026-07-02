@@ -352,6 +352,7 @@
                 <div id="verifyResult" style="margin-top:15px;"></div>
                 <div id="verifyStats" style="margin-top:15px;"></div>
             </div>
+        </div>
 
         <!-- ===== Tab: 总览 ===== -->
         <div id="tab-overview" class="tab-content">
@@ -449,130 +450,132 @@ const USERS = {
 // ============================================================
 //  工作字典
 // ============================================================
+// ============================================================
+//  工作字典（完整版 106 条，带英文）
+// ============================================================
 const WORK_DICT = {
     "无收入项": {
-        "送水送饭倒运材料": { code: "N/A", unit: "工时" },
-        "开会": { code: "N/A", unit: "工时" },
-        "配合测量": { code: "N/A", unit: "工时" },
-        "配合材料组": { code: "N/A", unit: "工时" },
-        "配合降水": { code: "N/A", unit: "工时" },
-        "旗手": { code: "N/A", unit: "工时" },
-        "其他杂活": { code: "N/A", unit: "工时" }
+        "送水送饭倒运材料": { code: "N/A", unit: "工时", en: "Water/food delivery & material handling" },
+        "开会": { code: "N/A", unit: "工时", en: "Meeting" },
+        "配合测量": { code: "N/A", unit: "工时", en: "Survey assistance" },
+        "配合材料组": { code: "N/A", unit: "工时", en: "Material team assistance" },
+        "配合降水": { code: "N/A", unit: "工时", en: "Dewatering assistance" },
+        "旗手": { code: "N/A", unit: "工时", en: "Flagman / Signalman" },
+        "其他杂活": { code: "N/A", unit: "工时", en: "Other miscellaneous work" }
     },
     "土石方工程": {
-        "人工挖土方（深度1.5m以内）": { code: "1-1-001", unit: "m3" },
-        "人工挖桩间土": { code: "1-1-004", unit: "m3" },
-        "人工回填（就地松填）": { code: "1-1-005", unit: "m3" },
-        "人工回填（夯填）": { code: "1-1-006", unit: "m3" },
-        "人工配合机械回填": { code: "1-1-007", unit: "m3" },
-        "人工平整场地、清理铲平机挖余土、配合机械平整水稳层": { code: "1-1-009", unit: "m2" },
-        "人工原土打夯": { code: "1-1-010", unit: "m2" },
-        "人工运土（运距20米以内）": { code: "1-1-011", unit: "m3" },
-        "砂垫层人工找平夯实": { code: "1-1-013", unit: "m3" },
-        "级配砂石人工平整夯实": { code: "1-1-014", unit: "m3" },
-        "铺碎石人工夯实": { code: "1-1-015", unit: "m3" },
-        "截、破砼实心桩（桩径1000mm以内）": { code: "1-1-016", unit: "根" },
-        "人工破砼（有筋）": { code: "1-1-020", unit: "m3" },
-        "人工破砼（无筋）": { code: "1-1-021", unit: "m3" },
-        "扣件修理": { code: "1-1-022", unit: "个" },
-        "钢管打捆装车": { code: "1-1-023", unit: "t" },
-        "周转材料装卸车（机械配合）": { code: "1-1-024", unit: "t" },
-        "周转材料装卸车（纯人工）": { code: "1-1-025", unit: "t" },
-        "场地盖土网 覆盖、回收、整理": { code: "1-1-026", unit: "m2" },
-        "机械土方（挖、装、运，运距1公里内）": { code: "1-1-034", unit: "m3" }
+        "人工挖土方（深度1.5m以内）": { code: "1-1-001", unit: "m3", en: "Manual excavation of earth (depth ≤1.5m)" },
+        "人工挖桩间土": { code: "1-1-004", unit: "m3", en: "Manual excavation of soil between piles" },
+        "人工回填（就地松填）": { code: "1-1-005", unit: "m3", en: "Manual backfill – loose fill" },
+        "人工回填（夯填）": { code: "1-1-006", unit: "m3", en: "Manual backfill – compacted fill" },
+        "人工配合机械回填": { code: "1-1-007", unit: "m3", en: "Manual assistance for machine backfill" },
+        "人工平整场地、清理铲平机挖余土、配合机械平整水稳层": { code: "1-1-009", unit: "m2", en: "Manual site leveling, cleaning and leveling machine-excavated surplus soil, assisting machine leveling of water-stabilized layer" },
+        "人工原土打夯": { code: "1-1-010", unit: "m2", en: "Manual compaction of natural soil" },
+        "人工运土（运距20米以内）": { code: "1-1-011", unit: "m3", en: "Manual earth transport (haul distance ≤20m)" },
+        "砂垫层人工找平夯实": { code: "1-1-013", unit: "m3", en: "Manual leveling and compaction of sand cushion layer" },
+        "级配砂石人工平整夯实": { code: "1-1-014", unit: "m3", en: "Manual leveling and compaction of graded sand and gravel" },
+        "铺碎石人工夯实": { code: "1-1-015", unit: "m3", en: "Manual compaction of crushed stone" },
+        "截、破砼实心桩（桩径1000mm以内）": { code: "1-1-016", unit: "根", en: "Cutting/breaking solid concrete piles (pile diameter ≤1000mm)" },
+        "人工破砼（有筋）": { code: "1-1-020", unit: "m3", en: "Manual breaking of reinforced concrete" },
+        "人工破砼（无筋）": { code: "1-1-021", unit: "m3", en: "Manual breaking of plain concrete" },
+        "扣件修理": { code: "1-1-022", unit: "个", en: "Repair of couplers/scaffold fittings" },
+        "钢管打捆装车": { code: "1-1-023", unit: "t", en: "Bundling and loading of steel pipes" },
+        "周转材料装卸车（机械配合）": { code: "1-1-024", unit: "t", en: "Loading/unloading of reusable materials (with machine assistance)" },
+        "周转材料装卸车（纯人工）": { code: "1-1-025", unit: "t", en: "Loading/unloading of reusable materials (purely manual)" },
+        "场地盖土网 覆盖、回收、整理": { code: "1-1-026", unit: "m2", en: "Site dust net – covering, recovery, and organizing" },
+        "机械土方（挖、装、运，运距1公里内）": { code: "1-1-034", unit: "m3", en: "Machine earthwork (excavation, loading, transport, within 1km)" }
     },
     "模板工程": {
-        "垫层模板": { code: "1-3-001", unit: "m2" },
-        "道路模板": { code: "1-3-002", unit: "m2" },
-        "基础模板": { code: "1-3-003", unit: "m2" },
-        "结构模板": { code: "1-3-004", unit: "m2" },
-        "结构（施工层无现浇板）模板": { code: "1-3-005", unit: "m2" },
-        "预留洞制、安、拆（深1m以内）": { code: "1-3-008", unit: "个" },
-        "预留洞制、安、拆（深1m以上）": { code: "1-3-009", unit: "个" },
-        "套管安装（Φ500mm以内）": { code: "1-3-010", unit: "个" },
-        "套管安装（Φ1000mm以内）": { code: "1-3-011", unit: "个" },
-        "套管安装（Φ1000mm以上）": { code: "1-3-012", unit: "个" },
-        "对拉螺杆（对拉扁铁）制作": { code: "1-3-013", unit: "根" },
-        "预埋螺栓安装（Φ20mm以内）": { code: "1-3-014", unit: "根" },
-        "预埋螺栓安装（Φ20-40mm以内）": { code: "1-3-015", unit: "根" },
-        "预埋螺栓安装（Φ40-60mm以内）": { code: "1-3-016", unit: "根" },
-        "预埋铁件安装（周长800mm以内）": { code: "1-3-019", unit: "块" },
-        "预埋铁件安装（周长2000mm以内）": { code: "1-3-021", unit: "块" },
-        "预埋铁件安装（周长2000mm以上）": { code: "1-3-023", unit: "块" }
+        "垫层模板": { code: "1-3-001", unit: "m2", en: "Lean concrete formwork" },
+        "道路模板": { code: "1-3-002", unit: "m2", en: "Road formwork" },
+        "基础模板": { code: "1-3-003", unit: "m2", en: "Foundation formwork" },
+        "结构模板": { code: "1-3-004", unit: "m2", en: "Structural formwork" },
+        "结构（施工层无现浇板）模板": { code: "1-3-005", unit: "m2", en: "Structural formwork (floor without cast-in-place slab)" },
+        "预留洞制、安、拆（深1m以内）": { code: "1-3-008", unit: "个", en: "Fabrication, installation, and removal of openings ≤1m deep" },
+        "预留洞制、安、拆（深1m以上）": { code: "1-3-009", unit: "个", en: "Fabrication, installation, and removal of openings >1m deep" },
+        "套管安装（Φ500mm以内）": { code: "1-3-010", unit: "个", en: "Sleeve installation (≤Φ500mm)" },
+        "套管安装（Φ1000mm以内）": { code: "1-3-011", unit: "个", en: "Sleeve installation (≤Φ1000mm)" },
+        "套管安装（Φ1000mm以上）": { code: "1-3-012", unit: "个", en: "Sleeve installation (>Φ1000mm)" },
+        "对拉螺杆（对拉扁铁）制作": { code: "1-3-013", unit: "根", en: "Fabrication of through-tie rods / flat iron ties" },
+        "预埋螺栓安装（Φ20mm以内）": { code: "1-3-014", unit: "根", en: "Installation of embedded bolts (≤Φ20mm)" },
+        "预埋螺栓安装（Φ20-40mm以内）": { code: "1-3-015", unit: "根", en: "Installation of embedded bolts (Φ20–40mm)" },
+        "预埋螺栓安装（Φ40-60mm以内）": { code: "1-3-016", unit: "根", en: "Installation of embedded bolts (Φ40–60mm)" },
+        "预埋铁件安装（周长800mm以内）": { code: "1-3-019", unit: "块", en: "Installation of embedded steel parts (perimeter ≤800mm)" },
+        "预埋铁件安装（周长2000mm以内）": { code: "1-3-021", unit: "块", en: "Installation of embedded steel parts (perimeter ≤2000mm)" },
+        "预埋铁件安装（周长2000mm以上）": { code: "1-3-023", unit: "块", en: "Installation of embedded steel parts (perimeter >2000mm)" }
     },
     "架子工程": {
-        "双排脚手架（高度≤6m）": { code: "1-4-001", unit: "m2" },
-        "双排脚手架（高度≤12m）": { code: "1-4-002", unit: "m2" },
-        "双排脚手架（高度≤18m）": { code: "1-4-003", unit: "m2" },
-        "双排脚手架（高度≤24m）": { code: "1-4-004", unit: "m2" },
-        "双排脚手架（高度≤30m）": { code: "1-4-005", unit: "m2" },
-        "双排脚手架（高度30m以上）": { code: "1-4-006", unit: "m2" },
-        "承重（支模）满堂脚手架,基本层（高度5m以内）立杆间距1200*1200mm以内": { code: "1-4-007", unit: "m3" },
-        "承重（支模）满堂脚手架,基本层（高度5m以内）立杆间距1000*1000mm以内": { code: "1-4-008", unit: "m2" },
-        "承重（支模）满堂脚手架,基本层（高度5m以内）立杆间距600*600mm以内": { code: "1-4-009", unit: "m2" },
-        "承重（支模）满堂脚手架,基本层（高度5m以内）立杆间距500*500mm以内": { code: "1-4-010", unit: "m2" },
-        "承重（支模）满堂脚手架,基本层（高度5m以内）每增高1m增加": { code: "1-4-011", unit: "m2" },
-        "承重（高支模）满堂脚手架（压缩机、汽轮机）立杆间距400*400mm以内": { code: "1-4-012", unit: "m2" },
-        "非承重满堂脚手架基本层（高度5m以内）立杆间距1600*1600mm以内": { code: "1-4-013", unit: "m2" },
-        "非承重满堂脚手架基本层（高度5m以内）每增高1m增加": { code: "1-4-014", unit: "m2" },
-        "单排脚手架(高度≤6m)": { code: "1-4-015", unit: "m2" },
-        "单排脚手架(高度≤12m)": { code: "1-4-016", unit: "m2" },
-        "挑檐、挑梁架（不计标高纯架子高度）单杆斜立外挑高度≤6m": { code: "1-4-017", unit: "m2" },
-        "挑檐、挑梁架（不计标高纯架子高度）单杆斜立外挑高度＞6m≤10m": { code: "1-4-018", unit: "m2" },
-        "挑檐、挑梁架（不计标高纯架子高度）单杆斜立外挑高度＞10m": { code: "1-4-019", unit: "m2" },
-        "独立柱（井式）脚手架（高度5m以内）": { code: "1-4-020", unit: "座" },
-        "独立柱（井式）脚手架（高度10m以内）": { code: "1-4-021", unit: "座" },
-        "独立柱（井式）脚手架（高度15m以内）": { code: "1-4-022", unit: "座" },
-        "独立柱（井式）脚手架（高度20m以内）": { code: "1-4-023", unit: "座" },
-        "独立柱（井式）脚手架（高度20m以上）": { code: "1-4-024", unit: "座" },
-        "吊架(跳板离地高度5m以内)": { code: "1-4-025", unit: "m2" },
-        "吊架(跳板离地高度10m以内)": { code: "1-4-026", unit: "m2" },
-        "吊架(跳板离地高度15m以内)": { code: "1-4-027", unit: "m2" },
-        "吊架(跳板离地高度20m以内)": { code: "1-4-028", unit: "m2" },
-        "吊架(跳板离地高度20m以上)": { code: "1-4-029", unit: "m2" },
-        "水平兜网": { code: "1-4-030", unit: "m2" },
-        "斜道": { code: "1-4-031", unit: "跑" },
-        "钢管安全维护(双杆)": { code: "1-4-032", unit: "m" },
-        "钢管安全维护(单杆)": { code: "1-4-033", unit: "m" },
-        "钢筋棚、木工棚、铆焊棚、材料棚等搭拆": { code: "1-4-041", unit: "m2" }
+        "双排脚手架（高度≤6m）": { code: "1-4-001", unit: "m2", en: "Double-row scaffolding (height ≤6m)" },
+        "双排脚手架（高度≤12m）": { code: "1-4-002", unit: "m2", en: "Double-row scaffolding (height ≤12m)" },
+        "双排脚手架（高度≤18m）": { code: "1-4-003", unit: "m2", en: "Double-row scaffolding (height ≤18m)" },
+        "双排脚手架（高度≤24m）": { code: "1-4-004", unit: "m2", en: "Double-row scaffolding (height ≤24m)" },
+        "双排脚手架（高度≤30m）": { code: "1-4-005", unit: "m2", en: "Double-row scaffolding (height ≤30m)" },
+        "双排脚手架（高度30m以上）": { code: "1-4-006", unit: "m2", en: "Double-row scaffolding (height >30m)" },
+        "承重（支模）满堂脚手架,基本层（高度5m以内）立杆间距1200*1200mm以内": { code: "1-4-007", unit: "m3", en: "Load-bearing (formwork support) full scaffolding – base layer (height ≤5m), post spacing ≤1200×1200mm" },
+        "承重（支模）满堂脚手架,基本层（高度5m以内）立杆间距1000*1000mm以内": { code: "1-4-008", unit: "m2", en: "Load-bearing full scaffolding – base layer (height ≤5m), post spacing ≤1000×1000mm" },
+        "承重（支模）满堂脚手架,基本层（高度5m以内）立杆间距600*600mm以内": { code: "1-4-009", unit: "m2", en: "Load-bearing full scaffolding – base layer (height ≤5m), post spacing ≤600×600mm" },
+        "承重（支模）满堂脚手架,基本层（高度5m以内）立杆间距500*500mm以内": { code: "1-4-010", unit: "m2", en: "Load-bearing full scaffolding – base layer (height ≤5m), post spacing ≤500×500mm" },
+        "承重（支模）满堂脚手架,基本层（高度5m以内）每增高1m增加": { code: "1-4-011", unit: "m2", en: "Load-bearing full scaffolding – base layer (height ≤5m), additional cost per 1m height increase" },
+        "承重（高支模）满堂脚手架（压缩机、汽轮机）立杆间距400*400mm以内": { code: "1-4-012", unit: "m2", en: "Heavy-duty (high-support) full scaffolding (for compressor/turbine), post spacing ≤400×400mm" },
+        "非承重满堂脚手架基本层（高度5m以内）立杆间距1600*1600mm以内": { code: "1-4-013", unit: "m2", en: "Non-load-bearing full scaffolding – base layer (height ≤5m), post spacing ≤1600×1600mm" },
+        "非承重满堂脚手架基本层（高度5m以内）每增高1m增加": { code: "1-4-014", unit: "m2", en: "Non-load-bearing full scaffolding – base layer (height ≤5m), additional cost per 1m height increase" },
+        "单排脚手架(高度≤6m)": { code: "1-4-015", unit: "m2", en: "Single-row scaffolding (height ≤6m)" },
+        "单排脚手架(高度≤12m)": { code: "1-4-016", unit: "m2", en: "Single-row scaffolding (height ≤12m)" },
+        "挑檐、挑梁架（不计标高纯架子高度）单杆斜立外挑高度≤6m": { code: "1-4-017", unit: "m2", en: "Eaves/balcony bracket (scaffold height only) – single-pole inclined, cantilever height ≤6m" },
+        "挑檐、挑梁架（不计标高纯架子高度）单杆斜立外挑高度＞6m≤10m": { code: "1-4-018", unit: "m2", en: "Eaves/balcony bracket – cantilever height >6m and ≤10m" },
+        "挑檐、挑梁架（不计标高纯架子高度）单杆斜立外挑高度＞10m": { code: "1-4-019", unit: "m2", en: "Eaves/balcony bracket – cantilever height >10m" },
+        "独立柱（井式）脚手架（高度5m以内）": { code: "1-4-020", unit: "座", en: "Independent column (tower) scaffolding (height ≤5m)" },
+        "独立柱（井式）脚手架（高度10m以内）": { code: "1-4-021", unit: "座", en: "Independent column scaffolding (height ≤10m)" },
+        "独立柱（井式）脚手架（高度15m以内）": { code: "1-4-022", unit: "座", en: "Independent column scaffolding (height ≤15m)" },
+        "独立柱（井式）脚手架（高度20m以内）": { code: "1-4-023", unit: "座", en: "Independent column scaffolding (height ≤20m)" },
+        "独立柱（井式）脚手架（高度20m以上）": { code: "1-4-024", unit: "座", en: "Independent column scaffolding (height >20m)" },
+        "吊架(跳板离地高度5m以内)": { code: "1-4-025", unit: "m2", en: "Suspended scaffold (plank height ≤5m)" },
+        "吊架(跳板离地高度10m以内)": { code: "1-4-026", unit: "m2", en: "Suspended scaffold (plank height ≤10m)" },
+        "吊架(跳板离地高度15m以内)": { code: "1-4-027", unit: "m2", en: "Suspended scaffold (plank height ≤15m)" },
+        "吊架(跳板离地高度20m以内)": { code: "1-4-028", unit: "m2", en: "Suspended scaffold (plank height ≤20m)" },
+        "吊架(跳板离地高度20m以上)": { code: "1-4-029", unit: "m2", en: "Suspended scaffold (plank height >20m)" },
+        "水平兜网": { code: "1-4-030", unit: "m2", en: "Horizontal safety net" },
+        "斜道": { code: "1-4-031", unit: "跑", en: "Ramp / inclined access way" },
+        "钢管安全维护(双杆)": { code: "1-4-032", unit: "m", en: "Steel pipe safety barrier (double rail)" },
+        "钢管安全维护(单杆)": { code: "1-4-033", unit: "m", en: "Steel pipe safety barrier (single rail)" },
+        "钢筋棚、木工棚、铆焊棚、材料棚等搭拆": { code: "1-4-041", unit: "m2", en: "Erection and dismantling of rebar workshop, carpentry workshop, welding workshop, material shed, etc." }
     },
     "钢筋工程": {
-        "水池底板及筏板基础": { code: "1-5-001", unit: "t" },
-        "水池壁板": { code: "1-5-002", unit: "t" },
-        "基础": { code: "1-5-003", unit: "t" },
-        "结构": { code: "1-5-004", unit: "t" },
-        "钢筋搭接焊": { code: "1-5-008", unit: "头" },
-        "植筋Φ10mm以内": { code: "1-5-009", unit: "根" },
-        "植筋Φ12mm-14mm": { code: "1-5-010", unit: "根" },
-        "植筋Φ16mm-18mm": { code: "1-5-011", unit: "根" },
-        "植筋Φ20mm-25mm": { code: "1-5-012", unit: "根" },
-        "植筋Φ25mm以上": { code: "1-5-013", unit: "根" }
+        "水池底板及筏板基础": { code: "1-5-001", unit: "t", en: "Reservoir bottom slab and raft foundation" },
+        "水池壁板": { code: "1-5-002", unit: "t", en: "Reservoir wall / tank wall" },
+        "基础": { code: "1-5-003", unit: "t", en: "Foundation" },
+        "结构": { code: "1-5-004", unit: "t", en: "Structural" },
+        "钢筋搭接焊": { code: "1-5-008", unit: "头", en: "Rebar lap welding" },
+        "植筋Φ10mm以内": { code: "1-5-009", unit: "根", en: "Rebar doweling / post-installed rebar (≤Φ10mm)" },
+        "植筋Φ12mm-14mm": { code: "1-5-010", unit: "根", en: "Rebar doweling (Φ12–14mm)" },
+        "植筋Φ16mm-18mm": { code: "1-5-011", unit: "根", en: "Rebar doweling (Φ16–18mm)" },
+        "植筋Φ20mm-25mm": { code: "1-5-012", unit: "根", en: "Rebar doweling (Φ20–25mm)" },
+        "植筋Φ25mm以上": { code: "1-5-013", unit: "根", en: "Rebar doweling (>Φ25mm)" }
     },
     "砌筑工程": {
-        "砌基础（小红砖）": { code: "1-6-001", unit: "m3" }
+        "砌基础（小红砖）": { code: "1-6-001", unit: "m3", en: "Masonry foundation (common brick)" }
     },
     "混凝土工程": {
-        "汽车泵砼浇筑（基础）": { code: "1-7-001", unit: "m3" },
-        "汽车泵砼浇筑高度50m内（结构）": { code: "1-7-002", unit: "m3" },
-        "人工上料（二次倒运）手推车运砼浇捣": { code: "1-7-008", unit: "m3" },
-        "道路砼（厚200mm）": { code: "1-7-010", unit: "m2" },
-        "混凝土井": { code: "1-7-020", unit: "m3" },
-        "设备基础灌浆（含模板）": { code: "1-7-021", unit: "m3" },
-        "砼面打磨": { code: "1-7-024", unit: "m2" },
-        "砼面凿毛": { code: "1-7-025", unit: "m2" },
-        "砂浆垫块制作": { code: "1-7-026", unit: "m2" },
-        "沟盖板预制": { code: "1-7-027", unit: "m3" },
-        "沟盖板安装": { code: "1-7-028", unit: "m3" },
-        "铸铁、玻璃钢沟盖板安装": { code: "1-7-029", unit: "块" },
-        "地坪混凝土浇筑（厚50mm）": { code: "", unit: "m2" },
-        "地坪混凝土浇筑（厚100mm）": { code: "", unit: "m2" },
-        "地坪混凝土浇筑（厚150mm）": { code: "", unit: "m2" },
-        "地坪混凝土浇筑（厚200mm）": { code: "", unit: "m2" },
-        "井安装": { code: "", unit: "m" },
-        "水沟安装": { code: "", unit: "m" }
+        "汽车泵砼浇筑（基础）": { code: "1-7-001", unit: "m3", en: "Concrete pouring via truck pump (foundation)" },
+        "汽车泵砼浇筑高度50m内（结构）": { code: "1-7-002", unit: "m3", en: "Concrete pouring via truck pump – structure, height ≤50m" },
+        "人工上料（二次倒运）手推车运砼浇捣": { code: "1-7-008", unit: "m3", en: "Manual material feeding (secondary hauling) and handcart transport for concrete pouring" },
+        "道路砼（厚200mm）": { code: "1-7-010", unit: "m2", en: "Road concrete (thickness 200mm)" },
+        "混凝土井": { code: "1-7-020", unit: "m3", en: "Concrete manhole / well" },
+        "设备基础灌浆（含模板）": { code: "1-7-021", unit: "m3", en: "Equipment base grouting (including formwork)" },
+        "砼面打磨": { code: "1-7-024", unit: "m2", en: "Concrete surface grinding" },
+        "砼面凿毛": { code: "1-7-025", unit: "m2", en: "Concrete surface roughening / scabbling" },
+        "砂浆垫块制作": { code: "1-7-026", unit: "m2", en: "Manufacture of mortar spacer blocks" },
+        "沟盖板预制": { code: "1-7-027", unit: "m3", en: "Precast trench cover slabs" },
+        "沟盖板安装": { code: "1-7-028", unit: "m3", en: "Installation of trench cover slabs" },
+        "铸铁、玻璃钢沟盖板安装": { code: "1-7-029", unit: "块", en: "Installation of cast iron / FRP trench cover slabs" },
+        "地坪混凝土浇筑（厚50mm）": { code: "", unit: "m2", en: "Concrete paving (thickness 50mm)" },
+        "地坪混凝土浇筑（厚100mm）": { code: "", unit: "m2", en: "Concrete paving (thickness 100mm)" },
+        "地坪混凝土浇筑（厚150mm）": { code: "", unit: "m2", en: "Concrete paving (thickness 150mm)" },
+        "地坪混凝土浇筑（厚200mm）": { code: "", unit: "m2", en: "Concrete paving (thickness 200mm)" },
+        "井安装": { code: "", unit: "m", en: "Manhole installation" },
+        "水沟安装": { code: "", unit: "m", en: "Trench / Ditch installation" }
     }
 };
-
 // ============================================================
 //  常量
 // ============================================================
@@ -580,6 +583,7 @@ const WORKER_TYPES = ['木工', '瓦工', '钢筋工', '架子工', '旗手', '�
 const WORKER_TYPES_EN = ['Carpenter', 'Mason', 'Rebar Man', 'Scaffolder', 'Flagman', 'Helper', 'Rigger', 'Surveyor', 'Welder'];
 const TEAMS = ['马玉奇(Ma Yuqi)', '王建(Wang Jian)', 'Kumar', '郭传海(Guo Chuanhai)', '曹桂龙(Cao Guilong)', '陈传军(Chen Chuanjun)', '王世杰(Wang Shijie)', 'Sheharyar', 'Anwar'];
 const AREAS = ['110', '210', '220', '240', '320', '330', '400', '800', 'precast yard 1', 'precast yard 2'];
+
 // ============================================================
 //  出勤日报 - 班组出勤 + 区域出勤
 // ============================================================
@@ -1015,7 +1019,8 @@ function updateUI() {
         }
     });
     renderPending();
-    loadAttendance();
+    loadTeamAttendance();
+    loadAreaAttendance();
     loadOverview();
     loadVerification();
     loadUserList();
@@ -1149,7 +1154,8 @@ function switchTab(tab) {
 
     if (tab === 'entry') {
         renderPending();
-        loadAttendance();
+        loadTeamAttendance();
+        loadAreaAttendance();
     }
     if (tab === 'overview') {
         loadOverview();
@@ -1179,19 +1185,22 @@ function switchSubTab(subtab) {
         loadVerification();
     }
 }
+
 // ============================================================
 //  初始化
 // ============================================================
 function initApp() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('entryDate').value = today;
-    document.getElementById('attDate').value = today;
+    document.getElementById('attTeamDate').value = today;
+    document.getElementById('attAreaDate').value = today;
     document.getElementById('overviewDate').value = today;
     document.getElementById('verifyDate').value = today;
 
     setTimeout(function() { onCategoryChange(); }, 100);
     loadPending();
-    loadAttendance();
+    loadTeamAttendance();
+    loadAreaAttendance();
     loadOverview();
     loadUserList();
     loadVerification();
@@ -1433,7 +1442,7 @@ async function submitAll() {
 }
 
 // ============================================================
-//  出勤日报
+//  出勤日报汇总（数据总览中使用）
 // ============================================================
 async function loadAttendanceSummary(date) {
     const container = document.getElementById('attendanceSummaryOverview');
@@ -1465,87 +1474,6 @@ async function loadAttendanceSummary(date) {
     } catch(e) {
         container.innerHTML = '<p style="color:#999;padding:10px;">加载失败</p>';
     }
-}
-
-function renderAttendance(data, tableId) {
-    const container = document.getElementById(tableId);
-    const map = {};
-    data.forEach(d => map[d.WorkerType] = d);
-    let html = '<table><thead><tr><th>' + t('workerType') + '</th><th>' + t('expected') + '</th><th>' + t('present') + '</th><th>' + t('absent') + '</th><th>' + t('foreignLabel') + '</th><th>' + t('remarkLabel') + '</th></tr></thead><tbody>';
-    let totalExpected = 0, totalPresent = 0, totalForeign = 0;
-    const workerTypes = currentLang === 'zh' ? WORKER_TYPES : WORKER_TYPES_EN;
-    workerTypes.forEach((type, idx) => {
-        const zhType = WORKER_TYPES[idx] || type;
-        const row = map[zhType] || { Total: 0, Present: 0, Foreign: 0, Remark: '' };
-        const total = row.Total || 0, present = row.Present || 0, foreign = row.Foreign || 0;
-        totalExpected += total; totalPresent += present; totalForeign += foreign;
-        const absent = total - present;
-        html += `<tr><td><strong>${type}</strong></td>
-            <td><input type="number" class="att-input" data-type="${zhType}" data-field="total" value="${total}" min="0" onchange="updateAbsent(this)"></td>
-            <td><input type="number" class="att-input" data-type="${zhType}" data-field="present" value="${present}" min="0" onchange="updateAbsent(this)"></td>
-            <td style="color:${absent > 0 ? '#c62828' : '#4caf50'};font-weight:bold;">${absent}</td>
-            <td><input type="number" class="att-input" data-type="${zhType}" data-field="foreign" value="${foreign}" min="0"></td>
-            <td><input type="text" class="att-input att-input-wide" data-type="${zhType}" data-field="remark" value="${row.Remark || ''}" placeholder="备注"></td>
-        </tr>`;
-    });
-    html += `<tr style="font-weight:bold;background:#f5f5f5;"><td>合计</td><td>${totalExpected}</td><td>${totalPresent}</td>
-        <td style="color:${totalExpected-totalPresent > 0 ? '#c62828' : '#4caf50'}">${totalExpected-totalPresent}</td><td>${totalForeign}</td><td></td></tr>`;
-    html += '</tbody></table>';
-    container.innerHTML = html;
-}
-
-function updateAbsent(el) {
-    const row = el.closest('tr');
-    const type = el.dataset.type;
-    const total = parseInt(row.querySelector(`.att-input[data-type="${type}"][data-field="total"]`)?.value) || 0;
-    const present = parseInt(row.querySelector(`.att-input[data-type="${type}"][data-field="present"]`)?.value) || 0;
-    const absent = total - present;
-    const cell = row.querySelector('td:nth-child(4)');
-    if (cell) { cell.textContent = absent; cell.style.color = absent > 0 ? '#c62828' : '#4caf50'; }
-}
-
-async function renderAttendanceSummary(date, containerId) {
-    const container = document.getElementById(containerId);
-    try {
-        const data = await getAttendance(date);
-        if (data.length === 0) { container.innerHTML = '<p style="color:#999;padding:10px;">' + t('noDataDate') + '</p>'; return; }
-        let html = '<table><thead><tr><th>' + t('teamCol') + '</th><th>' + t('detail') + '</th></tr></thead><tbody>';
-        const teams = [...new Set(data.map(d => d.Team))];
-        teams.forEach(team => {
-            const records = data.filter(d => d.Team === team);
-            let details = records.map(d => {
-                const wType = currentLang === 'zh' ? d.WorkerType : (WORKER_TYPES_EN[WORKER_TYPES.indexOf(d.WorkerType)] || d.WorkerType);
-                return wType + d.Total + '人' + ((d.Total - d.Present) > 0 ? '(缺勤' + (d.Total - d.Present) + '人)' : '');
-            }).join('、');
-            html += `<tr><td>${team}</td><td>${details || '无数据'}</td></tr>`;
-        });
-        html += '</tbody></table>';
-        container.innerHTML = html;
-    } catch(e) { container.innerHTML = '<p style="color:#999;padding:10px;">加载失败</p>'; }
-}
-
-async function saveAttendance() {
-    const date = document.getElementById('attDate').value;
-    const team = document.getElementById('attTeam').value;
-    if (!date || !team) { showToast('❌ 请选择日期和班组'); return; }
-    const records = [];
-    document.querySelectorAll('#attendanceTable .att-input[data-field="total"]').forEach(inp => {
-        const type = inp.dataset.type;
-        const total = parseInt(inp.value) || 0;
-        const present = parseInt(document.querySelector(`#attendanceTable .att-input[data-type="${type}"][data-field="present"]`)?.value) || 0;
-        const foreign = parseInt(document.querySelector(`#attendanceTable .att-input[data-type="${type}"][data-field="foreign"]`)?.value) || 0;
-        const remark = document.querySelector(`#attendanceTable .att-input[data-type="${type}"][data-field="remark"]`)?.value || '';
-        if (total > 0 || present > 0) {
-            records.push({ Date: date, Team: team, WorkerType: type, Total: total, Present: present, Absent: total - present, Foreign: foreign, Remark: remark, ReportedBy: currentUser || 'unknown' });
-        }
-    });
-    if (records.length === 0) { showToast('❌ 请至少填报一个工种'); return; }
-    try {
-        for (const record of records) await addAttendance(record);
-        showToast(t('successSaved'));
-        loadAttendance();
-        loadVerification();
-    } catch(e) { showToast('❌ 保存失败: ' + e.message); }
 }
 
 // ============================================================
@@ -1591,11 +1519,15 @@ async function loadOverview() {
                 allTable.innerHTML = html;
             }
         } catch(e) { allTable.innerHTML = '<p style="color:#999;padding:10px;">加载失败</p>'; }
-    } catch(e) { document.getElementById('overviewTable').innerHTML = '<p style="color:#999;padding:20px;">加载失败</p>'; }
+        
+        // 加载出勤日报汇总
+        loadAttendanceSummary(date);
+        
+    } catch(e) {
+        document.getElementById('overviewTable').innerHTML = '<p style="color:#999;padding:20px;">加载失败</p>';
+    }
 }
-    // 加载出勤日报汇总
-    loadAttendanceSummary(date);
-    
+
 function exportData() { showToast('📥 ' + t('export_title')); }
 function exportAllData() { showToast('📥 ' + t('export_title')); }
 
@@ -1670,7 +1602,7 @@ function exportBackup() { showToast('💾 ' + t('backup')); }
 function importBackup() { showToast('📂 ' + t('importBackup')); }
 async function clearZeroData() { if (!confirm(t('confirmClearZero'))) return; showToast('🧹 ' + t('clearZero')); loadOverview(); }
 async function deduplicateData() { if (!confirm(t('confirmDedup'))) return; showToast('🔄 ' + t('dedup')); loadOverview(); }
-async function resetAllData() { if (!confirm(t('confirmReset'))) return; if (!confirm(t('confirmReset2'))) return; showToast('💣 ' + t('reset')); loadOverview(); loadAttendance(); }
+async function resetAllData() { if (!confirm(t('confirmReset'))) return; if (!confirm(t('confirmReset2'))) return; showToast('💣 ' + t('reset')); loadOverview(); loadTeamAttendance(); loadAreaAttendance(); }
 
 function loadLoginLogs() { document.getElementById('loginLogs').innerHTML = '<p style="color:#999;padding:10px;">暂无登录记录</p>'; }
 
@@ -1690,12 +1622,15 @@ setInterval(function() {
 document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('entryDate').value = today;
-    document.getElementById('attDate').value = today;
+    document.getElementById('attTeamDate').value = today;
+    document.getElementById('attAreaDate').value = today;
     document.getElementById('overviewDate').value = today;
     document.getElementById('verifyDate').value = today;
     initApp();
-    document.getElementById('attDate').addEventListener('change', loadAttendance);
-    document.getElementById('attTeam').addEventListener('change', loadAttendance);
+    document.getElementById('attTeamDate').addEventListener('change', loadTeamAttendance);
+    document.getElementById('attTeamSelect').addEventListener('change', loadTeamAttendance);
+    document.getElementById('attAreaDate').addEventListener('change', loadAreaAttendance);
+    document.getElementById('attAreaSelect').addEventListener('change', loadAreaAttendance);
     document.getElementById('overviewDate').addEventListener('change', loadOverview);
     document.getElementById('verifyDate').addEventListener('change', loadVerification);
     document.getElementById('verifyTeam').addEventListener('change', loadVerification);
