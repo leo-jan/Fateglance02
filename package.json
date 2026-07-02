@@ -1,5 +1,5 @@
 {
-  "name": "your-project",
+  "name": "daily-report",
   "version": "1.0.0",
   "dependencies": {
     "@neondatabase/serverless": "^0.9.0"
