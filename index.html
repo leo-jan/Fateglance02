@@ -606,7 +606,7 @@ async function loadTeamAttendance() {
 function renderTeamAttendance(data, tableId) {
     const container = document.getElementById(tableId);
     const map = {};
-    data.forEach(d => map[d.WorkerType] = d);
+    data.forEach(d => map[d.worker_type] = d);  // ✅ 改为小写
 
     let html = `<table><thead><tr>
         <th>工种</th>
@@ -622,32 +622,31 @@ function renderTeamAttendance(data, tableId) {
     let totalAllExpected = 0, totalAllPresent = 0;
 
     WORKER_TYPES_ATT.forEach(type => {
-        const row = map[type] || { Total: 0, Present: 0, Foreign: 0, Chinese: 0, ChinesePresent: 0, Remark: '' };
-        const foreignExpected = row.ForeignExpected || row.Foreign || 0;
-        const foreignPresent = row.ForeignPresent || row.Foreign || 0;
-        const chineseExpected = row.ChineseExpected || row.Chinese || 0;
-        const chinesePresent = row.ChinesePresent || row.Chinese || 0;
-        const totalExpected = foreignExpected + chineseExpected;
-        const totalPresent = foreignPresent + chinesePresent;
-        const absent = totalExpected - totalPresent;
+        const row = map[type] || { total: 0, present: 0, foreign_count: 0, remark: '' };
+        // ✅ 改为小写字段名
+        const total = row.total || 0;
+        const present = row.present || 0;
+        const foreign = row.foreign_count || 0;
+        const chinese = total - foreign;
+        const absent = total - present;
 
-        totalForeignExpected += foreignExpected;
-        totalForeignPresent += foreignPresent;
-        totalChineseExpected += chineseExpected;
-        totalChinesePresent += chinesePresent;
-        totalAllExpected += totalExpected;
-        totalAllPresent += totalPresent;
+        totalForeignExpected += foreign;
+        totalForeignPresent += foreign; // 简化处理
+        totalChineseExpected += chinese;
+        totalChinesePresent += chinese;
+        totalAllExpected += total;
+        totalAllPresent += present;
 
         html += `<tr>
             <td><strong>${type}</strong></td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="foreignExpected" value="${foreignExpected}" min="0" style="width:50px;"></td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="foreignPresent" value="${foreignPresent}" min="0" style="width:50px;"></td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="chineseExpected" value="${chineseExpected}" min="0" style="width:50px;"></td>
-            <td><input type="number" class="att-input" data-type="${type}" data-field="chinesePresent" value="${chinesePresent}" min="0" style="width:50px;"></td>
-            <td style="font-weight:bold;color:#1565c0;">${totalExpected}</td>
-            <td style="font-weight:bold;color:#1565c0;">${totalPresent}</td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="foreignExpected" value="${foreign}" min="0" style="width:50px;"></td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="foreignPresent" value="${foreign}" min="0" style="width:50px;"></td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="chineseExpected" value="${chinese}" min="0" style="width:50px;"></td>
+            <td><input type="number" class="att-input" data-type="${type}" data-field="chinesePresent" value="${chinese}" min="0" style="width:50px;"></td>
+            <td style="font-weight:bold;color:#1565c0;">${total}</td>
+            <td style="font-weight:bold;color:#1565c0;">${present}</td>
             <td style="color:${absent > 0 ? '#c62828' : '#4caf50'};font-weight:bold;">${absent}</td>
-            <td><input type="text" class="att-input att-input-wide" data-type="${type}" data-field="remark" value="${row.Remark || ''}" placeholder="备注" style="width:120px;"></td>
+            <td><input type="text" class="att-input att-input-wide" data-type="${type}" data-field="remark" value="${row.remark || ''}" placeholder="备注" style="width:120px;"></td>
         </tr>`;
     });
 
@@ -665,7 +664,6 @@ function renderTeamAttendance(data, tableId) {
     html += '</tbody></table>';
     container.innerHTML = html;
 }
-
 async function saveTeamAttendance() {
     const date = document.getElementById('attTeamDate').value;
     const team = document.getElementById('attTeamSelect').value;
@@ -1649,11 +1647,11 @@ async function loadAttendanceSummary(date) {
         }
         const summary = {};
         data.forEach(d => {
-            const type = d.WorkerType || '未知';
+            const type = d.worker_type || '未知';  // ✅ 改为小写
             if (!summary[type]) summary[type] = { Total: 0, Present: 0, Absent: 0 };
-            summary[type].Total += d.Total || 0;
-            summary[type].Present += d.Present || 0;
-            summary[type].Absent += d.Absent || 0;
+            summary[type].Total += d.total || 0;
+            summary[type].Present += d.present || 0;
+            summary[type].Absent += d.absent || 0;
         });
         let html = `<h4>📊 出勤日报汇总 (${date})</h4><table><thead><tr><th>工种</th><th>应到</th><th>实到</th><th>缺勤</th></tr></thead><tbody>`;
         let totalT = 0, totalP = 0, totalA = 0;
@@ -1678,7 +1676,7 @@ async function loadOverview() {
     try {
         const data = await getReports(date);
         const filtered = data || [];
-        const submittedAreas = new Set(filtered.map(d => d.Area));
+        const submittedAreas = new Set(filtered.map(d => d.area)); // 改为小写
         const statusHtml = AREAS.map(area => {
             const isSubmitted = submittedAreas.has(area);
             return `<span style="padding:8px 16px;border-radius:6px;background:${isSubmitted ? '#e8f5e9' : '#ffebee'};color:${isSubmitted ? '#2e7d32' : '#c62828'};border:1px solid ${isSubmitted ? '#a5d6a7' : '#ef9a9a'};">
@@ -1686,18 +1684,22 @@ async function loadOverview() {
             </span>`;
         }).join('');
         document.getElementById('areaStatus').innerHTML = statusHtml;
+        
         const table = document.getElementById('overviewTable');
         if (filtered.length === 0) {
             table.innerHTML = '<p style="color:#999;padding:20px;">' + t('noDataDate') + '</p>';
         } else {
             let html = `<p style="color:#666;margin-bottom:10px;">共 ${filtered.length} 条记录</p><table><thead><tr><th>日期</th><th>区域</th><th>班组</th><th>工作描述</th><th>完成量</th><th>人数</th><th>工时</th></tr></thead><tbody>`;
             filtered.forEach(d => {
-                html += `<tr><td>${d.Date}</td><td>${d.Area}</td><td>${d.Team}</td><td>${(d.Description || '').substring(0, 30)}${(d.Description || '').length > 30 ? '...' : ''}</td>
-                    <td>${d.Qty || 0}</td><td>${d.Manpower || 0}</td><td>${d.Manhours || 0}</td></tr>`;
+                // ✅ 改为小写字段名
+                html += `<tr><td>${d.date}</td><td>${d.area}</td><td>${d.team}</td><td>${(d.description || '').substring(0, 30)}${(d.description || '').length > 30 ? '...' : ''}</td>
+                    <td>${d.qty || 0}</td><td>${d.manpower || 0}</td><td>${d.manhours || 0}</td></tr>`;
             });
             html += '</tbody></table>';
             table.innerHTML = html;
         }
+        
+        // 全部数据
         const allTable = document.getElementById('allDataTable');
         try {
             const all = await getReports();
@@ -1706,17 +1708,18 @@ async function loadOverview() {
             } else {
                 let html = `<p style="color:#666;margin-bottom:10px;">共 ${all.length} 条记录</p><table><thead><tr><th>日期</th><th>区域</th><th>班组</th><th>工作描述</th><th>完成量</th><th>人数</th><th>工时</th></tr></thead><tbody>`;
                 all.slice(-100).reverse().forEach(d => {
-                    html += `<tr><td>${d.Date}</td><td>${d.Area}</td><td>${d.Team}</td><td>${(d.Description || '').substring(0, 30)}${(d.Description || '').length > 30 ? '...' : ''}</td>
-                        <td>${d.Qty || 0}</td><td>${d.Manpower || 0}</td><td>${d.Manhours || 0}</td></tr>`;
+                    // ✅ 改为小写字段名
+                    html += `<tr><td>${d.date}</td><td>${d.area}</td><td>${d.team}</td><td>${(d.description || '').substring(0, 30)}${(d.description || '').length > 30 ? '...' : ''}</td>
+                        <td>${d.qty || 0}</td><td>${d.manpower || 0}</td><td>${d.manhours || 0}</td></tr>`;
                 });
                 html += '</tbody></table>';
                 allTable.innerHTML = html;
             }
-        } catch(e) { allTable.innerHTML = '<p style="color:#999;padding:10px;">加载失败</p>'; }
+        } catch(e) { 
+            allTable.innerHTML = '<p style="color:#999;padding:10px;">加载失败</p>'; 
+        }
         
-        // 加载出勤日报汇总
         loadAttendanceSummary(date);
-        
     } catch(e) {
         document.getElementById('overviewTable').innerHTML = '<p style="color:#999;padding:20px;">加载失败</p>';
     }
@@ -1739,10 +1742,10 @@ async function loadVerification() {
         let html = '<table><thead><tr><th>' + t('teamCol') + '</th><th>出勤人数</th><th>工时人数</th><th>' + t('matched') + '</th><th>' + t('diff') + '</th></tr></thead><tbody>';
         let totalExpected = 0, totalManpower = 0, matchedCount = 0, teamsWithData = 0;
         filteredTeams.forEach(team => {
-            const att = attendance.filter(a => a.Team === team);
-            const totalAtt = att.reduce((s, a) => s + (a.Total || 0), 0);
-            const rep = reports.filter(r => r.Team === team);
-            const totalMp = rep.reduce((s, r) => s + (r.Manpower || 0), 0);
+            const att = attendance.filter(a => a.team === team);  // ✅ 改为小写
+            const totalAtt = att.reduce((s, a) => s + (a.total || 0), 0);
+            const rep = reports.filter(r => r.team === team);
+            const totalMp = rep.reduce((s, r) => s + (r.manpower || 0), 0);
             const hasData = totalAtt > 0 || totalMp > 0;
             if (hasData) teamsWithData++;
             const matched = totalAtt === totalMp && totalAtt > 0;
@@ -1762,9 +1765,10 @@ async function loadVerification() {
             <div class="stat-card"><div class="stat-number">${totalManpower}</div><div class="stat-label">总工时人数</div></div>
             <div class="stat-card"><div class="stat-number">${matchedCount}/${teamsWithData || 1}</div><div class="stat-label">匹配班组</div></div>
         </div>`;
-    } catch(e) { document.getElementById('verifyResult').innerHTML = '<p style="color:#999;padding:20px;">加载失败</p>'; }
+    } catch(e) { 
+        document.getElementById('verifyResult').innerHTML = '<p style="color:#999;padding:20px;">加载失败</p>'; 
+    }
 }
-
 // ============================================================
 //  用户管理
 // ============================================================
