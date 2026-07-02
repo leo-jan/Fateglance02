@@ -1,62 +1,51 @@
-// api/reports.js
 import { createClient } from 'redis';
 
-const getRedisClient = () => {
-    const url = process.env.KV_URL || process.env.REDIS_URL;
-    if (!url) {
-        throw new Error('Redis URL not configured');
+let redisClient = null;
+
+async function getRedis() {
+    if (!redisClient) {
+        const url = process.env.KV_URL;
+        if (!url) throw new Error('KV_URL not configured');
+        redisClient = createClient({ url });
+        await redisClient.connect();
     }
-    return createClient({ url });
-};
+    return redisClient;
+}
 
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
-
-    let redis = null;
+    if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        redis = getRedisClient();
-        await redis.connect();
-    } catch (err) {
-        return res.status(500).json({ 
-            error: 'Redis 连接失败', 
-            details: err.message 
-        });
-    }
+        const redis = await getRedis();
 
-    try {
         if (req.method === 'GET') {
             const { date } = req.query;
             const data = await redis.get('reports');
-            const all = data ? JSON.parse(data) : [];
-            const filtered = date ? all.filter(r => r.Date === date) : all;
-            await redis.disconnect();
-            return res.status(200).json(filtered);
+            const reports = data ? JSON.parse(data) : [];
+            if (date) {
+                const filtered = reports.filter(r => r.Date === date);
+                return res.status(200).json(filtered);
+            }
+            return res.status(200).json(reports);
         }
 
         if (req.method === 'POST') {
             const newReport = req.body;
             const data = await redis.get('reports');
-            const all = data ? JSON.parse(data) : [];
+            const reports = data ? JSON.parse(data) : [];
             newReport.id = Date.now();
-            newReport.created_at = new Date().toISOString();
-            all.push(newReport);
-            await redis.set('reports', JSON.stringify(all));
-            await redis.disconnect();
+            newReport.createdAt = new Date().toISOString();
+            reports.push(newReport);
+            await redis.set('reports', JSON.stringify(reports));
             return res.status(200).json({ success: true, id: newReport.id });
         }
 
-        await redis.disconnect();
         return res.status(405).json({ error: 'Method not allowed' });
-
     } catch (err) {
-        if (redis) await redis.disconnect().catch(() => {});
         return res.status(500).json({ error: err.message });
     }
 }
