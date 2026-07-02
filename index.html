@@ -1169,9 +1169,16 @@ function addNoWork() {
 }
 
 function renderPending() {
+    console.log('🔄 renderPending 被调用，当前数量:', pendingItems.length);
+
     const container = document.getElementById('pendingItems');
-    const count = document.getElementById('pendingCount');
-    count.textContent = pendingItems.length;
+    const countEl = document.getElementById('pendingCount');
+
+    // ✅ 关键：先清空容器
+    container.innerHTML = '';
+
+    // ✅ 更新数量
+    countEl.textContent = pendingItems.length;
 
     if (pendingItems.length === 0) {
         container.innerHTML = '<p style="color:#999;padding:20px;text-align:center;">' + t('noPending') + '</p>';
@@ -1180,8 +1187,8 @@ function renderPending() {
 
     let html = '';
     pendingItems.forEach((item, index) => {
-        html += `<div class="pending-item">
-            <div class="info">
+        html += `<div class="pending-item" style="display:flex;justify-content:space-between;align-items:center;padding:10px 15px;border-bottom:1px solid #f0f0f0;">
+            <div class="info" style="flex:1;">
                 <strong>${item.Date}</strong> | ${item.Area} | ${item.Team} | ${item.Description}
                 <span style="color:#999;font-size:12px;margin-left:10px;">
                     ${item.Qty > 0 ? '数量:' + item.Qty : ''}
@@ -1189,13 +1196,14 @@ function renderPending() {
                 </span>
             </div>
             <div class="actions">
-                <button class="btn btn-danger btn-sm" onclick="removePending(${index})">删除</button>
+                <button class="btn btn-danger btn-sm" onclick="removePending(${index})" style="padding:5px 12px;font-size:12px;background:#e53935;color:white;border:none;border-radius:4px;cursor:pointer;">删除</button>
             </div>
         </div>`;
     });
     container.innerHTML = html;
 }
 
+    
 function removePending(index) {
     pendingItems.splice(index, 1);
     renderPending();
