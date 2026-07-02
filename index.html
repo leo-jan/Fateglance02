@@ -419,6 +419,7 @@
 // ============================================================
 const API_URL = '/api/reports';
 const ATTENDANCE_API = '/api/attendance';
+const AREA_API = '/api/area-distribution';  // ✅ 添加这一行
 
 // ============================================================
 //  用户数据库
@@ -723,14 +724,21 @@ async function loadAreaAttendance() {
         return;
     }
     try {
-        // 先刷新班组出勤数据（确保实到人数是最新的）
-        await loadTeamAttendance();
-        // 渲染区域出勤
-        renderAreaAttendance([], 'areaAttendanceTable', team);
+        // 从区域出勤表读取数据
+        const response = await fetch(`${AREA_API}?date=${date}&team=${encodeURIComponent(team)}`);
+        if (!response.ok) {
+            throw new Error('读取区域出勤数据失败');
+        }
+        const data = await response.json();
+        console.log('区域出勤数据:', data); // 调试用
+        renderAreaAttendance(data, 'areaAttendanceTable', team);
     } catch(e) {
+        console.error(e);
         renderAreaAttendance([], 'areaAttendanceTable', team);
+        showToast('❌ 加载区域出勤失败: ' + e.message);
     }
 }
+    
 function renderAreaAttendance(data, tableId, team) {
     const container = document.getElementById(tableId);
     
@@ -742,13 +750,12 @@ function renderAreaAttendance(data, tableId, team) {
         teamAttendanceMap[type] = chinesePresent + foreignPresent;
     });
 
-    const savedKey = `area_distribution_${document.getElementById('attAreaDate').value}_${team}`;
-    let savedData = {};
-    try {
-        savedData = JSON.parse(localStorage.getItem(savedKey) || '{}');
-    } catch(e) {
-        savedData = {};
-    }
+    // 构建已保存的数据映射: { worker_type: { area: count } }
+    const savedMap = {};
+    data.forEach(item => {
+        if (!savedMap[item.worker_type]) savedMap[item.worker_type] = {};
+        savedMap[item.worker_type][item.area] = item.count;
+    });
 
     let html = `<div style="margin-bottom:10px;font-size:13px;color:#666;">
         <strong>👷 ${team}</strong> 各工种实到人数分配
@@ -781,9 +788,9 @@ function renderAreaAttendance(data, tableId, team) {
         // 如果实到为0，跳过
         if (present === 0) return;
         hasData = true;
-
         rowIndex++;
-        const savedRow = savedData[type] || {};
+        
+        const savedRow = savedMap[type] || {};
         
         // 计算各区域分配值
         let rowTotal = 0;
@@ -828,11 +835,10 @@ function renderAreaAttendance(data, tableId, team) {
     
     container.innerHTML = html;
 
-    // 更新各区域合计（只更新区域合计行）
+    // 更新各区域合计
     updateAreaTotalsOnly();
 }
-
-// 只更新区域合计（不添加总合计行）
+    
 function updateAreaTotalsOnly() {
     AREA_LIST.forEach(area => {
         const inputs = document.querySelectorAll(`.area-input[data-area="${area}"]`);
@@ -902,22 +908,48 @@ async function saveAreaAttendance() {
     const team = document.getElementById('attAreaTeamSelect').value;
     if (!date || !team) { showToast('❌ 请选择日期和班组'); return; }
 
-    const savedKey = `area_distribution_${date}_${team}`;
-    const distribution = {};
-    
+    const records = [];
     document.querySelectorAll('.area-input').forEach(inp => {
         const type = inp.dataset.type;
         const area = inp.dataset.area;
         const val = parseInt(inp.value) || 0;
-        if (!distribution[type]) distribution[type] = {};
-        distribution[type][area] = val;
+        if (val > 0) {
+            records.push({
+                date: date,
+                team: team,
+                worker_type: type,
+                area: area,
+                count: val,
+                created_by: currentUser || 'unknown'
+            });
+        }
     });
 
-    localStorage.setItem(savedKey, JSON.stringify(distribution));
-    showToast('✅ 区域分配已保存！');
-    loadAreaAttendance();
-}
+    if (records.length === 0) { showToast('❌ 请至少分配一个区域'); return; }
 
+    try {
+        // 先删除该日期该班组的旧数据
+        await fetch(`${AREA_API}?date=${date}&team=${encodeURIComponent(team)}`, {
+            method: 'DELETE'
+        });
+        // 插入新数据
+        for (const record of records) {
+            const response = await fetch(AREA_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(record)
+            });
+            if (!response.ok) {
+                throw new Error('保存失败');
+            }
+        }
+        showToast('✅ 区域分配已保存到数据库！');
+        loadAreaAttendance(); // 刷新显示
+    } catch(e) {
+        console.error(e);
+        showToast('❌ 保存失败: ' + e.message);
+    }
+}
 // ============================================================
 //  全局变量
 // ============================================================
