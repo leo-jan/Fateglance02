@@ -2,75 +2,58 @@
 import { neon } from '@vercel/postgres';
 
 export default async function handler(req, res) {
+    // CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
 
-    try {
-        // ✅ 使用 POSTGRES_URL（Vercel Storage 注入的变量名）
-        const sql = neon(process.env.POSTGRES_URL);
+    // 获取数据库连接
+    const sql = neon(process.env.POSTGRES_URL);
 
+    try {
+        // ===== GET =====
         if (req.method === 'GET') {
             const { date, team } = req.query;
             
             let query = 'SELECT * FROM attendance';
             const params = [];
-            const conditions = [];
             
-            if (date) {
-                conditions.push(`date = $${params.length + 1}`);
+            if (date && team) {
+                query += ' WHERE date = $1 AND team = $2 ORDER BY id DESC';
+                params.push(date, team);
+            } else if (date) {
+                query += ' WHERE date = $1 ORDER BY id DESC';
                 params.push(date);
+            } else {
+                query += ' ORDER BY id DESC';
             }
-            if (team) {
-                conditions.push(`team = $${params.length + 1}`);
-                params.push(team);
-            }
-            
-            if (conditions.length > 0) {
-                query += ' WHERE ' + conditions.join(' AND ');
-            }
-            query += ' ORDER BY id DESC';
             
             const result = await sql(query, params);
             
-            const rows = result.map(r => ({
-                Date: r.date,
-                Team: r.team,
-                WorkerType: r.worker_type,
-                Total: r.total || 0,
-                Present: r.present || 0,
-                Absent: r.absent || 0,
-                Foreign: r.foreign_count || 0,
-                Chinese: r.chinese || 0,
-                ChinesePresent: r.chinese_present || 0,
-                ForeignExpected: r.foreign_expected || 0,
-                ForeignPresent: r.foreign_present || 0,
-                ChineseExpected: r.chinese_expected || 0,
-                Remark: r.remark || '',
-                ReportedBy: r.reported_by || ''
-            }));
-            
-            return res.status(200).json(rows);
+            // 直接返回数据库字段（前端已经适配）
+            return res.status(200).json(result);
         }
 
+        // ===== POST =====
         if (req.method === 'POST') {
             const body = req.body;
             
+            // 必填字段验证
             if (!body.Date || !body.Team || !body.WorkerType) {
-                return res.status(400).json({ 
-                    error: '缺少必填字段: Date, Team, WorkerType' 
-                });
+                return res.status(400).json({ error: '缺少必填字段' });
             }
             
+            // 删除旧记录
             await sql(
                 'DELETE FROM attendance WHERE date = $1 AND team = $2 AND worker_type = $3',
                 [body.Date, body.Team, body.WorkerType]
             );
             
+            // 插入新记录
             const result = await sql(
                 `INSERT INTO attendance (
                     date, team, worker_type, 
@@ -87,12 +70,12 @@ export default async function handler(req, res) {
                     body.Total || 0,
                     body.Present || 0,
                     body.Absent || 0,
-                    body.Foreign || 0,
-                    body.ForeignExpected || 0,
-                    body.ForeignPresent || 0,
-                    body.Chinese || 0,
-                    body.ChineseExpected || 0,
-                    body.ChinesePresent || 0,
+                    body.Foreign || body.ForeignExpected || 0,
+                    body.ForeignExpected || body.Foreign || 0,
+                    body.ForeignPresent || body.Foreign || 0,
+                    body.Chinese || body.ChineseExpected || 0,
+                    body.ChineseExpected || body.Chinese || 0,
+                    body.ChinesePresent || body.Chinese || 0,
                     body.Remark || '',
                     body.ReportedBy || 'unknown'
                 ]
