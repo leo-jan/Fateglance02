@@ -1008,17 +1008,17 @@ function switchTab(tab) {
 
     // ✅ 切换时自动刷新对应数据
     if (tab === 'entry') {
-        renderPending();      // 刷新待提交列表
-        loadAttendance();     // 刷新考勤
+        renderPending();
+        loadAttendance();
     }
     if (tab === 'attendance') {
-        loadAttendance2();    // 刷新考勤
+        loadAttendance2();
     }
     if (tab === 'overview') {
-        loadOverview();       // 刷新总览
+        loadOverview();
     }
     if (tab === 'verify') {
-        loadVerification2();  // 刷新核对
+        loadVerification2();
     }
     if (tab === 'settings') {
         loadUserList();
@@ -1032,7 +1032,6 @@ function switchSubTab(subtab) {
     document.querySelector(`.sub-tab-btn[data-subtab="${subtab}"]`).classList.add('active');
     document.getElementById(`subtab-${subtab}`).classList.remove('hidden');
 
-    // ✅ 切换时自动刷新对应数据
     if (subtab === 'attendance_sub') {
         loadAttendance();
     }
@@ -1123,7 +1122,7 @@ function addToPending() {
 
     pendingItems.push(record);
     savePending();
-    renderPending();  // ✅ 刷新待提交列表
+    renderPending();
     showToast('✅ 已添加到待提交列表');
 
     // 清空输入
@@ -1169,15 +1168,10 @@ function addNoWork() {
 }
 
 function renderPending() {
-    console.log('🔄 renderPending 被调用，当前数量:', pendingItems.length);
-
     const container = document.getElementById('pendingItems');
     const countEl = document.getElementById('pendingCount');
 
-    // ✅ 关键：先清空容器
     container.innerHTML = '';
-
-    // ✅ 更新数量
     countEl.textContent = pendingItems.length;
 
     if (pendingItems.length === 0) {
@@ -1187,8 +1181,8 @@ function renderPending() {
 
     let html = '';
     pendingItems.forEach((item, index) => {
-        html += `<div class="pending-item" style="display:flex;justify-content:space-between;align-items:center;padding:10px 15px;border-bottom:1px solid #f0f0f0;">
-            <div class="info" style="flex:1;">
+        html += `<div class="pending-item">
+            <div class="info">
                 <strong>${item.Date}</strong> | ${item.Area} | ${item.Team} | ${item.Description}
                 <span style="color:#999;font-size:12px;margin-left:10px;">
                     ${item.Qty > 0 ? '数量:' + item.Qty : ''}
@@ -1196,18 +1190,17 @@ function renderPending() {
                 </span>
             </div>
             <div class="actions">
-                <button class="btn btn-danger btn-sm" onclick="removePending(${index})" style="padding:5px 12px;font-size:12px;background:#e53935;color:white;border:none;border-radius:4px;cursor:pointer;">删除</button>
+                <button class="btn btn-danger btn-sm" onclick="removePending(${index})">删除</button>
             </div>
         </div>`;
     });
     container.innerHTML = html;
 }
 
-    
 function removePending(index) {
     pendingItems.splice(index, 1);
-    renderPending();
     savePending();
+    renderPending();
 }
 
 function clearPending() {
@@ -1219,7 +1212,7 @@ function clearPending() {
 
     pendingItems = [];
     localStorage.removeItem('pending_items');
-    renderPending();  // ✅ 刷新待提交列表
+    renderPending();
     showToast('🗑️ 已清空待提交列表');
 }
 
@@ -1259,8 +1252,8 @@ async function submitAll() {
 
     pendingItems = [];
     localStorage.removeItem('pending_items');
-    renderPending();   // ✅ 刷新待提交列表
-    loadOverview();    // ✅ 刷新数据总览
+    renderPending();
+    loadOverview();
 
     if (successCount > 0) {
         showToast(t('successSubmit').replace('{count}', successCount));
@@ -1268,6 +1261,7 @@ async function submitAll() {
         showToast('❌ 提交失败，请检查网络');
     }
 }
+
 // ============================================================
 //  出勤日报
 // ============================================================
@@ -1423,8 +1417,10 @@ async function saveAttendance() {
             await addAttendance(record);
         }
         showToast(t('successSaved'));
-        loadAttendance();   // ✅ 刷新考勤表
-        loadAttendance2();  // ✅ 刷新另一个考勤表
+        loadAttendance();
+        loadAttendance2();
+        loadVerification();
+        loadVerification2();
     } catch (e) {
         showToast('❌ 保存失败: ' + e.message);
     }
@@ -1467,8 +1463,10 @@ async function saveAttendance2() {
             await addAttendance(record);
         }
         showToast(t('successSaved'));
-        loadAttendance();   // ✅ 刷新考勤表
-        loadAttendance2();  // ✅ 刷新另一个考勤表
+        loadAttendance();
+        loadAttendance2();
+        loadVerification();
+        loadVerification2();
     } catch (e) {
         showToast('❌ 保存失败: ' + e.message);
     }
