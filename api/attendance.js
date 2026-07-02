@@ -30,22 +30,44 @@ export default async function handler(req, res) {
             }
             
             const result = await neon(query, params);
-            return res.status(200).json(result.rows);
+            // ✅ 转成前端期望的格式
+            const rows = result.rows.map(r => ({
+                Date: r.date,
+                Team: r.team,
+                WorkerType: r.worker_type,
+                Total: r.total,
+                Present: r.present,
+                Absent: r.absent,
+                Foreign: r.foreign_count,
+                Remark: r.remark,
+                ReportedBy: r.reported_by
+            }));
+            return res.status(200).json(rows);
         }
 
         if (req.method === 'POST') {
-            const { Date, Team, WorkerType, Total, Present, Absent, Foreign, Remark, ReportedBy } = req.body;
+            const body = req.body;
             
             await neon(
                 'DELETE FROM attendance WHERE date = $1 AND team = $2 AND worker_type = $3',
-                [Date, Team, WorkerType]
+                [body.Date, body.Team, body.WorkerType]
             );
             
             const result = await neon(
                 `INSERT INTO attendance (date, team, worker_type, total, present, absent, foreign_count, remark, reported_by, created_at)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())
                  RETURNING id`,
-                [Date, Team, WorkerType, Total || 0, Present || 0, Absent || 0, Foreign || 0, Remark || '', ReportedBy || 'unknown']
+                [
+                    body.Date, 
+                    body.Team, 
+                    body.WorkerType, 
+                    body.Total || 0, 
+                    body.Present || 0, 
+                    body.Absent || 0, 
+                    body.Foreign || 0, 
+                    body.Remark || '', 
+                    body.ReportedBy || 'unknown'
+                ]
             );
             
             return res.status(200).json({ success: true, id: result.rows[0].id });
