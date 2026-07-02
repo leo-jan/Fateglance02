@@ -737,9 +737,7 @@ function renderAreaAttendance(data, tableId, team) {
     // 从 teamAttendanceTable 读取各工种的实到人数
     const teamAttendanceMap = {};
     WORKER_TYPES_ATT.forEach(type => {
-        // 读取中国实到
         const chinesePresent = parseInt(document.querySelector(`#teamAttendanceTable .att-input[data-type="${type}"][data-field="chinesePresent"]`)?.value) || 0;
-        // 读取外籍实到
         const foreignPresent = parseInt(document.querySelector(`#teamAttendanceTable .att-input[data-type="${type}"][data-field="foreignPresent"]`)?.value) || 0;
         teamAttendanceMap[type] = chinesePresent + foreignPresent;
     });
@@ -774,8 +772,6 @@ function renderAreaAttendance(data, tableId, team) {
         <th style="min-width:60px;">差值</th>
     </tr></thead><tbody>`;
 
-    let grandTotal = 0;
-    let grandDistributed = 0;
     let rowIndex = 0;
     let hasData = false;
 
@@ -787,8 +783,7 @@ function renderAreaAttendance(data, tableId, team) {
         hasData = true;
 
         rowIndex++;
-        const rowKey = `${type}`;
-        const savedRow = savedData[rowKey] || {};
+        const savedRow = savedData[type] || {};
         
         // 计算各区域分配值
         let rowTotal = 0;
@@ -800,9 +795,6 @@ function renderAreaAttendance(data, tableId, team) {
         });
         
         const diff = present - rowTotal;
-
-        grandTotal += present;
-        grandDistributed += rowTotal;
 
         html += `<tr>
             <td>${rowIndex}</td>
@@ -828,17 +820,6 @@ function renderAreaAttendance(data, tableId, team) {
         </td></tr>`;
     }
 
-    // 合计行
-    const totalDiff = grandTotal - grandDistributed;
-    html += `<tr style="font-weight:bold;background:#f5f5f5;">
-        <td colspan="3">合计</td>`;
-    AREA_LIST.forEach(area => {
-        html += `<td id="area-total-${area}">0</td>`;
-    });
-    html += `<td style="color:#1565c0;" id="grand-distributed">${grandDistributed}</td>
-        <td style="color:${totalDiff !== 0 ? '#c62828' : '#4caf50'}" id="grand-diff">${totalDiff}</td>
-    </tr>`;
-
     html += '</tbody></table>';
     
     html += `<div style="margin-top:10px;font-size:12px;color:#999;">
@@ -847,11 +828,12 @@ function renderAreaAttendance(data, tableId, team) {
     
     container.innerHTML = html;
 
-    // 更新各区域合计
-    updateAreaTotals();
+    // 更新各区域合计（只更新区域合计行）
+    updateAreaTotalsOnly();
 }
-// 更新区域合计
-function updateAreaTotals() {
+
+// 只更新区域合计（不添加总合计行）
+function updateAreaTotalsOnly() {
     AREA_LIST.forEach(area => {
         const inputs = document.querySelectorAll(`.area-input[data-area="${area}"]`);
         let total = 0;
@@ -882,11 +864,9 @@ function updateAreaTotal(el) {
     }
     
     // 更新各区域合计
-    updateAreaTotals();
-    
-    // 更新总计
-    updateGrandTotals();
+    updateAreaTotalsOnly();
 }
+    
 
 // 更新总计
 function updateGrandTotals() {
