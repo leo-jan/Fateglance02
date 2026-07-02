@@ -414,12 +414,61 @@
 
 <script>
 // ============================================================
-//  Supabase 配置
 // ============================================================
-const SUPABASE_URL = 'https://zthosewfpsgtaqhtvcyt.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0aG9zZXdmcHNndGFxaHR2Y3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTA3MTksImV4cCI6MjA5ODQyNjcxOX0.Q9E4rDoZtFPGsjoJOUyhHmwNA0MGhzPOl5aymZ1Xjgo';
+//  Google Sheets API 配置
+// ============================================================
+const SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbx7KqS7V1COetOHycPHYqii9u6ICN6ZBJHyjZkG3sjcDGZYbwiiYUN4mqVO_xSGFwYXBw/exec';
 
-// ============================================================
+// Google Sheets API 操作函数
+async function sheetsGet(action, params = {}) {
+    const url = new URL(SHEETS_API_URL);
+    url.searchParams.append('action', action);
+    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+    const response = await fetch(url.toString());
+    return await response.json();
+}
+
+async function sheetsPost(action, data = {}) {
+    const response = await fetch(SHEETS_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ...data })
+    });
+    return await response.json();
+}
+
+// 替换原来的 sheetsQuery
+async function sheetsQuery(table, params = {}) {
+    const map = {
+        'daily_reports': 'getReports',
+        'attendance': 'getAttendance',
+        'users': 'getUsers',
+        'work_dictionary': 'getWorkDictionary',
+        'login_logs': 'getLoginLogs'
+    };
+    return await sheetsGet(map[table], params.eq || {});
+}
+
+// 替换原来的 sheetsInsert
+async function sheetsInsert(table, data) {
+    const map = {
+        'daily_reports': 'addReport',
+        'attendance': 'addAttendance',
+        'users': 'addUser',
+        'login_logs': 'addLoginLog'
+    };
+    return await sheetsPost(map[table], data);
+}
+
+// 替换原来的 sheetsDelete
+async function sheetsDelete(table, data) {
+    const map = {
+        'daily_reports': 'deleteReport',
+        'attendance': 'deleteAttendance',
+        'users': 'deleteUser'
+    };
+    return await sheetsPost(map[table], data);
+}
 //  国际化 (i18n)
 // ============================================================
 const I18N = {
@@ -800,7 +849,7 @@ async function supabaseFetch(table, options = {}) {
     }
 }
 
-async function supabaseQuery(table, params = {}) {
+async function sheetsQuery(table, params = {}) {
     let url = `${SUPABASE_URL}/rest/v1/${table}`;
     const queryParams = new URLSearchParams();
     
@@ -864,35 +913,19 @@ const AREAS = ['110', '210', '220', '240', '320', '330', '400', '800', 'precast 
 // ============================================================
 let categoryMap = {};
 
-async function loadCategoriesFromSupabase() {
+async function loadCategoriesFromSheets() {
     try {
         console.log('🔍 开始加载分类...');
-        const url = SUPABASE_URL + '/rest/v1/work_dictionary?select=cat_zh,cat_en';
-        console.log('📡 请求URL:', url);
-        
-        const response = await fetch(url, {
-            headers: {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
-            }
-        });
-        
-        console.log('📊 响应状态:', response.status);
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('❌ 请求失败:', errorText);
-            showToast('❌ 加载字典失败: ' + response.status);
-            return [];
-        }
-        
-        const data = await response.json();
+        const data = await sheetsQuery('work_dictionary', { select: '*' });
         console.log('✅ 原始数据:', data);
-        console.log('📊 数据条数:', data.length);
         
         if (!data || data.length === 0) {
             console.warn('⚠️ 字典表为空');
             showToast('⚠️ 字典表没有数据');
+            // 使用硬编码备用
+            window.zhCategories = ['无收入项', '土石方工程', '模板工程', '架子工程', '钢筋工程', '混凝土工程', '砌筑工程'];
+            window.enCategories = ['Non-revenue Work', 'Earthwork', 'Formwork', 'Scaffolding', 'Rebar', 'Concrete Works', 'Masonry'];
+            window.categoryMap = {};
             return [];
         }
         
@@ -922,24 +955,12 @@ async function loadCategoriesFromSupabase() {
     } catch (error) {
         console.error('❌ 加载分类失败:', error);
         showToast('❌ 加载失败: ' + error.message);
+        // 使用硬编码备用
+        window.zhCategories = ['无收入项', '土石方工程', '模板工程', '架子工程', '钢筋工程', '混凝土工程', '砌筑工程'];
+        window.enCategories = ['Non-revenue Work', 'Earthwork', 'Formwork', 'Scaffolding', 'Rebar', 'Concrete Works', 'Masonry'];
         return [];
     }
 }
-async function onCategoryChange() {
-    const lang = currentLang;
-    const categorySelect = document.getElementById('entryCategory');
-    
-    // 如果分类还没加载，先加载
-    if (!window.zhCategories || window.zhCategories.length === 0) {
-        await loadCategoriesFromSupabase();
-    }
-    
-    // 如果仍然没有数据，使用硬编码备用
-    if (!window.zhCategories || window.zhCategories.length === 0) {
-        console.warn('⚠️ 使用硬编码分类');
-        window.zhCategories = ['无收入项', '土石方工程', '模板工程', '架子工程', '钢筋工程', '混凝土工程', '砌筑工程'];
-        window.enCategories = ['Non-revenue Work', 'Earthwork', 'Formwork', 'Scaffolding', 'Rebar', 'Concrete Works', 'Masonry'];
-    }
     
     const displayCategories = lang === 'zh' ? window.zhCategories : window.enCategories;
     const zhCategories = window.zhCategories;
@@ -960,7 +981,7 @@ let workItemsMap = {};
 
 async function loadWorkItemsFromSupabase() {
     try {
-        const data = await supabaseQuery('work_dictionary', {
+        const data = await sheetsQuery('work_dictionary', {
             select: '*'
         });
         workItemsMap = {};
@@ -1023,9 +1044,9 @@ async function onSubItemChange() {
 // ============================================================
 //  登录/登出
 // ============================================================
-async function loadUsersFromSupabase() {
+async function loadUsersFromSheets() {
     try {
-        const data = await supabaseQuery('users', { select: '*' });
+        const data = await sheetsQuery('users', { select: '*' });
         usersData = {};
         data.forEach(u => {
             usersData[u.username] = {
@@ -1053,7 +1074,7 @@ async function handleLogin() {
     }
     
     try {
-        const users = await loadUsersFromSupabase();
+        const users = await loadUsersFromSheets();
         const user = users.find(u => u.username === username);
         
         if (!user) {
@@ -1097,14 +1118,11 @@ async function handleLogin() {
 
 async function addLoginLog(username, displayName, role) {
     try {
-        await supabaseFetch('login_logs', {
-            method: 'POST',
-            body: {
-                username: username,
-                display_name: displayName,
-                role: role,
-                timestamp: new Date().toLocaleString()
-            }
+        await sheetsInsert('login_logs', {
+            username: username,
+            display_name: displayName,
+            role: role,
+            timestamp: new Date().toLocaleString()
         });
     } catch (error) {
         console.error('记录登录日志失败:', error);
@@ -1113,7 +1131,7 @@ async function addLoginLog(username, displayName, role) {
 
 async function loadLoginLogs() {
     try {
-        const data = await supabaseQuery('login_logs', { 
+        const data = await sheetsQuery('login_logs', { 
             select: '*',
             order: 'id.desc',
             limit: '100'
@@ -1183,16 +1201,11 @@ function initApp() {
     document.getElementById('overviewDate').value = today;
     document.getElementById('verifyDate').value = today;
     
-    // ✅ 预加载字典数据，完成后初始化下拉菜单
-    loadCategoriesFromSupabase()
-        .then(() => loadWorkItemsFromSupabase())
-        .then(() => {
-            onCategoryChange();
-            console.log('✅ 字典数据加载完成，分类下拉已初始化');
-        })
-        .catch(error => {
-            console.error('❌ 字典数据加载失败:', error);
-        });
+    // 加载字典数据
+    loadCategoriesFromSheets().then(() => {
+        onCategoryChange();
+    });
+    loadWorkItemsFromSupabase();
     
     loadPending();
     loadAttendance();
@@ -1373,7 +1386,6 @@ async function submitAll() {
     if (!confirm(t('confirmSubmit').replace('{count}', pendingItems.length))) return;
     
     try {
-        // 转换字段名以匹配数据库
         const records = pendingItems.map(item => ({
             date: item.Date,
             area: item.Area,
@@ -1393,10 +1405,7 @@ async function submitAll() {
         }));
         
         for (const record of records) {
-            await supabaseFetch('daily_reports', {
-                method: 'POST',
-                body: record
-            });
+            await sheetsInsert('daily_reports', record);
         }
         
         const count = pendingItems.length;
@@ -1420,7 +1429,7 @@ async function loadAttendance() {
     if (!date) return;
     
     try {
-        const data = await supabaseQuery('attendance', {
+        const data = await sheetsQuery('attendance', {
             eq: { date: date, team: team }
         });
         renderAttendance(data || []);
@@ -1496,7 +1505,7 @@ function updateAbsent(el) {
 async function renderAttendanceSummary(date) {
     const container = document.getElementById('attendanceSummary');
     try {
-        const data = await supabaseQuery('attendance', { eq: { date: date } });
+        const data = await sheetsQuery('attendance', { eq: { date: date } });
         
         if (data.length === 0) {
             container.innerHTML = '<p style="color:#999;padding:10px;">' + t('noDataDate') + '</p>';
@@ -1556,21 +1565,11 @@ async function saveAttendance() {
     
     try {
         // 先删除该日期该班组的旧数据
-        const existing = await supabaseQuery('attendance', {
-            eq: { date: date, team: team }
-        });
-        for (const item of existing) {
-            await supabaseFetch(`attendance?id=eq.${item.id}`, {
-                method: 'DELETE'
-            });
-        }
+        await sheetsDelete('attendance', { date: date, team: team });
         
         // 插入新数据
         for (const record of records) {
-            await supabaseFetch('attendance', {
-                method: 'POST',
-                body: record
-            });
+            await sheetsInsert('attendance', record);
         }
         
         showToast(t('successSaved'));
@@ -1589,9 +1588,9 @@ async function loadOverview() {
     try {
         let allData = [];
         if (date) {
-            allData = await supabaseQuery('daily_reports', { eq: { date: date } });
+            allData = await sheetsQuery('daily_reports', { eq: { date: date } });
         } else {
-            allData = await supabaseQuery('daily_reports', { select: '*' });
+            allData = await sheetsQuery('daily_reports', { select: '*' });
         }
         
         const filtered = allData || [];
@@ -1622,7 +1621,7 @@ async function loadOverview() {
         // 全部数据（最近100条）
         const allDataTable = document.getElementById('allDataTable');
         try {
-            const all = await supabaseQuery('daily_reports', { 
+            const all = await sheetsQuery('daily_reports', { 
                 select: '*',
                 order: 'id.desc',
                 limit: '100'
@@ -1702,8 +1701,8 @@ async function loadVerification() {
     if (!date) return;
     
     try {
-        const attendance = await supabaseQuery('attendance', { eq: { date: date } });
-        const reports = await supabaseQuery('daily_reports', { eq: { date: date } });
+        const attendance = await sheetsQuery('attendance', { eq: { date: date } });
+        const reports = await sheetsQuery('daily_reports', { eq: { date: date } });
         
         const filteredTeams = teamFilter === 'all' ? TEAMS : [teamFilter];
         
@@ -1767,7 +1766,7 @@ async function loadVerification() {
 // ============================================================
 async function loadUserList() {
     try {
-        const users = await supabaseQuery('users', { select: '*' });
+        const users = await sheetsQuery('users', { select: '*' });
         const container = document.getElementById('userList');
         let html = '<table><thead><tr><th>' + (currentLang === 'zh' ? '用户名' : 'Username') + '</th><th>' + (currentLang === 'zh' ? '显示名称' : 'Display Name') + '</th><th>' + (currentLang === 'zh' ? '角色' : 'Role') + '</th><th>' + (currentLang === 'zh' ? '操作' : 'Action') + '</th></tr></thead><tbody>';
         let hasUsers = false;
@@ -1796,9 +1795,7 @@ async function deleteUser(username) {
     if (username === 'admin') return;
     if (confirm(t('deleteConfirm').replace('{name}', username))) {
         try {
-            await supabaseFetch(`users?username=eq.${username}`, {
-                method: 'DELETE'
-            });
+            await sheetsDelete('users', { username: username });
             showToast(t('userDeleted'));
             loadUserList();
         } catch (error) {
@@ -1820,20 +1817,17 @@ async function addUser() {
     }
     
     try {
-        const existing = await supabaseQuery('users', { eq: { username: username } });
+        const existing = await sheetsQuery('users', { eq: { username: username } });
         if (existing.length > 0) {
             showToast(t('errorUserExists'));
             return;
         }
         
-        await supabaseFetch('users', {
-            method: 'POST',
-            body: {
-                username: username,
-                password: password,
-                role: role,
-                display_name: displayName
-            }
+        await sheetsInsert('users', {
+            username: username,
+            password: password,
+            role: role,
+            display_name: displayName
         });
         
         showToast(t('successAddUser').replace('{name}', displayName));
@@ -1853,10 +1847,10 @@ async function addUser() {
 function exportBackup() {
     showToast('📦 ' + (currentLang === 'zh' ? '正在导出备份...' : 'Exporting backup...'));
     Promise.all([
-        supabaseQuery('users', { select: '*' }),
-        supabaseQuery('daily_reports', { select: '*' }),
-        supabaseQuery('attendance', { select: '*' }),
-        supabaseQuery('login_logs', { select: '*' })
+        sheetsQuery('users', { select: '*' }),
+        sheetsQuery('daily_reports', { select: '*' }),
+        sheetsQuery('attendance', { select: '*' }),
+        sheetsQuery('login_logs', { select: '*' })
     ]).then(([users, reports, attendance, logs]) => {
         const data = {
             users: users,
@@ -1890,26 +1884,17 @@ function importBackup() {
                 const data = JSON.parse(ev.target.result);
                 if (data.users) {
                     for (const user of data.users) {
-                        await supabaseFetch('users', {
-                            method: 'POST',
-                            body: user
-                        }).catch(() => {});
+                        await sheetsInsert('users', user).catch(() => {});
                     }
                 }
                 if (data.daily_reports) {
                     for (const report of data.daily_reports) {
-                        await supabaseFetch('daily_reports', {
-                            method: 'POST',
-                            body: report
-                        }).catch(() => {});
+                        await sheetsInsert('daily_reports', report).catch(() => {});
                     }
                 }
                 if (data.attendance_data) {
                     for (const att of data.attendance_data) {
-                        await supabaseFetch('attendance', {
-                            method: 'POST',
-                            body: att
-                        }).catch(() => {});
+                        await sheetsInsert('attendance', att).catch(() => {});
                     }
                 }
                 showToast(t('successRestore'));
@@ -1929,16 +1914,35 @@ function importBackup() {
 async function clearZeroData() {
     if (!confirm(t('confirmClearZero'))) return;
     try {
-        const data = await supabaseQuery('daily_reports', { select: '*' });
+        const data = await sheetsQuery('daily_reports', { select: '*' });
         const toDelete = data.filter(d => {
             const nums = [d.qty || 0, d.pipe_length || 0, d.manpower || 0, d.manhours || 0, d.non_chinese || 0];
             return nums.every(n => n === 0);
         });
         let count = 0;
         for (const item of toDelete) {
-            await supabaseFetch(`daily_reports?id=eq.${item.id}`, {
-                method: 'DELETE'
-            });
+            await sheetsDelete('daily_reports', { id: item.id });
+            count++;
+        }
+        showToast(t('successClearZero').replace('{count}', count));
+        loadOverview();
+    } catch (error) {
+        showToast('❌ ' + (currentLang === 'zh' ? '清理失败' : 'Clear failed'));
+        console.error(error);
+    }
+}
+
+async function clearZeroData() {
+    if (!confirm(t('confirmClearZero'))) return;
+    try {
+        const data = await sheetsQuery('daily_reports', { select: '*' });
+        const toDelete = data.filter(d => {
+            const nums = [d.qty || 0, d.pipe_length || 0, d.manpower || 0, d.manhours || 0, d.non_chinese || 0];
+            return nums.every(n => n === 0);
+        });
+        let count = 0;
+        for (const item of toDelete) {
+            await sheetsDelete('daily_reports', { id: item.id });
             count++;
         }
         showToast(t('successClearZero').replace('{count}', count));
@@ -1952,7 +1956,7 @@ async function clearZeroData() {
 async function deduplicateData() {
     if (!confirm(t('confirmDedup'))) return;
     try {
-        const data = await supabaseQuery('daily_reports', { select: '*' });
+        const data = await sheetsQuery('daily_reports', { select: '*' });
         const keys = ['date', 'area', 'team', 'tag_number', 'code', 'description'];
         const seen = new Set();
         const duplicates = [];
@@ -1966,9 +1970,7 @@ async function deduplicateData() {
         });
         let count = 0;
         for (const item of duplicates) {
-            await supabaseFetch(`daily_reports?id=eq.${item.id}`, {
-                method: 'DELETE'
-            });
+            await sheetsDelete('daily_reports', { id: item.id });
             count++;
         }
         showToast(t('successDedup').replace('{count}', count));
@@ -1978,16 +1980,13 @@ async function deduplicateData() {
         console.error(error);
     }
 }
-
 async function resetAllData() {
     if (!confirm(t('confirmReset'))) return;
     if (!confirm(t('confirmReset2'))) return;
     try {
         const tables = ['daily_reports', 'attendance', 'login_logs'];
         for (const table of tables) {
-            await supabaseFetch(table, {
-                method: 'DELETE'
-            });
+            await sheetsDelete(table, {}); // 删除所有数据
         }
         showToast(t('successReset'));
         loadOverview();
