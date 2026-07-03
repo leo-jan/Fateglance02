@@ -1392,25 +1392,29 @@ function switchSubTab(subtab) {
 //  初始化
 // ============================================================
 function initApp() {
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('entryDate').value = today;
-  document.getElementById('attTeamDate').value = today;
-  document.getElementById('attAreaDate').value = today;
-  document.getElementById('overviewDate').value = today;
-  document.getElementById('verifyDate').value = today;
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('entryDate').value = today;
+    document.getElementById('attTeamDate').value = today;
+    document.getElementById('attAreaDate').value = today;
+    document.getElementById('overviewDate').value = today;
+    document.getElementById('verifyDate').value = today;
 
-  setTimeout(function() { onCategoryChange(); }, 100);
-  loadPending();
-  loadTeamAttendance();
-  loadAreaAttendance();
-  loadOverview();
-  loadUserList();
-  loadVerification();
+    // ✅ 先加载分类
+    setTimeout(function() { 
+        onCategoryChange(); 
+    }, 100);
+    
+    loadPending();
+    loadTeamAttendance();
+    loadAreaAttendance();
+    loadOverview();
+    loadUserList();
+    loadVerification();
 
-  // ✅ 加载今日已提交数据
-  setTimeout(function() {
-    loadTodaySubmitted();
-  }, 500);
+    // ✅ 加载今日已提交数据
+    setTimeout(function() {
+        loadTodaySubmitted();
+    }, 500);
 }
 // ============================================================
 //  工作字典联动
